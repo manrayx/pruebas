@@ -170,6 +170,13 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
 .modal .gurmy{margin-top:14px;font-size:15px}
 .modal .gurmy img{width:70px}
 #cat.gurmy-on{background:linear-gradient(180deg,#5b47a0 0%,#3a2a78 100%)}
+
+.vid{text-align:center}
+.vid h3{font-weight:900;font-size:24px;color:var(--gold-l);margin-top:4px}
+.vid p{font-weight:700;opacity:.85;margin:4px 0 14px}
+.vframe{position:relative;width:min(100%,340px);aspect-ratio:9/16;margin:0 auto;border-radius:22px;overflow:hidden;border:4px solid var(--gold);box-shadow:0 14px 30px rgba(0,0,0,.45);background:#000}
+.vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vbtn{display:inline-block;margin-top:16px;background:var(--red);color:#fff;font-weight:900;padding:13px 24px;border-radius:99px;text-decoration:none;box-shadow:0 6px 0 var(--wine)}
 </style>
 </head>
 <body>
@@ -360,13 +367,17 @@ function openCat(id){curCat=id;$('#cat').classList.toggle('gurmy-on',id==='gurmy
  $('#home').classList.remove('on');$('#cat').classList.add('on');renderTabs();renderList()}
 $('#back').onclick=()=>{$('#cat').classList.remove('on');$('#home').classList.add('on');renderCats()};
 
+const VIDEO_ID='rRaUr964fuM';
+const VTAB={id:'VIDEO',html:()=>`<span class="pc">▶</span>Último video`};
+function tabsFor(c){return c==='navidad'?[TABS[0],VTAB,TABS[2]]:TABS}
 function renderTabs(){const items=P.filter(p=>p.cat===curCat);
- $('#tabs').innerHTML=TABS.map(t=>{const n=items.filter(p=>inTab(p,t.id)&&!seen.has(p.id)).length;
+ $('#tabs').innerHTML=tabsFor(curCat).map(t=>{const n=items.filter(p=>inTab(p,t.id)&&!seen.has(p.id)).length;
   return `<button class="tab ${t.id===curTab?'on':''}" data-t="${t.id}">${t.html()}${n?`<span class="n">${n}</span>`:''}</button>`}).join('');
  $$('.tab').forEach(b=>b.onclick=()=>{curTab=b.dataset.t;renderTabs();renderList()})}
 
 function kindLabel(t){return t==='HIPER'?`<span class="kind">★ Híper Oferta</span>`:t==='H'?`<span class="kind"><img src="${H}" alt="">Sello H</span>`:t==='MEGA'?`<span class="kind">⭐ Mega Oferta</span>`:`<span class="kind">% Descuento</span>`}
-function renderList(){const items=P.filter(p=>p.cat===curCat&&inTab(p,curTab)).sort((a,b)=>(b.tipo==='HIPER')-(a.tipo==='HIPER'));let h='';
+function renderList(){if(curTab==='VIDEO'){renderVideo();return}
+ const items=P.filter(p=>p.cat===curCat&&inTab(p,curTab)).sort((a,b)=>(b.tipo==='HIPER')-(a.tipo==='HIPER'));let h='';
  if(curTab==='H')h+=`<div class="note"><b>Sello H:</b> llévalo al mejor precio al comprar 3 productos de todo el catálogo. <b>Híper Oferta:</b> al comprar 1 producto con H.</div>`;
  if(curTab==='MEGA')h+=`<div class="note"><b>Mega Oferta:</b> llévala al mejor precio al comprar 3 productos marcados como NUEVO.</div>`;
  if(!items.length){h+=`<div class="empty"><div>🔍</div>No hay ${curTab==='H'?'productos con sello H':curTab==='MEGA'?'Mega Ofertas':'descuentos'} en esta categoría.<br>¡Prueba otra pestaña!</div>`}
@@ -385,6 +396,16 @@ function renderList(){const items=P.filter(p=>p.cat===curCat&&inTab(p,curTab)).s
  $('#list').innerHTML=h;$('#list').scrollTop=0;
  sizeCards();
  $$('.card').forEach(c=>c.onclick=e=>reveal(c,e));bindGurmy()}
+
+
+function renderVideo(){
+ $('#list').innerHTML=`<div class="vid"><h3>🎬 Descubre el último video</h3><p>La Navidad empieza con Betterware</p>
+  <div class="vframe"><iframe src="https://www.youtube.com/embed/${VIDEO_ID}?rel=0&playsinline=1" title="Video Betterware" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  <a class="vbtn" href="https://youtube.com/shorts/${VIDEO_ID}" target="_blank" rel="noopener">▶ Ver en YouTube</a></div>`;
+ $('#list').scrollTop=0;
+ const f=$('.vframe iframe');f.addEventListener('load',()=>{});
+ if(!mu.paused){mu.pause();snd.textContent='🔇';snd.classList.remove('play')}
+}
 
 /* altura de cada tarjeta = altura de su reverso */
 function sizeCards(){$$('.card').forEach(c=>{const b=c.querySelector('.rear'),img=b.querySelector('img.ph');
