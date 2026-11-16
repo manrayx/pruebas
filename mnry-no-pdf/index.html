@@ -3,6 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Una conversación interactiva de 2 minutos con MNRY Visual Lab. Comunicadores que filman.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mnry-no-pdf.onrender.com/">
+<meta property="og:title" content="MNRY · Esto no es un PDF">
+<meta property="og:description" content="Una conversación interactiva de 2 minutos. Tú eliges por dónde empezar.">
+<meta property="og:image" content="https://mnry-no-pdf.onrender.com/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0e0e0f">
 <title>MNRY · Esto no es un PDF</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -113,7 +123,7 @@ h2{font-size:clamp(34px,6.4vw,84px);font-weight:900;line-height:1;letter-spacing
 <div class="prog" id="prog"></div>
 <div class="top">
   <div class="logo">MNRY<span>VISUAL LAB</span></div>
-  <a class="reelbtn" href="https://vimeo.com/1247427460" target="_blank" rel="noopener">REEL ▶</a>
+  <div style="display:flex;gap:8px;align-items:center"><button class="reelbtn" id="snd" aria-label="Sonido" style="padding:9px 12px">🔊</button><a class="reelbtn" href="https://vimeo.com/1247427460" target="_blank" rel="noopener">REEL ▶</a></div>
 </div>
 
 <!-- 0 · Entrada -->
@@ -223,6 +233,29 @@ h2{font-size:clamp(34px,6.4vw,84px);font-weight:900;line-height:1;letter-spacing
 <div class="nav"><button class="back" id="back">← ATRÁS</button><span></span></div>
 
 <script>
+// ===== Sonido (Web Audio, sin archivos) =====
+const SFX=(()=>{let ctx=null,on=true,master;try{on=localStorage.getItem('mnry_snd')!=='0'}catch(e){}
+ function init(){if(ctx)return;try{ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=.55;master.connect(ctx.destination)}catch(e){}}
+ function env(g,t,a,d,v){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+d)}
+ function tone(f,dur,type='sine',v=.25,f2=null,delay=0){if(!ctx||!on)return;const t=ctx.currentTime+delay,o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);env(g,t,.008,dur,v);o.connect(g);g.connect(master);o.start(t);o.stop(t+dur+.05)}
+ function noise(dur,fFrom,fTo,v=.3,q=1,delay=0,type='bandpass'){if(!ctx||!on)return;const t=ctx.currentTime+delay,n=ctx.sampleRate*dur,b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;
+  const s=ctx.createBufferSource();s.buffer=b;const f=ctx.createBiquadFilter();f.type=type;f.Q.value=q;f.frequency.setValueAtTime(fFrom,t);f.frequency.exponentialRampToValueAtTime(fTo,t+dur);const g=ctx.createGain();env(g,t,dur*.35,dur*.65,v);s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+dur+.02)}
+ return{init,get on(){return on},toggle(){on=!on;try{localStorage.setItem('mnry_snd',on?'1':'0')}catch(e){}if(on){init();ctx&&ctx.resume();this.tap()}return on},
+  resume(){init();ctx&&ctx.state==='suspended'&&ctx.resume()},
+  tap(){tone(1200,.06,'sine',.12,700)},
+  hover(){tone(2400,.03,'sine',.035)},
+  whoosh(){noise(.45,300,3200,.22,.8)},
+  pick(){tone(523,.12,'triangle',.16);tone(784,.18,'triangle',.16,null,.07)},
+  clap(){noise(.07,4000,2500,.6,.6,0,'highpass');tone(140,.12,'sine',.35,60)},
+  perfect(){[659,880,1175,1568].forEach((f,i)=>tone(f,.22,'triangle',.14,null,.12+i*.07))},
+  good(){[659,880].forEach((f,i)=>tone(f,.2,'triangle',.14,null,.12+i*.08))},
+  miss(){tone(220,.3,'sawtooth',.07,140,.12)},
+  rec(){tone(880,.05,'square',.04);tone(880,.05,'square',.04,null,.12)},
+  fanfare(){[523,659,784,1047].forEach((f,i)=>tone(f,.35,'triangle',.13,null,i*.11));noise(.9,800,6000,.08,.5,.3)}}})();
+const sndb=document.getElementById('snd');const paintSnd=()=>sndb.textContent=SFX.on?'🔊':'🔇';paintSnd();
+sndb.onclick=()=>{SFX.toggle();paintSnd()};
+document.addEventListener('pointerdown',()=>SFX.resume(),{once:false,passive:true});
+document.querySelectorAll('.opt').forEach(o=>o.addEventListener('mouseenter',()=>SFX.hover()));
 const ANS=[
  {k:'01 · Un mensaje importante al que cuesta que presten atención',v:'v/op1.mp4',p:'p/op1.jpg',
   h:'Lo convertimos en una historia que se quiere ver.',
@@ -246,10 +279,10 @@ const prog=document.getElementById('prog'),back=document.getElementById('back');
 function play(sec){sec.querySelectorAll('video').forEach(v=>{if(sec.id==='s4'&&v.id==='gv')return;v.play().catch(()=>{})})}
 function stop(sec){sec.querySelectorAll('video').forEach(v=>v.pause())}
 function go(n,push=true){if(n===cur)return;if(push)hist.push(cur);stop(S[cur]);S[cur].classList.remove('on');cur=n;S[n].classList.add('on');play(S[n]);
- prog.style.width=(n/5*100)+'%';back.classList.toggle('v',n>0);if(n===4)resetGame();if(n!==4)stopGame()}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){go(+b.dataset.go)}
- const o=e.target.closest('[data-op]');if(o){showAns(+o.dataset.op);o.classList.add('seen')}});
-back.onclick=()=>{if(hist.length)go(hist.pop(),false)};
+ prog.style.width=(n/5*100)+'%';SFX.whoosh();back.classList.toggle('v',n>0);if(n===4)resetGame();if(n!==4)stopGame()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){SFX.tap();go(+b.dataset.go)}
+ const o=e.target.closest('[data-op]');if(o){SFX.pick();showAns(+o.dataset.op);o.classList.add('seen')}});
+back.onclick=()=>{SFX.tap();if(hist.length)go(hist.pop(),false)};
 const av=document.getElementById('ansv');
 function showAns(i){const a=ANS[i];document.getElementById('ansk').textContent=a.k;document.getElementById('ansh').textContent=a.h;document.getElementById('ansp').textContent=a.b;
  document.getElementById('ansc').innerHTML=a.c.map(x=>'<span>'+x+'</span>').join('');av.poster=a.p;av.src=a.v;go(2)}
@@ -265,15 +298,15 @@ let t0=0,raf=0,round=0,pts=0,zs=0,zw=0,speed=0,running=false,pos=0,cuts=[],grade
 function setClip(i){gv.src=CLIPS[i][0];gv.poster=CLIPS[i][1];gv.loop=true}
 function setZone(){zw=W[round];zs=15+Math.random()*(70-zw);zone.style.left=zs+'%';zone.style.width=zw+'%';speed=SP[round]}
 function loop(t){if(!running)return;const s=(t-t0)/1000*speed;const p=(s%2);pos=p<1?p*100:(2-p)*100;needle.style.left=pos+'%';raf=requestAnimationFrame(loop)}
-function startRound(){mode='play';take.textContent='TOMA '+(round+1)+'/3';rec.innerHTML='<i></i>REC';setClip(round);gv.currentTime=0;gv.play().catch(()=>{});
+function startRound(){mode='play';SFX.rec();take.textContent='TOMA '+(round+1)+'/3';rec.innerHTML='<i></i>REC';setClip(round);gv.currentTime=0;gv.play().catch(()=>{});
  setZone();flash.classList.remove('show');cutb.disabled=false;meter.style.visibility='visible';running=true;t0=performance.now();raf=requestAnimationFrame(loop)}
 function resetGame(){clearTimeout(pbTimer);round=0;pts=0;cuts=[];grades=[];cutb.textContent='¡CORTE!';cutb.style.display='';replayb.style.display='none';score.textContent='';startRound()}
 function stopGame(){running=false;cancelAnimationFrame(raf);clearTimeout(pbTimer);gv.pause()}
 function cut(){if(mode!=='play'){resetGame();return}if(!running)return;
  running=false;cancelAnimationFrame(raf);cutb.disabled=true;
- const at=gv.currentTime;gv.pause();cuts.push(at);
+ const at=gv.currentTime;gv.pause();cuts.push(at);SFX.clap();
  const c=zs+zw/2,d=Math.abs(pos-c),ok=pos>=zs&&pos<=zs+zw;let m;
- if(ok&&d<zw*0.2){pts+=3;m='¡Toma perfecta!';grades.push('PERFECTA')}else if(ok){pts+=2;m='¡Buena! Se queda.';grades.push('BUENA')}else{m=pos<zs?'Cortaste muy pronto.':'Se te pasó el momento.';grades.push('FUERA DE TIEMPO')}
+ if(ok&&d<zw*0.2){pts+=3;m='¡Toma perfecta!';SFX.perfect();grades.push('PERFECTA')}else if(ok){pts+=2;m='¡Buena! Se queda.';SFX.good();grades.push('BUENA')}else{SFX.miss();m=pos<zs?'Cortaste muy pronto.':'Se te pasó el momento.';grades.push('FUERA DE TIEMPO')}
  flash.textContent=m;flash.classList.add('show');round++;
  setTimeout(()=>{if(round<3)startRound();else playback()},1200)}
 // Al final: se reproduce la edición que armó el jugador con sus tres cortes
@@ -286,7 +319,7 @@ function playback(){mode='review';meter.style.visibility='hidden';cutb.disabled=
    pbTimer=setTimeout(()=>{gv.pause();i++;next()},(end-start)*1000)};
   if(gv.readyState>=1)go();else gv.addEventListener('loadedmetadata',go,{once:true})};
  pbTimer=setTimeout(next,900)}
-function endCard(){const f=pts>=8?'Tienes ojo de director.':pts>=5?'Nada mal para tu primer rodaje.':'Dirigir es saber cuándo cortar. Para eso estamos.';
+function endCard(){SFX.fanfare();const f=pts>=8?'Tienes ojo de director.':pts>=5?'Nada mal para tu primer rodaje.':'Dirigir es saber cuándo cortar. Para eso estamos.';
  take.textContent='FIN';rec.innerHTML='MNRY';
  flash.innerHTML='<span>Dirigido por ti.<br><span style="color:var(--yel)">Producido por MNRY.</span><br><small style="display:block;font-size:.4em;font-weight:800;color:var(--soft);margin-top:12px;letter-spacing:1px">'+f+' · '+pts+'/9</small></span>';flash.classList.add('show');
  cutb.textContent='JUGAR DE NUEVO';cutb.disabled=false;replayb.style.display='';score.textContent='Juegos así, para tu marca o tu equipo.'}
