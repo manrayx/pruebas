@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MNRY · Esto no es un PDF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0e0e0f;--ink2:#1b1b1d;--paper:#f2f1ec;--gray:#8c8c8c;--soft:#c9c9c4;--yel:#f5d90a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--ink);color:var(--paper);font-family:Montserrat,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a{color:inherit}
+/* barra superior */
+.top{position:fixed;left:0;right:0;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;pointer-events:none}
+.top>*{pointer-events:auto}
+.logo{font-weight:900;font-size:18px;letter-spacing:1px;line-height:1}
+.logo span{display:block;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--gray);margin-top:3px}
+.reelbtn{font-weight:800;font-size:12px;letter-spacing:2px;padding:9px 14px;border:2px solid var(--yel);color:var(--yel);border-radius:40px;text-decoration:none;background:rgba(14,14,15,.4);backdrop-filter:blur(6px)}
+.prog{position:fixed;left:0;top:0;height:4px;background:var(--yel);z-index:21;width:0;transition:width .5s ease}
+/* pantallas */
+.scr{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:96px 24px 40px;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility 0s .6s}
+.scr.on{opacity:1;visibility:visible;transition:opacity .6s ease}
+.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.veil{position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,rgba(14,14,15,.97) 0%,rgba(14,14,15,.75) 38%,rgba(14,14,15,.15) 75%,rgba(14,14,15,.45) 100%)}
+.wrap{width:100%;max-width:1100px;margin:0 auto}
+.kick{font-size:12px;font-weight:800;letter-spacing:4px;color:var(--yel);margin:0 0 14px;text-transform:uppercase}
+h1{font-size:clamp(46px,11vw,136px);font-weight:900;line-height:.92;letter-spacing:-.03em;margin:0}
+h2{font-size:clamp(34px,6.4vw,84px);font-weight:900;line-height:1;letter-spacing:-.02em;margin:0}
+.lead{font-size:clamp(17px,2.1vw,24px);font-weight:600;line-height:1.4;color:var(--soft);margin:18px 0 0;max-width:720px}
+.y{color:var(--yel)}
+.cta{display:inline-flex;align-items:center;gap:10px;background:var(--yel);color:var(--ink);font-weight:900;font-size:16px;letter-spacing:2px;padding:18px 28px;border-radius:60px;text-decoration:none;margin-top:28px;transition:transform .15s}
+.cta:active{transform:scale(.96)}
+.ghost{display:inline-flex;align-items:center;gap:8px;border:2px solid rgba(242,241,236,.5);color:var(--paper);font-weight:800;font-size:14px;letter-spacing:1.5px;padding:14px 22px;border-radius:60px;text-decoration:none;margin-top:28px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.row .cta,.row .ghost{margin-top:0}
+.btns{margin-top:28px}
+/* entrada */
+#s0 h1 .no{display:inline-block;background:var(--yel);color:var(--ink);padding:0 .12em;transform:rotate(-2deg)}
+.hint{font-size:12px;letter-spacing:3px;color:var(--gray);font-weight:800;margin-top:22px}
+/* pregunta */
+#s1{justify-content:flex-start;padding-top:84px;overflow-y:auto;background:var(--ink)}
+#s1 h2{margin-bottom:20px}
+.opts{display:grid;grid-template-columns:1fr;gap:12px}
+.opt{position:relative;overflow:hidden;border-radius:10px;min-height:118px;text-align:left;display:flex;align-items:flex-end;padding:18px;isolation:isolate;outline:2px solid transparent;transition:outline-color .2s,transform .2s}
+.opt video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .6s}
+.opt::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(14,14,15,.92) 0%,rgba(14,14,15,.55) 65%,rgba(14,14,15,.2) 100%)}
+.opt .n{font-size:13px;font-weight:900;color:var(--yel);letter-spacing:2px;display:block;margin-bottom:6px}
+.opt .t{font-size:clamp(20px,2.3vw,28px);font-weight:900;line-height:1.1;display:block;max-width:420px}
+.opt .go{position:absolute;right:16px;top:16px;width:38px;height:38px;border-radius:50%;background:var(--yel);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:900}
+.opt:hover{outline-color:var(--yel)}
+.opt:hover video{transform:scale(1.05)}
+.opt.seen .go{background:var(--paper)}
+.skip{margin-top:18px;font-size:13px;font-weight:800;letter-spacing:2px;color:var(--gray);text-decoration:underline;text-underline-offset:4px;align-self:flex-start}
+/* respuesta */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chips span{font-size:13px;font-weight:800;padding:8px 14px;border-radius:40px;background:rgba(242,241,236,.12);border:1px solid rgba(242,241,236,.25)}
+.q{font-size:15px;font-weight:800;color:var(--soft);margin:0 0 12px}
+/* quienes */
+#s3 .big{font-size:clamp(30px,5.4vw,70px)}
+.logos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:24px;max-width:900px}
+.logos img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:5px;display:block}
+.stats{display:flex;gap:28px;margin-top:22px;flex-wrap:wrap}
+.stats b{display:block;font-size:clamp(28px,4vw,44px);font-weight:900;color:var(--yel);line-height:1}
+.stats small{font-size:12px;font-weight:800;letter-spacing:1.5px;color:var(--soft)}
+/* juego */
+#s4{background:var(--ink2);justify-content:center}
+.stage{position:relative;width:100%;max-width:820px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;margin:18px 0 14px;background:#000}
+.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rec{position:absolute;left:12px;top:12px;font-size:12px;font-weight:900;letter-spacing:2px;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.5);padding:6px 10px;border-radius:4px}
+.rec i{width:10px;height:10px;border-radius:50%;background:#ff3b30;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.2}}
+.take{position:absolute;right:12px;top:12px;font-size:12px;font-weight:900;letter-spacing:2px;background:rgba(0,0,0,.5);padding:6px 10px;border-radius:4px}
+.flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(28px,6vw,64px);font-weight:900;text-align:center;opacity:0;background:rgba(14,14,15,.55);transition:opacity .2s;padding:20px}
+.flash.show{opacity:1}
+.meter{position:relative;height:22px;border-radius:30px;background:rgba(242,241,236,.12);max-width:820px;overflow:hidden}
+.zone{position:absolute;top:0;bottom:0;background:var(--yel);opacity:.9;border-radius:30px}
+.needle{position:absolute;top:-4px;bottom:-4px;width:6px;margin-left:-3px;background:var(--paper);border-radius:3px;box-shadow:0 0 10px rgba(255,255,255,.8)}
+.gamebar{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap;max-width:820px}
+#cut{background:#ff3b30;color:#fff;font-weight:900;font-size:20px;letter-spacing:3px;padding:16px 34px;border-radius:60px}
+#cut:active{transform:scale(.95)}
+#cut[disabled]{opacity:.4}
+.score{font-weight:800;font-size:14px;color:var(--soft)}
+/* cierre */
+.contact{margin-top:22px;font-size:15px;font-weight:600;color:var(--soft);line-height:1.6}
+.contact b{color:var(--paper)}
+.sign{margin-top:26px;font-weight:900;font-size:22px;line-height:1}
+.sign span{display:block;font-size:12px;letter-spacing:3px;color:var(--gray);margin-top:4px}
+/* navegación */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;justify-content:space-between;padding:0 22px 14px;pointer-events:none}
+.back{pointer-events:auto;font-size:12px;font-weight:800;letter-spacing:2px;color:var(--gray);padding:8px 0;visibility:hidden}
+.back.v{visibility:visible}
+@media (min-width:760px){
+  .scr{padding:110px 64px 64px}
+  .opts{grid-template-columns:1fr 1fr;gap:16px}
+  .opt{min-height:200px;padding:24px}
+  #s1{justify-content:center}
+  .logos{grid-template-columns:repeat(6,1fr)}
+  .top{padding:24px 40px}
+  .nav{padding:0 40px 20px}
+}
+@media (min-width:760px) and (max-height:760px){.opt{min-height:150px}}
+.rise{opacity:0;transform:translateY(24px)}
+.scr.on .rise{animation:rise .7s ease-out forwards}
+.scr.on .d1{animation-delay:.15s}.scr.on .d2{animation-delay:.3s}.scr.on .d3{animation-delay:.45s}.scr.on .d4{animation-delay:.6s}
+@keyframes rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.rise{opacity:1;transform:none}.scr.on .rise{animation:none}}
+</style>
+</head>
+<body>
+<div class="prog" id="prog"></div>
+<div class="top">
+  <div class="logo">MNRY<span>VISUAL LAB</span></div>
+  <a class="reelbtn" href="https://vimeo.com/1247427460" target="_blank" rel="noopener">REEL ▶</a>
+</div>
+
+<!-- 0 · Entrada -->
+<section class="scr on" id="s0">
+  <video class="bg" src="v/intro.mp4" poster="p/intro.jpg" autoplay muted loop playsinline></video>
+  <div class="veil"></div>
+  <div class="wrap">
+    <p class="kick rise">Hola de nuevo</p>
+    <h1 class="rise d1">Esto <span class="no">no</span> es<br>un PDF.</h1>
+    <p class="lead rise d2">Es una conversación de dos minutos. Tú eliges por dónde empezar.</p>
+    <button class="cta rise d3" data-go="1">EMPEZAR ▶</button>
+  </div>
+</section>
+
+<!-- 1 · Pregunta -->
+<section class="scr" id="s1">
+  <div class="wrap">
+    <p class="kick">Pregunta 1 de 1</p>
+    <h2>¿Qué necesitas<br>comunicar?</h2>
+    <div class="opts">
+      <button class="opt" data-op="0"><video src="v/op1.mp4" poster="p/op1.jpg" muted loop playsinline preload="metadata"></video><span><span class="n">01</span><span class="t">Un mensaje importante al que cuesta que presten atención</span></span><span class="go">→</span></button>
+      <button class="opt" data-op="1"><video src="v/op2.mp4" poster="p/op2.jpg" muted loop playsinline preload="metadata"></video><span><span class="n">02</span><span class="t">Un vocero o gerente que no es actor</span></span><span class="go">→</span></button>
+      <button class="opt" data-op="2"><video src="v/op3.mp4" poster="p/op3.jpg" muted loop playsinline preload="metadata"></video><span><span class="n">03</span><span class="t">Un producto que tiene que verse y sentirse</span></span><span class="go">→</span></button>
+      <button class="opt" data-op="3"><video src="v/op4.mp4" poster="p/op4.jpg" muted loop playsinline preload="metadata"></video><span><span class="n">04</span><span class="t">Una idea que todavía no tiene forma</span></span><span class="go">→</span></button>
+    </div>
+    <button class="skip" data-go="3">Prefiero ver quiénes son →</button>
+  </div>
+</section>
+
+<!-- 2 · Respuesta -->
+<section class="scr" id="s2">
+  <video class="bg" id="ansv" muted loop playsinline autoplay></video>
+  <div class="veil"></div>
+  <div class="wrap">
+    <p class="kick" id="ansk"></p>
+    <h2 id="ansh"></h2>
+    <p class="lead" id="ansp"></p>
+    <div class="chips" id="ansc"></div>
+    <div class="row btns">
+      <button class="cta" data-go="3">SEGUIR ▶</button>
+      <button class="ghost" data-go="1">Ver otra respuesta</button>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Quiénes somos -->
+<section class="scr" id="s3">
+  <video class="bg" src="v/detras.mp4" poster="p/detras.jpg" muted loop playsinline preload="metadata"></video>
+  <div class="veil" style="background:linear-gradient(0deg,rgba(14,14,15,.98) 0%,rgba(14,14,15,.85) 55%,rgba(14,14,15,.4) 100%)"></div>
+  <div class="wrap">
+    <p class="kick rise">Quiénes somos</p>
+    <h2 class="big rise d1">No somos una productora que filma lo que le piden.</h2>
+    <p class="lead rise d2">Somos <b style="color:var(--paper)">comunicadores</b>. Primero entendemos qué hay que decir y a quién. Después lo filmamos.</p>
+    <div class="stats rise d3">
+      <div><b>25+</b><small>AÑOS COMUNICANDO</small></div>
+      <div><b>Creativos</b><small>ANTES QUE TÉCNICOS</small></div>
+      <div><b>Personas</b><small>REALES, NO ACTORES</small></div>
+    </div>
+    <div class="logos rise d4">
+      <img src="l/hochschild.jpg" alt="Hochschild Mining"><img src="l/rimac.jpg" alt="RIMAC"><img src="l/habitat.jpg" alt="AFP Habitat"><img src="l/lenovo.jpg" alt="Lenovo"><img src="l/andino.jpg" alt="Andino"><img src="l/medifarma.jpg" alt="Medifarma"><img src="l/boost2.jpg" alt="Boost Brand Accelerator"><img src="l/wiener2.jpg" alt="Universidad Norbert Wiener"><img src="l/gents.jpg" alt="Gents"><img src="l/mariate.jpg" alt="Mariate"><img src="l/limaexpresa.jpg" alt="Lima Expresa"><img src="l/oxfam.jpg" alt="Oxfam">
+    </div>
+    <button class="cta rise d4" data-go="4">SEGUIR ▶</button>
+  </div>
+</section>
+
+<!-- 4 · Juego -->
+<section class="scr" id="s4">
+  <div class="wrap">
+    <p class="kick">Esto también lo hacemos</p>
+    <h2>Dirige tú la toma.</h2>
+    <p class="lead" style="margin-top:10px" id="glead">Tres tomas. Toca <b style="color:#ff3b30">CORTE</b> cuando la aguja esté en la zona amarilla. Al final verás tu edición.</p>
+    <div class="stage">
+      <video id="gv" src="v/op3.mp4" poster="p/op3.jpg" muted playsinline preload="auto"></video>
+      <div class="rec" id="rec"><i></i>REC</div>
+      <div class="take" id="take">TOMA 1/3</div>
+      <div class="flash" id="flash"></div>
+    </div>
+    <div class="meter" id="meter"><div class="zone" id="zone"></div><div class="needle" id="needle"></div></div>
+    <div class="gamebar">
+      <button id="cut">¡CORTE!</button>
+      <button class="ghost" id="replay" style="margin-top:0;display:none">Ver mi edición otra vez</button>
+      <span class="score" id="score"></span>
+    </div>
+    <div class="row" style="margin-top:22px">
+      <button class="cta" data-go="5" id="gonext">SEGUIR ▶</button>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · Cierre -->
+<section class="scr" id="s5">
+  <video class="bg" src="v/cierre.mp4" poster="p/cierre.jpg" muted loop playsinline preload="metadata"></video>
+  <div class="veil"></div>
+  <div class="wrap">
+    <p class="kick rise">¿Conversamos?</p>
+    <h2 class="rise d1" style="font-size:clamp(40px,8vw,108px)">La próxima historia puede ser <span class="y">la tuya.</span></h2>
+    <div class="row btns rise d2">
+      <a class="cta" href="https://wa.me/51959261300?text=Hola%20Miguel%2C%20vi%20tu%20NO%20PDF%20y%20quiero%20conversar." target="_blank" rel="noopener">ESCRÍBEME ▶</a>
+      <a class="ghost" href="https://vimeo.com/1247427460" target="_blank" rel="noopener">Ver el reel completo</a>
+      <a class="ghost" href="MNRY_Hola_de_nuevo.pdf" target="_blank" rel="noopener">Descargar PDF</a>
+    </div>
+    <p class="contact rise d3"><b>Miguel Villalobos</b> · Director creativo<br>miguel@mantarraya.pe · +51 959 261 300</p>
+    <p class="sign rise d4">MNRY<span>VISUAL LAB · MANTARRAYA.PE</span></p>
+  </div>
+</section>
+
+<div class="nav"><button class="back" id="back">← ATRÁS</button><span></span></div>
+
+<script>
+const ANS=[
+ {k:'01 · Un mensaje importante al que cuesta que presten atención',v:'v/op1.mp4',p:'p/op1.jpg',
+  h:'Lo convertimos en una historia que se quiere ver.',
+  b:'Resultados, cambios, seguridad, cultura. Buscamos a las personas y el ángulo humano detrás del dato, y lo contamos para que se entienda y se recuerde.',
+  c:['Concepto y guion','Rodaje en planta, oficina o calle','Versiones para cada canal']},
+ {k:'02 · Un vocero o gerente que no es actor',v:'v/op2.mp4',p:'p/op2.jpg',
+  h:'Lo dirigimos hasta que suene como él en su mejor día.',
+  b:'Llevamos 25 años frente a gerentes, operarios y voceros que nunca habían estado ante una cámara. Trabajamos el mensaje con ellos, los hacemos sentir cómodos y sacamos lo natural.',
+  c:['Preparación del mensaje','Dirección de no actores','Entrevista o a cámara']},
+ {k:'03 · Un producto que tiene que verse y sentirse',v:'v/op3.mp4',p:'p/op3.jpg',
+  h:'Lo filmamos para que se antoje.',
+  b:'Belleza, cuidado personal, alimentos, tecnología. Sabemos cómo luce un cabello, una textura o un producto en la mano, y cómo contarlo para que se quiera tener.',
+  c:['Spots y piezas para redes','Tutoriales de producto','Voceras e influencers']},
+ {k:'04 · Una idea que todavía no tiene forma',v:'v/op4.mp4',p:'p/op4.jpg',
+  h:'Empezamos antes de la cámara.',
+  b:'Somos el área creativa de las empresas que no la tienen. Te ayudamos a encontrar el concepto, escribimos el guion y después lo producimos.',
+  c:['Concepto creativo','Guion','Producción con IA cuando suma']}
+];
+const S=[...document.querySelectorAll('.scr')];let cur=0,hist=[];
+const prog=document.getElementById('prog'),back=document.getElementById('back');
+function play(sec){sec.querySelectorAll('video').forEach(v=>{if(sec.id==='s4'&&v.id==='gv')return;v.play().catch(()=>{})})}
+function stop(sec){sec.querySelectorAll('video').forEach(v=>v.pause())}
+function go(n,push=true){if(n===cur)return;if(push)hist.push(cur);stop(S[cur]);S[cur].classList.remove('on');cur=n;S[n].classList.add('on');play(S[n]);
+ prog.style.width=(n/5*100)+'%';back.classList.toggle('v',n>0);if(n===4)resetGame();if(n!==4)stopGame()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){go(+b.dataset.go)}
+ const o=e.target.closest('[data-op]');if(o){showAns(+o.dataset.op);o.classList.add('seen')}});
+back.onclick=()=>{if(hist.length)go(hist.pop(),false)};
+const av=document.getElementById('ansv');
+function showAns(i){const a=ANS[i];document.getElementById('ansk').textContent=a.k;document.getElementById('ansh').textContent=a.h;document.getElementById('ansp').textContent=a.b;
+ document.getElementById('ansc').innerHTML=a.c.map(x=>'<span>'+x+'</span>').join('');av.poster=a.p;av.src=a.v;go(2)}
+// precarga suave de los videos de opciones al llegar a la pregunta
+document.querySelectorAll('.opt video').forEach(v=>v.addEventListener('loadeddata',()=>{if(S[1].classList.contains('on'))v.play().catch(()=>{})}));
+// teclado
+document.addEventListener('keydown',e=>{if(e.key==='Escape')back.click();if(cur===4&&(e.code==='Space'||e.key==='Enter')){e.preventDefault();cut()}});
+// ===== Juego: ¡CORTE! =====
+const zone=document.getElementById('zone'),needle=document.getElementById('needle'),flash=document.getElementById('flash'),take=document.getElementById('take'),score=document.getElementById('score'),cutb=document.getElementById('cut'),gv=document.getElementById('gv'),rec=document.getElementById('rec'),meter=document.getElementById('meter'),replayb=document.getElementById('replay');
+const CLIPS=[['v/op3.mp4','p/op3.jpg'],['v/op2.mp4','p/op2.jpg'],['v/op1.mp4','p/op1.jpg']];
+const W=[26,18,12],SP=[.8,1.15,1.55];
+let t0=0,raf=0,round=0,pts=0,zs=0,zw=0,speed=0,running=false,pos=0,cuts=[],grades=[],mode='play',pbTimer=0;
+function setClip(i){gv.src=CLIPS[i][0];gv.poster=CLIPS[i][1];gv.loop=true}
+function setZone(){zw=W[round];zs=15+Math.random()*(70-zw);zone.style.left=zs+'%';zone.style.width=zw+'%';speed=SP[round]}
+function loop(t){if(!running)return;const s=(t-t0)/1000*speed;const p=(s%2);pos=p<1?p*100:(2-p)*100;needle.style.left=pos+'%';raf=requestAnimationFrame(loop)}
+function startRound(){mode='play';take.textContent='TOMA '+(round+1)+'/3';rec.innerHTML='<i></i>REC';setClip(round);gv.currentTime=0;gv.play().catch(()=>{});
+ setZone();flash.classList.remove('show');cutb.disabled=false;meter.style.visibility='visible';running=true;t0=performance.now();raf=requestAnimationFrame(loop)}
+function resetGame(){clearTimeout(pbTimer);round=0;pts=0;cuts=[];grades=[];cutb.textContent='¡CORTE!';cutb.style.display='';replayb.style.display='none';score.textContent='';startRound()}
+function stopGame(){running=false;cancelAnimationFrame(raf);clearTimeout(pbTimer);gv.pause()}
+function cut(){if(mode!=='play'){resetGame();return}if(!running)return;
+ running=false;cancelAnimationFrame(raf);cutb.disabled=true;
+ const at=gv.currentTime;gv.pause();cuts.push(at);
+ const c=zs+zw/2,d=Math.abs(pos-c),ok=pos>=zs&&pos<=zs+zw;let m;
+ if(ok&&d<zw*0.2){pts+=3;m='¡Toma perfecta!';grades.push('PERFECTA')}else if(ok){pts+=2;m='¡Buena! Se queda.';grades.push('BUENA')}else{m=pos<zs?'Cortaste muy pronto.':'Se te pasó el momento.';grades.push('FUERA DE TIEMPO')}
+ flash.textContent=m;flash.classList.add('show');round++;
+ setTimeout(()=>{if(round<3)startRound();else playback()},1200)}
+// Al final: se reproduce la edición que armó el jugador con sus tres cortes
+function playback(){mode='review';meter.style.visibility='hidden';cutb.disabled=true;replayb.style.display='none';rec.innerHTML='▶ TU EDICIÓN';
+ flash.innerHTML='Tu edición';flash.classList.add('show');let i=0;
+ const next=()=>{if(i>=3){endCard();return}
+  setClip(i);gv.loop=false;const end=Math.max(cuts[i],1.2),start=Math.max(0,end-2);
+  take.textContent='PLANO '+(i+1)+'/3';
+  const go=()=>{gv.currentTime=start;gv.play().catch(()=>{});flash.classList.remove('show');
+   pbTimer=setTimeout(()=>{gv.pause();i++;next()},(end-start)*1000)};
+  if(gv.readyState>=1)go();else gv.addEventListener('loadedmetadata',go,{once:true})};
+ pbTimer=setTimeout(next,900)}
+function endCard(){const f=pts>=8?'Tienes ojo de director.':pts>=5?'Nada mal para tu primer rodaje.':'Dirigir es saber cuándo cortar. Para eso estamos.';
+ take.textContent='FIN';rec.innerHTML='MNRY';
+ flash.innerHTML='<span>Dirigido por ti.<br><span style="color:var(--yel)">Producido por MNRY.</span><br><small style="display:block;font-size:.4em;font-weight:800;color:var(--soft);margin-top:12px;letter-spacing:1px">'+f+' · '+pts+'/9</small></span>';flash.classList.add('show');
+ cutb.textContent='JUGAR DE NUEVO';cutb.disabled=false;replayb.style.display='';score.textContent='Juegos así, para tu marca o tu equipo.'}
+replayb.onclick=()=>{clearTimeout(pbTimer);playback()};
+cutb.onclick=cut;
+</script>
+</body>
+</html>
