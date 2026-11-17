@@ -132,6 +132,8 @@ h2{font-size:clamp(34px,6.4vw,84px);font-weight:900;line-height:1;letter-spacing
 @keyframes rise{to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.rise{opacity:1;transform:none}.scr.on .rise{animation:none}}
 </style>
+<script>window.goatcounter={path:'/nopdf'}</script>
+<script data-goatcounter="https://manrayx.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
 <div class="prog" id="prog"></div>
@@ -358,6 +360,17 @@ function closeReel(){rm.classList.remove('on');const f=rmbox.querySelector('ifra
 document.querySelectorAll('.openreel').forEach(a=>a.addEventListener('click',openReel));
 document.getElementById('rmx').onclick=closeReel;rm.addEventListener('click',e=>{if(e.target===rm)closeReel()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&rm.classList.contains('on'))closeReel()});
+
+// Conteo de uso (GoatCounter): visitas y acciones
+const ev=(n,t)=>{try{window.goatcounter&&window.goatcounter.count&&window.goatcounter.count({path:'nopdf-'+n,title:t||n,event:true})}catch(e){}};
+const evOnce=(()=>{const d=new Set();return(n,t)=>{if(d.has(n))return;d.add(n);ev(n,t)}})();
+document.addEventListener('click',e=>{const o=e.target.closest('[data-op]');if(o)evOnce('opcion-'+(+o.dataset.op+1),'Eligió opción '+(+o.dataset.op+1));
+ if(e.target.closest('#wa'))ev('whatsapp','Clic en CUÉNTAME (WhatsApp)');
+ if(e.target.closest('.openreel'))ev('reel','Abrió el reel');
+ if(e.target.closest('#shr'))ev('compartir','Tocó compartir');
+ if(e.target.closest('[data-go="1"]'))evOnce('empezar','Tocó EMPEZAR');
+ if(e.target.closest('#cut'))evOnce('juego','Jugó Dirige tú la toma')},true);
+const _end=endCard;endCard=function(){evOnce('juego-fin','Terminó el juego');return _end.apply(this,arguments)};
 </script>
 </body>
 </html>
