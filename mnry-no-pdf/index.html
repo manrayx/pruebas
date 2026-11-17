@@ -29,6 +29,16 @@ a{color:inherit}
 .logo{font-weight:900;font-size:18px;letter-spacing:1px;line-height:1}
 .logo span{display:block;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--gray);margin-top:3px}
 .reelbtn{font-weight:800;font-size:12px;letter-spacing:2px;padding:9px 14px;border:2px solid var(--yel);color:var(--yel);border-radius:40px;text-decoration:none;background:rgba(14,14,15,.4);backdrop-filter:blur(6px)}
+.ico{padding:9px 11px!important;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.ico svg{width:15px;height:15px;display:block}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:var(--yel);color:var(--ink);font-weight:800;font-size:13px;letter-spacing:1px;padding:10px 18px;border-radius:40px;z-index:60;opacity:0;transition:.3s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.rm{position:fixed;inset:0;z-index:50;background:rgba(8,8,9,.97);display:none;align-items:center;justify-content:center;padding:64px 14px 24px}
+.rm.on{display:flex}
+.rm .box{position:relative;width:100%;max-width:1100px;aspect-ratio:16/9;max-height:calc(100vh - 100px);background:#000;border-radius:10px;overflow:hidden}
+.rm iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.rm .x{position:absolute;top:16px;right:18px;font-size:13px;font-weight:800;letter-spacing:2px;color:var(--yel);border:2px solid var(--yel);border-radius:40px;padding:8px 14px}
+.rm .ld{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:12px;letter-spacing:3px;font-weight:800}
 .prog{position:fixed;left:0;top:0;height:4px;background:var(--yel);z-index:21;width:0;transition:width .5s ease}
 /* pantallas */
 .scr{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:92px 24px 36px;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility 0s .6s}
@@ -127,7 +137,7 @@ h2{font-size:clamp(34px,6.4vw,84px);font-weight:900;line-height:1;letter-spacing
 <div class="prog" id="prog"></div>
 <div class="top">
   <div style="display:flex;align-items:center;gap:14px"><button class="back" id="back" aria-label="Atrás">←</button><div class="logo">MNRY<span>VISUAL LAB</span></div></div>
-  <div style="display:flex;gap:8px;align-items:center"><button class="reelbtn" id="snd" aria-label="Sonido" style="padding:9px 12px">🔊</button><a class="reelbtn" href="https://vimeo.com/1247427460" target="_blank" rel="noopener">REEL ▶</a></div>
+  <div style="display:flex;gap:8px;align-items:center"><button class="reelbtn ico" id="shr" aria-label="Compartir" title="Compartir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg></button><button class="reelbtn" id="snd" aria-label="Sonido" style="padding:9px 12px">🔊</button><a class="reelbtn openreel" href="https://vimeo.com/1247427460" target="_blank" rel="noopener">REEL ▶</a></div>
 </div>
 
 <!-- 0 · Entrada -->
@@ -227,7 +237,7 @@ h2{font-size:clamp(34px,6.4vw,84px);font-weight:900;line-height:1;letter-spacing
     <p class="lead rise d2" style="margin-top:14px">Cuéntame qué necesitas comunicar.</p>
     <div class="row btns rise d2">
       <a class="cta" id="wa" href="https://wa.me/51959261300?text=Hola%20Miguel%2C%20vi%20tu%20presentaci%C3%B3n%20y%20quiero%20conversar." target="_blank" rel="noopener">CUÉNTAME ▶</a>
-      <a class="ghost" href="https://vimeo.com/1247427460" target="_blank" rel="noopener">Ver el reel completo</a>
+      <a class="ghost openreel" href="https://vimeo.com/1247427460" target="_blank" rel="noopener">Ver el reel completo</a>
       <a class="ghost" href="MNRY_Hola_de_nuevo.pdf" target="_blank" rel="noopener">Descargar PDF</a>
     </div>
     <p class="contact rise d3"><b>Miguel Villalobos</b> · Director creativo<br>miguel@mantarraya.pe · +51 959 261 300</p>
@@ -237,6 +247,8 @@ h2{font-size:clamp(34px,6.4vw,84px);font-weight:900;line-height:1;letter-spacing
 
 
 
+<div class="rm" id="rm" role="dialog" aria-label="Reel MNRY"><button class="x" id="rmx">CERRAR ✕</button><div class="box" id="rmbox"><div class="ld">CARGANDO REEL…</div></div></div>
+<div class="toast" id="toast"></div>
 <script>
 // ===== Sonido (Web Audio, sin archivos) =====
 const SFX=(()=>{let ctx=null,on=true,master;try{on=localStorage.getItem('mnry_snd')!=='0'}catch(e){}
@@ -332,6 +344,20 @@ function endCard(){SFX.fanfare();const f=pts>=8?'Tienes ojo de director.':pts>=5
  cutb.textContent='JUGAR DE NUEVO';cutb.disabled=false;replayb.style.display='';score.textContent='Juegos así, para tu marca o tu equipo.'}
 replayb.onclick=()=>{clearTimeout(pbTimer);playback()};
 cutb.onclick=cut;
+
+// Compartir
+const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2200)};
+document.getElementById('shr').onclick=async()=>{SFX.tap&&SFX.tap();const url='https://mnry-no-pdf.onrender.com',text='Mira esto de MNRY, productora audiovisual:';
+ if(navigator.share){try{await navigator.share({title:'MNRY Visual Lab',text,url})}catch(e){}return}
+ try{await navigator.clipboard.writeText(url);toast('LINK COPIADO')}catch(e){window.open('https://wa.me/?text='+encodeURIComponent(text+' '+url),'_blank')}};
+// Reel dentro de la página (se carga solo al abrirlo)
+const rm=document.getElementById('rm'),rmbox=document.getElementById('rmbox');let paused=[];
+function openReel(e){e&&e.preventDefault();paused=[...document.querySelectorAll('video')].filter(v=>!v.paused);paused.forEach(v=>v.pause());
+ const f=document.createElement('iframe');f.src='https://player.vimeo.com/video/1247427460?autoplay=1&title=0&byline=0&portrait=0&color=f5d90a';f.allow='autoplay; fullscreen; picture-in-picture';f.allowFullscreen=true;rmbox.appendChild(f);rm.classList.add('on')}
+function closeReel(){rm.classList.remove('on');const f=rmbox.querySelector('iframe');f&&f.remove();paused.forEach(v=>v.play().catch(()=>{}));paused=[]}
+document.querySelectorAll('.openreel').forEach(a=>a.addEventListener('click',openReel));
+document.getElementById('rmx').onclick=closeReel;rm.addEventListener('click',e=>{if(e.target===rm)closeReel()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&rm.classList.contains('on'))closeReel()});
 </script>
 </body>
 </html>
