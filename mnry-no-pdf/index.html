@@ -137,7 +137,7 @@ h2{font-size:clamp(34px,6.4vw,84px);font-weight:900;line-height:1;letter-spacing
 <div class="prog" id="prog"></div>
 <div class="top">
   <div style="display:flex;align-items:center;gap:14px"><button class="back" id="back" aria-label="Atrás">←</button><div class="logo">MNRY<span>VISUAL LAB</span></div></div>
-  <div style="display:flex;gap:8px;align-items:center"><button class="reelbtn ico" id="shr" aria-label="Compartir" title="Compartir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg></button><button class="reelbtn" id="snd" aria-label="Sonido" style="padding:9px 12px">🔊</button><a class="reelbtn openreel" href="https://vimeo.com/1247427460" target="_blank" rel="noopener">REEL ▶</a></div>
+  <div style="display:flex;gap:8px;align-items:center"><button class="reelbtn ico" id="shr" aria-label="Compartir" title="Compartir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg></button><button class="reelbtn" id="snd" aria-label="Sonido" style="padding:9px 12px">🔊</button><a class="reelbtn openreel" href="https://youtu.be/VUe5PCUhyeE" target="_blank" rel="noopener">REEL ▶</a></div>
 </div>
 
 <!-- 0 · Entrada -->
@@ -237,7 +237,7 @@ h2{font-size:clamp(34px,6.4vw,84px);font-weight:900;line-height:1;letter-spacing
     <p class="lead rise d2" style="margin-top:14px">Cuéntame qué necesitas comunicar.</p>
     <div class="row btns rise d2">
       <a class="cta" id="wa" href="https://wa.me/51959261300?text=Hola%20Miguel%2C%20vi%20tu%20presentaci%C3%B3n%20y%20quiero%20conversar." target="_blank" rel="noopener">CUÉNTAME ▶</a>
-      <a class="ghost openreel" href="https://vimeo.com/1247427460" target="_blank" rel="noopener">Ver el reel completo</a>
+      <a class="ghost openreel" href="https://youtu.be/VUe5PCUhyeE" target="_blank" rel="noopener">Ver el reel completo</a>
       <a class="ghost" href="MNRY_Hola_de_nuevo.pdf" target="_blank" rel="noopener">Descargar PDF</a>
     </div>
     <p class="contact rise d3"><b>Miguel Villalobos</b> · Director creativo<br>miguel@mantarraya.pe · +51 959 261 300</p>
@@ -353,7 +353,7 @@ document.getElementById('shr').onclick=async()=>{SFX.tap&&SFX.tap();const url='h
 // Reel dentro de la página (se carga solo al abrirlo)
 const rm=document.getElementById('rm'),rmbox=document.getElementById('rmbox');let paused=[];
 function openReel(e){e&&e.preventDefault();paused=[...document.querySelectorAll('video')].filter(v=>!v.paused);paused.forEach(v=>v.pause());
- const f=document.createElement('iframe');f.src='https://player.vimeo.com/video/1247427460?autoplay=1&title=0&byline=0&portrait=0&color=f5d90a';f.allow='autoplay; fullscreen; picture-in-picture';f.allowFullscreen=true;rmbox.appendChild(f);rm.classList.add('on')}
+ const f=document.createElement('iframe');f.src='https://www.youtube-nocookie.com/embed/VUe5PCUhyeE?autoplay=1&rel=0&modestbranding=1&playsinline=1';f.allow='autoplay; encrypted-media; fullscreen; picture-in-picture';f.allowFullscreen=true;rmbox.appendChild(f);rm.classList.add('on')}
 function closeReel(){rm.classList.remove('on');const f=rmbox.querySelector('iframe');f&&f.remove();paused.forEach(v=>v.play().catch(()=>{}));paused=[]}
 document.querySelectorAll('.openreel').forEach(a=>a.addEventListener('click',openReel));
 document.getElementById('rmx').onclick=closeReel;rm.addEventListener('click',e=>{if(e.target===rm)closeReel()});
