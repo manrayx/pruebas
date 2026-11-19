@@ -134,6 +134,14 @@ input.text{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-ra
 .welcome .img{flex:1;min-height:0;position:relative;overflow:hidden}
 .welcome .img img{width:100%;height:100%;object-fit:cover}
 .welcome .body{padding:24px 24px 30px;display:flex;flex-direction:column;gap:14px}
+.splash{background:#1E140F}
+.splash .sp-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.splash .sp-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,12,8,.55) 0%,rgba(20,12,8,.1) 40%,rgba(20,12,8,.75) 100%)}
+.splash .sp-brand{position:relative;margin-top:96px;display:flex;flex-direction:column;align-items:center;gap:10px;color:#fff}
+.splash .sp-brand svg{width:56px;height:56px;color:var(--amber)}
+.splash .sp-name{font-family:var(--display);font-weight:700;font-size:54px;letter-spacing:-.02em;line-height:1}
+.splash .sp-foot{position:relative;margin-top:auto;padding:0 24px 34px;display:flex;flex-direction:column;gap:16px;text-align:center}
+.splash .sp-tag{color:#fff;font-size:16px;opacity:.9}
 .radio{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);font-weight:600;font-size:15px;width:100%}
 .radio.sel{border-color:var(--ink)}
 .radio i{width:18px;height:18px;border-radius:50%;border:2px solid var(--line)}
@@ -731,13 +739,20 @@ function endGame(){ clearInterval(gt); if(game.done) return; game.done=true; S.g
 
 /* Bienvenida (solo la primera vez) */
 function welcome(){
-  if(S.welcomed) return;
-  const w=document.createElement('div'); w.className='welcome';
-  w.innerHTML=`<div class="img">${img('hero','Taza de café con arte latte sobre una mesa de madera','')}</div>
-  <div class="body"><h1 style="font-size:34px">Todo el café,<br>y dónde tomarlo</h1><p class="muted">Recetas, métodos y juegos que terminan en una taza real, cerca de ti.</p>
-  <button class="btn btn-main btn-block" id="wgo">Empezar ${I.arrow}</button></div>`;
+  const first=!S.welcomed;
+  const w=document.createElement('div'); w.className='welcome splash';
+  w.innerHTML=`${img('hero','Taza de café con arte latte sobre una mesa de madera','sp-img')}
+  <div class="sp-shade"></div>
+  <div class="sp-brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3.5c0 1 1 1.3 1 2.3M12 3.5c0 1 1 1.3 1 2.3"/></svg>
+    <p class="sp-name">Ruta Taza</p>
+  </div>
+  <div class="sp-foot">
+    <p class="sp-tag">Todo el café, y dónde tomarlo</p>
+    <button class="btn btn-main btn-block" id="wgo">Empezar ${I.arrow}</button>
+  </div>`;
   $('#app').appendChild(w);
-  w.querySelector('#wgo').addEventListener('click',()=>{ w.remove(); S.welcomed=true; save(); openDist(); });
+  w.querySelector('#wgo').addEventListener('click',()=>{ w.remove(); if(first){ S.welcomed=true; save(); openDist(); } });
 }
 render(); welcome();
 </script>
