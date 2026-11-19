@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruta Taza · Prototipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Claro y de especialidad: fondo casi blanco, café oscuro solo en texto y detalles, ámbar solo en la acción principal */
+  --bg:#F7F6F3; --surface:#FFFFFF; --line:#E9E4DD; --ink:#1E140F; --muted:#6F6259;
+  --amber:#E9B872; --amber-ink:#2A1A10; --caramel:#9A5220; --soft:#F2ECE4; --ok:#2F7A4F;
+  --display:'Fraunces', Georgia, serif; --body:'DM Sans', system-ui, sans-serif;
+  color-scheme: light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#E7E2DB;font-family:var(--body);color:var(--ink);display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--caramel);outline-offset:2px}
+.device{width:390px;height:844px;max-height:100%;background:var(--bg);border-radius:44px;border:10px solid #1B1410;position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(30,20,15,.25)}
+@media (max-width:500px){body{background:var(--bg);display:block}.device{width:100%;height:100%;border:0;border-radius:0;box-shadow:none}}
+header.top{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px;background:var(--bg);flex:none}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.01em}
+.logo svg{width:24px;height:24px}
+.dist{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+main{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 20px 24px;scroll-behavior:smooth}
+nav.tabs{flex:none;display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);background:var(--surface);padding:8px 4px 14px}
+nav.tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--muted);font-weight:500}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button.on{color:var(--ink);font-weight:700}
+nav.tabs button.on svg{color:var(--caramel)}
+h1{font-family:var(--display);font-weight:600;font-size:30px;line-height:1.1;letter-spacing:-.02em;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:21px;line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
+h3{font-size:15px;font-weight:700;line-height:1.3}
+p{line-height:1.5}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.xs{font-size:11.5px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.sec{margin-top:26px;display:flex;flex-direction:column;gap:12px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline}
+.link{color:var(--caramel);font-weight:600;font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:13px 18px;font-weight:700;font-size:14px;transition:transform .1s}
+.btn:active{transform:scale(.98)}
+.btn-main{background:var(--amber);color:var(--amber-ink)}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-line{border:1.5px solid var(--ink);color:var(--ink)}
+.btn-block{width:100%}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--soft);color:var(--caramel);white-space:nowrap}
+.pill.ad{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:600}
+.pill.cup{background:#FBEBD2;color:#7A3F12}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.pad{padding:14px}
+.ph{width:100%;display:block;object-fit:cover;background:var(--soft)}
+.ph-wrap{overflow:hidden;background:var(--soft)}
+.ph-wrap img{transform:scale(1.06)}
+.hero{display:block;width:100%;text-align:left;border-radius:22px;overflow:hidden;position:relative;height:240px;background:var(--soft)}
+.hero img{width:100%;height:100%;object-fit:cover;transform:scale(1.04)}
+.hero .cap{position:absolute;left:0;right:0;bottom:0;padding:18px;background:linear-gradient(transparent,rgba(20,12,8,.78));color:#fff}
+.hero .cap h2{color:#fff;font-size:24px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{display:flex;flex-direction:column;text-align:left}
+.tile .ph-wrap{height:118px}
+.tile .ph{height:100%}
+.tile .t{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px}
+.hscroll{display:flex;gap:12px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scrollbar-width:none}
+.hscroll::-webkit-scrollbar{display:none}
+.cafe-mini{flex:none;width:168px;text-align:left}
+.cafe-mini .ph-wrap{height:104px}
+.cafe-mini .ph{height:100%}
+.listcafe{display:grid;grid-template-columns:96px 1fr;gap:12px;text-align:left;padding:10px}
+.listcafe .ph-wrap{border-radius:12px;height:96px}
+.listcafe .ph{height:100%}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted);margin:2px 0 12px}
+.tabsx{display:flex;gap:18px;border-bottom:1px solid var(--line);margin:14px 0 14px}
+.tabsx button{padding:0 0 10px;font-size:14px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabsx button.on{color:var(--ink);border-color:var(--caramel)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
+.fact b{display:block;font-size:14px}
+.fact span{font-size:11px;color:var(--muted)}
+ol.steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:12px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:28px 1fr;gap:10px;font-size:14px;line-height:1.5}
+ol.steps li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--soft);color:var(--caramel);font-weight:700;display:grid;place-items:center;font-size:13px}
+ul.ing{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14px}
+ul.ing li{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:8px}
+.sponsor{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.brandmark{width:44px;height:44px;border-radius:12px;background:var(--ink);color:var(--amber);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:15px;flex:none}
+.map{position:relative;height:190px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#EFEAE2}
+.map svg{width:100%;height:100%;display:block}
+.pin{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center}
+.pin b{background:var(--ink);color:#fff;font-size:10.5px;font-weight:700;padding:3px 7px;border-radius:8px;white-space:nowrap}
+.pin i{width:2px;height:8px;background:var(--ink)}
+.pin.sel b{background:var(--caramel)}
+.stamps{display:flex;gap:8px}
+.stamp{width:40px;height:40px;border-radius:50%;border:1.5px dashed #CDBFAF;display:grid;place-items:center}
+.stamp.on{border:0;background:var(--amber)}
+.stamp svg{width:20px;height:20px}
+.prog{height:6px;border-radius:99px;background:var(--soft);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--caramel);border-radius:99px}
+.opt{display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid var(--line);border-radius:16px;background:var(--surface);text-align:left;font-size:14px;font-weight:600;width:100%}
+.opt.sel{border-color:var(--caramel);background:#FDF6EC}
+.opt .em{width:40px;height:40px;border-radius:12px;background:var(--soft);display:grid;place-items:center;flex:none}
+.opt .em svg{width:22px;height:22px;color:var(--caramel)}
+.big{font-family:var(--display);font-size:44px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.center{text-align:center}
+.sheet-bg{position:absolute;inset:0;background:rgba(20,12,8,.45);display:flex;align-items:flex-end;z-index:20}
+.sheet{background:var(--surface);width:100%;border-radius:24px 24px 0 0;padding:22px 20px 28px;display:flex;flex-direction:column;gap:14px;max-height:85%;overflow-y:auto}
+.toast{position:absolute;left:20px;right:20px;bottom:92px;background:var(--ink);color:#fff;padding:12px 14px;border-radius:14px;font-size:13px;font-weight:600;z-index:30;text-align:center}
+.pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pinpad button{height:52px;border-radius:14px;background:var(--soft);font-size:20px;font-weight:600}
+.dots{display:flex;gap:12px;justify-content:center}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink)}
+.dots i.f{background:var(--ink)}
+.rank{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.rank:last-child{border:0}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.badge{border:1px solid var(--line);border-radius:16px;padding:12px 6px;text-align:center;background:var(--surface);font-size:11.5px;font-weight:600}
+.badge .ic{width:40px;height:40px;border-radius:50%;margin:0 auto 6px;display:grid;place-items:center;background:var(--amber)}
+.badge.off{color:var(--muted)}
+.badge.off .ic{background:var(--soft)}
+.badge svg{width:20px;height:20px}
+input.text{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:14px;font:inherit;font-size:15px;background:var(--surface)}
+.timer{font-family:var(--display);font-size:34px;font-weight:700;font-variant-numeric:tabular-nums}
+.welcome{position:absolute;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column}
+.welcome .img{flex:1;min-height:0;position:relative;overflow:hidden}
+.welcome .img img{width:100%;height:100%;object-fit:cover}
+.welcome .body{padding:24px 24px 30px;display:flex;flex-direction:column;gap:14px}
+.radio{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);font-weight:600;font-size:15px;width:100%}
+.radio.sel{border-color:var(--ink)}
+.radio i{width:18px;height:18px;border-radius:50%;border:2px solid var(--line)}
+.radio.sel i{border:5px solid var(--ink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .45s ease-out both}
+</style>
+</head>
+<body>
+<div class="device" id="app">
+  <header class="top">
+    <button class="logo" data-go="inicio" aria-label="Ir a Inicio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3.5c0 1 1 1.3 1 2.3M12 3.5c0 1 1 1.3 1 2.3"/></svg>
+      Ruta Taza
+    </button>
+    <button class="dist" id="distBtn" aria-label="Cambiar distrito">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      <span id="distName">Barranco</span>
+    </button>
+  </header>
+  <main id="view"></main>
+  <nav class="tabs" id="tabs">
+    <button data-go="inicio" data-tab="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20h-5v-6H9v6H4z"/></svg>Inicio</button>
+    <button data-go="recetas" data-tab="recetas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/></svg>Recetas</button>
+    <button data-go="cafeterias" data-tab="cafeterias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Cafeterías</button>
+    <button data-go="juegos" data-tab="juegos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="7" width="18" height="11" rx="5.5"/><path d="M8 10.5v4M6 12.5h4"/><circle cx="15.5" cy="11.5" r=".9" fill="currentColor"/><circle cx="17.5" cy="13.5" r=".9" fill="currentColor"/></svg>Juegos</button>
+    <button data-go="cuenta" data-tab="cuenta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>Mi cuenta</button>
+  </nav>
+</div>
+
+<script>
+const I = {
+  bean:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="6.5" ry="8.5" transform="rotate(30 12 12)"/><path d="M9 6.5c3 3 3 8 6 11" /></svg>',
+  beanF:'<svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="6.5" ry="8.5" transform="rotate(30 12 12)" fill="#2A1A10"/><path d="M9 6.5c3 3 3 8 6 11" stroke="#E9B872" stroke-width="1.6" fill="none"/></svg>',
+  back:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  arrow:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  wa:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/></svg>',
+  nav:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-8z"/></svg>',
+  qr:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7h-4M14 18v3"/></svg>',
+  crown:'<svg width="18" height="18" viewBox="0 0 24 24" fill="#E9B872" stroke="#9A5220" stroke-width="1.4" stroke-linejoin="round"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg>',
+  clock:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  ice:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2v20M4 7l16 10M20 7L4 17"/></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
+  map:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6.5 6.5 0 0 0 10 10z"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>'
+};
+
+const RECETAS = [
+  {id:'coldbrew',n:'Cold Brew con naranja',img:'coldbrew',tags:['Frías','De autor'],d:'Café de extracción en frío, suave y refrescante, con un toque cítrico de naranja.',t:'12 h de reposo · 5 min de armado',met:'coldbrew',
+   ing:[['Café molido grueso','60 g'],['Agua fría','500 ml'],['Hielo','al gusto'],['Naranja','1 rodaja y su cáscara'],['Jarabe simple (opcional)','1 cdta']],
+   pasos:['Mezcla el café con el agua fría en un frasco y revuelve.','Tapa y deja reposar en la refrigeradora entre 12 y 18 horas.','Filtra con papel o tela.','Sirve sobre hielo, añade la rodaja de naranja y frota la cáscara en el borde del vaso.']},
+  {id:'olla',n:'Café de olla con panela',img:'olla',tags:['Calientes','Peruanas'],d:'Café hervido a la manera tradicional, endulzado con panela y perfumado con canela.',t:'15 min',met:'pasado',
+   ing:[['Café molido medio','30 g'],['Agua','500 ml'],['Panela','40 g'],['Canela','1 rama']],
+   pasos:['Hierve el agua con la panela y la canela hasta que la panela se disuelva.','Apaga el fuego y agrega el café.','Deja reposar 4 minutos, sin hervir.','Cuela y sirve caliente.']},
+  {id:'tonic',n:'Espresso tonic',img:'tonic',tags:['Frías','De autor'],d:'Agua tónica con hielo y un espresso servido encima: amargo, cítrico y burbujeante.',t:'3 min',met:'espresso',
+   ing:[['Espresso doble','36 ml'],['Agua tónica','120 ml'],['Hielo','1 vaso'],['Limón','1 rodaja']],
+   pasos:['Llena un vaso con hielo y agrega la tónica.','Prepara el espresso.','Viértelo despacio sobre la tónica para que se formen capas.','Decora con la rodaja de limón.']},
+  {id:'flatwhite',n:'Flat white',img:'flatwhite',tags:['Calientes','Con leche'],d:'Espresso doble con una capa fina de leche texturizada. Más café que un latte.',t:'5 min',met:'espresso',
+   ing:[['Espresso doble','36 ml'],['Leche entera','120 ml']],
+   pasos:['Prepara el espresso doble en una taza de 160 ml.','Calienta y texturiza la leche hasta unos 60 °C, con poca espuma.','Vierte la leche desde cerca para integrar la crema y terminar con un dibujo.']},
+  {id:'affogato',n:'Affogato',img:'affogato',tags:['Frías','Con leche'],d:'Una bola de helado de vainilla ahogada en espresso caliente.',t:'2 min',met:'espresso',
+   ing:[['Helado de vainilla','1 bola'],['Espresso','1 shot']],
+   pasos:['Sirve el helado en un vaso bajo.','Prepara el espresso.','Viértelo sobre el helado justo antes de servir.']},
+  {id:'pasado',n:'Café pasado',img:'pasado',tags:['Calientes','Peruanas'],d:'El café filtrado de toda la vida, hecho con calma y agua recién hervida.',t:'6 min',met:'v60',
+   ing:[['Café molido medio','15 g'],['Agua caliente','250 ml']],
+   pasos:['Coloca el filtro y enjuágalo con agua caliente.','Agrega el café y moja con un poco de agua; espera 30 segundos.','Vierte el resto del agua en círculos, en dos o tres tandas.','Sirve apenas termine de filtrar.']}
+];
+const METODOS = [
+  {id:'espresso',n:'Espresso',img:'m_espresso',dif:'Media',tiempo:'25–30 s',f:[['18 g','café'],['Fina','molienda'],['36 ml','bebida'],['28 s','tiempo']],pasos:['Muele fino y llena el portafiltro.','Nivela y prensa con firmeza.','Extrae entre 25 y 30 segundos.'],eq:'Máquina de espresso'},
+  {id:'v60',n:'V60',img:'m_v60',dif:'Media',tiempo:'3–4 min',f:[['15 g','café'],['Media','molienda'],['250 ml','agua'],['3:30','tiempo']],pasos:['Enjuaga el filtro con agua caliente.','Moja el café y espera 30 segundos.','Vierte en espiral en tres tandas.'],eq:'Gotero V60 y hervidor'},
+  {id:'prensa',n:'Prensa francesa',img:'m_prensa',dif:'Fácil',tiempo:'4 min',f:[['30 g','café'],['Gruesa','molienda'],['500 ml','agua'],['4 min','tiempo']],pasos:['Agrega el café y el agua caliente.','Revuelve y tapa.','Espera 4 minutos y baja el émbolo.'],eq:'Prensa francesa'},
+  {id:'moka',n:'Moka',img:'m_moka',dif:'Fácil',tiempo:'5–7 min',f:[['20 g','café'],['Media-fina','molienda'],['200 ml','agua'],['6 min','tiempo']],pasos:['Llena la base con agua hasta la válvula.','Pon el café sin prensar.','Calienta a fuego medio y retira al oír el burbujeo.'],eq:'Cafetera moka'},
+  {id:'chemex',n:'Chemex',img:'m_chemex',dif:'Media',tiempo:'4–5 min',f:[['30 g','café'],['Media-gruesa','molienda'],['500 ml','agua'],['4:30','tiempo']],pasos:['Enjuaga el filtro grueso.','Moja el café y espera 45 segundos.','Vierte lento en tandas hasta 500 ml.'],eq:'Chemex'},
+  {id:'coldbrew',n:'Cold brew',img:'m_coldbrew',dif:'Fácil',tiempo:'12–18 h',f:[['60 g','café'],['Gruesa','molienda'],['500 ml','agua fría'],['12–18 h','reposo']],pasos:['Mezcla el café con agua fría.','Reposa en la refrigeradora de 12 a 18 horas.','Filtra y guarda hasta 5 días.'],eq:'Frasco con filtro para cold brew'},
+  {id:'aeropress',n:'Aeropress',img:'m_aeropress',dif:'Fácil',tiempo:'2–3 min',f:[['15 g','café'],['Media-fina','molienda'],['220 ml','agua'],['2 min','tiempo']],pasos:['Coloca el filtro y enjuágalo.','Agrega café y agua, y revuelve.','Espera 1 minuto y presiona despacio.'],eq:'Aeropress'}
+];
+const ORIGENES = [
+  {n:'Cajamarca',alt:'1,200–2,000 m',notas:'Chocolate y frutos rojos',x:52,y:30},
+  {n:'Amazonas',alt:'1,300–2,000 m',notas:'Caramelo y cítricos',x:60,y:22},
+  {n:'Junín',alt:'1,000–1,900 m',notas:'Nueces y panela',x:60,y:57},
+  {n:'Cusco',alt:'1,400–2,100 m',notas:'Flores y miel',x:68,y:74},
+  {n:'Puno',alt:'1,500–2,200 m',notas:'Frutas tropicales y cacao',x:80,y:82}
+];
+const CAFES = [
+  {id:'esquina',n:'Café La Esquina',img:'esquina',dist:'350 m',hor:'8:00–20:00',precio:'S/ 18',cup:'10% en cold brew',code:'RUTA-ESQ10',hasCup:true,x:28,y:38,recetas:['coldbrew','flatwhite']},
+  {id:'tostado',n:'Tostado Sur',img:'tostado',dist:'600 m',hor:'7:30–21:00',precio:'S/ 17',cup:'2x1 en affogato los martes',code:'RUTA-TOS2X1',hasCup:true,x:66,y:30,recetas:['affogato','tonic']},
+  {id:'grano',n:'Grano Norte',img:'grano',dist:'900 m',hor:'8:00–19:30',precio:'S/ 19',cup:null,code:null,hasCup:false,x:50,y:72,recetas:['pasado','olla']}
+];
+const RANK = {esquina:[['CafeteroDeBarranco',6],['LaMuyCafetera',5],['Toño_V60',4],['MarianaCold',3],['ElDeLaMoka',2]],
+  tostado:[['AffogatoLover',5],['Rocío.Barranco',4],['CafeteroDeBarranco',3],['JP_espresso',2],['Lu_tueste',2]],
+  grano:[['Granito',4],['PasadoDeLaAbuela',3],['Kike_Chemex',2],['Sofi.Lima',1],['CafeteroDeBarranco',1]]};
+
+const DEF = {dist:'Barranco',apodo:'CafeteroDeBarranco',sellos:{esquina:3,tostado:4,grano:0},granos:40,hoy:{},juegos:0,favs:['flatwhite'],correo:null,welcomed:false,canjes:[]};
+let S;
+try{ S = Object.assign({},DEF,JSON.parse(localStorage.getItem('rutataza')||'{}')); }catch(e){ S = Object.assign({},DEF); }
+function save(){ try{ localStorage.setItem('rutataza',JSON.stringify(S)); }catch(e){} }
+const R = id=>RECETAS.find(r=>r.id===id), M = id=>METODOS.find(m=>m.id===id), C = id=>CAFES.find(c=>c.id===id);
+const img = (n,alt,cls='ph')=>`<img class="${cls}" src="img/${n}.jpg" alt="${alt}">`;
+const $ = s=>document.querySelector(s);
+const view = $('#view');
+let recTab='recetas', recFilter='Todas', cafFilter=null, quiz=null, game=null, triv=null, pinVal='';
+
+function toast(t){ const d=document.createElement('div'); d.className='toast pop'; d.textContent=t; $('#app').appendChild(d); setTimeout(()=>d.remove(),2400); }
+function go(h){ if(location.hash==='#'+h) render(); else location.hash=h; }
+function back(label,to){ return `<button class="back" data-go="${to}">${I.back}${label}</button>`; }
+function hasCafes(){ return S.dist==='Barranco'; }
+
+function stampsHTML(n){ let s=''; for(let i=0;i<5;i++) s+=`<span class="stamp ${i<n?'on':''}">${i<n?I.beanF:''}</span>`; return `<div class="stamps">${s}</div>`; }
+
+/* ---------- Pantallas ---------- */
+const P = {
+inicio(){
+  const c=C('esquina'), n=S.sellos.esquina;
+  return `
+  <div class="stack" style="margin-top:6px">
+    <p class="muted small">Hola, ${S.apodo}</p>
+    <h1>¿Qué café te provoca hoy?</h1>
+  </div>
+  <div class="sec">
+    <button class="hero" data-go="receta-coldbrew" aria-label="Ver receta Cold Brew con naranja">
+      ${img('coldbrew','Cold brew con naranja sobre una mesa de madera','')}
+      <div class="cap"><span class="pill" style="background:var(--amber);color:var(--amber-ink)">Receta del día</span><h2 style="margin-top:8px">Cold Brew con naranja</h2><p class="small" style="opacity:.85">12 h de reposo · 5 min de armado</p></div>
+    </button>
+  </div>
+  <div class="sec">
+    <button class="card pad" data-go="cafe-esquina" style="text-align:left">
+      <div class="row between"><div><p class="xs muted">Tu tarjeta de sellos</p><h3>${c.n}</h3></div><span class="link">${n} de 5</span></div>
+      <div style="margin-top:10px">${stampsHTML(n)}</div>
+      <p class="small muted" style="margin-top:8px">${n>=5?'¡Tu café gratis está listo!':`Te ${5-n===1?'falta 1 sello':'faltan '+(5-n)+' sellos'} para tu café gratis`}</p>
+    </button>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><h2>Cafeterías cerca de ti</h2><button class="link" data-go="cafeterias">Ver todas</button></div>
+    ${hasCafes()?`<div class="hscroll">${CAFES.map(c=>`
+      <button class="card cafe-mini" data-go="cafe-${c.id}">
+        <div class="ph-wrap">${img(c.img,'Fachada de '+c.n)}</div>
+        <div class="pad" style="padding:10px 12px 12px"><h3>${c.n}</h3><p class="xs muted">${c.dist} · ${c.hor}</p>
+        <div class="row" style="margin-top:6px;gap:6px"><span class="pill ad">Auspicia</span>${c.hasCup?'<span class="pill cup">Cupón</span>':''}</div></div>
+      </button>`).join('')}</div>`:emptyDist()}
+  </div>
+  <div class="sec">
+    <div class="sec-h"><h2>Juego de la semana</h2></div>
+    <button class="card pad row" data-go="quiz" style="text-align:left;gap:14px">
+      <div class="brandmark" style="background:var(--amber);color:var(--amber-ink);font-size:22px">?</div>
+      <div style="flex:1"><h3>¿Qué café eres?</h3><p class="small muted">6 preguntas · 2 min · Gana 5 granos de oro</p></div>${I.arrow}
+    </button>
+  </div>
+  <div class="sec">
+    <div class="sponsor"><div class="brandmark">CA</div><div style="flex:1"><p class="xs muted">Presentado por</p><h3>Café Andino</h3><p class="small muted">Granos de altura de Cajamarca, tostados en Lima.</p></div><span class="pill ad">Auspicia</span></div>
+  </div>`;
+},
+
+recetas(){
+  const tabs=[['recetas','Recetas'],['metodos','Métodos'],['origenes','Orígenes'],['tipos','Tipos y tuestes']];
+  let body='';
+  if(recTab==='recetas'){
+    const fl=['Todas','Frías','Calientes','Con leche','De autor','Peruanas'];
+    const list=RECETAS.filter(r=>recFilter==='Todas'||r.tags.includes(recFilter));
+    body=`<div class="chips">${fl.map(f=>`<button class="chip ${f===recFilter?'on':''}" data-filter="${f}">${f}</button>`).join('')}</div>
+    <div class="grid2" style="margin-top:14px">${list.map(r=>`
+      <button class="card tile" data-go="receta-${r.id}"><div class="ph-wrap">${img(r.img,r.n)}</div><div class="t"><h3>${r.n}</h3><p class="xs muted">${r.t}</p></div></button>`).join('')}</div>`;
+  } else if(recTab==='metodos'){
+    body=`<div class="grid2">${METODOS.map(m=>`
+      <button class="card tile" data-go="metodo-${m.id}"><div class="ph-wrap">${img(m.img,m.n)}</div><div class="t"><h3>${m.n}</h3><p class="xs muted">${m.dif} · ${m.tiempo}</p></div></button>`).join('')}</div>`;
+  } else if(recTab==='origenes'){
+    body=`<p class="small muted">Las regiones cafeteras del Perú. Toca una para conocer su café.</p>
+    <div class="map" style="height:230px;margin-top:12px;background:#F4EFE7">${peruSVG()}</div>
+    <div class="stack" style="margin-top:14px">${ORIGENES.map((o,i)=>`
+      <button class="card pad row between" data-origen="${i}" style="text-align:left"><div><h3>${o.n}</h3><p class="xs muted">${o.alt} · ${o.notas}</p></div>${I.arrow}</button>`).join('')}</div>`;
+  } else {
+    body=`<div class="stack">
+      <div class="card pad"><h3>Arábica</h3><p class="small muted" style="margin-top:4px">La más común en cafés de especialidad. Sabor más dulce y aromático, con más acidez y menos cafeína.</p></div>
+      <div class="card pad"><h3>Robusta</h3><p class="small muted" style="margin-top:4px">Más intensa y amarga, con más cafeína y más cuerpo. Se usa en mezclas y en café soluble.</p></div>
+      <h2 style="margin-top:10px">Niveles de tueste</h2>
+      <div class="card pad stack">
+        ${[['Claro','#C89A62','Conserva más los sabores del origen: frutal y ácido.'],['Medio','#8A5A33','Equilibrado: dulzor, cuerpo y aroma.'],['Oscuro','#3F2516','Más amargo y tostado, con notas de cacao.']].map(t=>`
+        <div class="row" style="align-items:flex-start"><span style="width:22px;height:22px;border-radius:50%;background:${t[1]};flex:none;margin-top:2px"></span><div><h3>${t[0]}</h3><p class="small muted">${t[2]}</p></div></div>`).join('')}
+      </div></div>`;
+  }
+  return `<h1 style="margin-top:6px">Recetas</h1>
+  <div class="tabsx">${tabs.map(t=>`<button class="${recTab===t[0]?'on':''}" data-rtab="${t[0]}">${t[1]}</button>`).join('')}</div>${body}`;
+},
+
+receta(id){
+  const r=R(id); if(!r) return P.inicio();
+  const fav=S.favs.includes(id);
+  return `${back('Recetas','recetas')}
+  <div class="hero" style="height:220px">${img(r.img,r.n,'')}</div>
+  <div class="row between" style="margin-top:16px;align-items:flex-start"><h1>${r.n}</h1>
+    <button data-fav="${id}" aria-label="Guardar en favoritos" style="padding:6px;color:${fav?'var(--caramel)':'var(--muted)'}"><svg width="22" height="22" viewBox="0 0 24 24" fill="${fav?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12v18l-6-4-6 4z"/></svg></button></div>
+  <p class="muted" style="margin-top:6px">${r.d}</p>
+  <div class="grid2" style="margin-top:16px">
+    <button class="btn btn-main" data-go="cerca-${id}">Tómalo cerca ${I.arrow}</button>
+    <button class="btn btn-line" data-go="metodo-${r.met}">Prepáralo en casa</button>
+  </div>
+  ${hasCafes()?`<button class="card pad" data-go="cerca-${id}" style="margin-top:14px;text-align:left;width:100%">
+    <div class="row between"><p class="xs" style="color:var(--caramel);font-weight:700">Auspician en ${S.dist}</p><span class="pill ad">Auspicia</span></div>
+    <div class="listcafe" style="padding:8px 0 0">${'<div class="ph-wrap">'+img('esquina','Café La Esquina')+'</div>'}<div><h3>Café La Esquina</h3><p class="xs muted">350 m · Cupón 10%</p><p class="link" style="margin-top:8px">+ 2 cafeterías más</p></div></div>
+  </button>`:`<div style="margin-top:14px">${emptyDist()}</div>`}
+  <div class="sec"><h2>Ingredientes</h2><ul class="ing">${r.ing.map(i=>`<li><span>${i[0]}</span><b>${i[1]}</b></li>`).join('')}</ul></div>
+  <div class="sec"><h2>Preparación</h2><ol class="steps">${r.pasos.map(p=>`<li><span>${p}</span></li>`).join('')}</ol></div>
+  <div class="sec"><div class="sponsor"><div class="brandmark">CA</div><div style="flex:1"><p class="xs muted">Receta presentada por</p><h3>Café Andino</h3></div><button class="btn btn-line" style="padding:8px 12px;font-size:12px" data-toast="Aquí se abre la tienda de la marca">Comprar</button></div></div>`;
+},
+
+cerca(id){
+  const r=R(id)||R('coldbrew');
+  return `${back(r.n,'receta-'+r.id)}
+  <h1>${r.n} en ${S.dist}</h1>
+  ${hasCafes()?`<p class="muted small" style="margin-top:6px">3 cafeterías te lo preparan cerca</p>
+  <div class="map" style="margin-top:14px">${mapSVG()}${CAFES.map(c=>`<button class="pin" style="left:${c.x}%;top:${c.y}%" data-go="cafe-${c.id}"><b>${c.n}</b><i></i></button>`).join('')}</div>
+  <div class="stack" style="margin-top:14px">${CAFES.map(cafeRow).join('')}</div>`:`<div style="margin-top:14px">${emptyDist()}</div>`}`;
+},
+
+metodo(id){
+  const m=M(id); if(!m) return P.recetas();
+  return `${back('Métodos','recetas-metodos')}
+  <div class="hero" style="height:200px">${img(m.img,m.n,'')}</div>
+  <h1 style="margin-top:16px">${m.n} en casa</h1>
+  <p class="small muted" style="margin-top:4px">Dificultad ${m.dif.toLowerCase()} · ${m.tiempo}</p>
+  <div class="facts" style="margin-top:14px">${m.f.map(f=>`<div class="fact"><b>${f[0]}</b><span>${f[1]}</span></div>`).join('')}</div>
+  <div class="sec"><h2>Paso a paso</h2><ol class="steps">${m.pasos.map(p=>`<li><span>${p}</span></li>`).join('')}</ol></div>
+  <div class="sec card">
+    <div class="ph-wrap" style="height:150px">${img(m.img,m.eq)}</div>
+    <div class="pad stack" style="gap:8px"><div class="row between"><p class="xs muted">Prepáralo con</p><span class="pill ad">Auspicia</span></div>
+    <h3>${m.eq} · Molinos Andinos</h3><p class="small muted">Equipos para preparar café de especialidad en casa.</p>
+    <button class="btn btn-dark btn-block" data-toast="Aquí se abre la tienda del auspiciador">Ver en la tienda</button></div>
+  </div>`;
+},
+
+cafeterias(){
+  const list=CAFES.filter(c=>!cafFilter||(cafFilter==='cup'&&c.hasCup));
+  return `<h1 style="margin-top:6px">Cafeterías</h1>
+  <p class="small muted" style="margin-top:4px">Las que auspician aparecen primero.</p>
+  <div class="chips" style="margin-top:14px">
+    <button class="chip ${!cafFilter?'on':''}" data-cf="">Todas</button>
+    <button class="chip ${cafFilter==='cup'?'on':''}" data-cf="cup">Con cupón</button>
+    <button class="chip" data-toast="Filtro de ejemplo">Abierto ahora</button>
+    <button class="chip" data-toast="Filtro de ejemplo">Wi-Fi</button>
+    <button class="chip" data-toast="Filtro de ejemplo">Pet friendly</button>
+  </div>
+  ${hasCafes()?`<div class="map" style="margin-top:14px">${mapSVG()}${list.map(c=>`<button class="pin" style="left:${c.x}%;top:${c.y}%" data-go="cafe-${c.id}"><b>${c.n}</b><i></i></button>`).join('')}</div>
+  <div class="stack" style="margin-top:14px">${list.map(cafeRow).join('')}</div>`:`<div style="margin-top:14px">${emptyDist()}</div>`}`;
+},
+
+cafe(id){
+  const c=C(id); if(!c) return P.cafeterias();
+  const n=S.sellos[id]||0, top=RANK[id][0];
+  return `${back('Cafeterías','cafeterias')}
+  <div class="hero" style="height:200px">${img(c.img,'Fachada de '+c.n,'')}</div>
+  <div class="row between" style="margin-top:16px"><h1>${c.n}</h1><span class="pill ad">Auspicia</span></div>
+  <p class="small muted" style="margin-top:4px">${S.dist} · ${c.dist} · Hoy ${c.hor} · ${c.precio} aprox.</p>
+  <div class="grid2" style="margin-top:14px">
+    <button class="btn btn-dark" data-toast="Aquí se abre WhatsApp con la cafetería">${I.wa} WhatsApp</button>
+    <button class="btn btn-line" data-toast="Aquí se abre el mapa con la ruta">${I.nav} Cómo llegar</button>
+  </div>
+  ${c.hasCup?`<div class="sec"><h2>Cupón activo</h2>
+    <button class="card pad row" data-go="cupon-${id}" style="text-align:left;border-style:dashed;border-color:var(--caramel)">
+      <div class="brandmark" style="background:#FBEBD2;color:#7A3F12">%</div><div style="flex:1"><h3>${c.cup}</h3><p class="xs muted">Válido hasta el 30 de noviembre</p></div><span class="link">Usar</span></button></div>`:''}
+  <div class="sec"><div class="sec-h"><h2>Tu tarjeta de sellos</h2><span class="link">${n} de 5</span></div>
+    <div class="card pad stack">${stampsHTML(n)}
+      <p class="small muted">${n>=5?'¡Completaste tu tarjeta! Tu café gratis te espera.':`Te ${5-n===1?'falta 1 sello':'faltan '+(5-n)+' sellos'} para tu café gratis.`}</p>
+      ${n>=5?`<button class="btn btn-main btn-block" data-go="canje-${id}">Canjear mi café gratis</button>`:`<button class="btn btn-main btn-block" data-checkin="${id}">${I.qr} Escanear QR en la mesa</button>`}
+      <p class="xs muted center">Se suma un sello por día. Tu tarjeta queda guardada en este celular.</p>
+    </div></div>
+  <div class="sec"><div class="sec-h"><h2>Catador Mayor</h2><button class="link" data-go="ranking-${id}">Ver ranking</button></div>
+    <div class="card pad row">${I.crown}<div style="flex:1"><h3>${top[0]}</h3><p class="xs muted">${top[1]} visitas esta semana</p></div></div></div>
+  <div class="sec"><h2>Recetas de su barista</h2><div class="grid2">${c.recetas.map(rid=>{const r=R(rid);return `<button class="card tile" data-go="receta-${r.id}"><div class="ph-wrap">${img(r.img,r.n)}</div><div class="t"><h3>${r.n}</h3></div></button>`}).join('')}</div></div>`;
+},
+
+cupon(id){
+  const c=C(id); if(!c||!c.hasCup) return P.cafeterias();
+  return `${back(c.n,'cafe-'+id)}
+  <div class="card" style="margin-top:4px">
+    <div class="pad center stack" style="padding:26px 20px;gap:10px">
+      <p class="xs muted">${c.n} · ${S.dist}</p>
+      <h1>${c.cup}</h1>
+      <p class="small muted">Muestra esta pantalla en caja</p>
+      <div style="margin:10px auto;width:170px;height:170px">${qrSVG(c.code)}</div>
+      <p style="font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:.06em">${c.code}</p>
+      <p class="xs muted">Válido hasta el 30 de noviembre. Uno por persona. No acumulable con otras promociones.</p>
+    </div>
+  </div>
+  <button class="btn btn-dark btn-block" style="margin-top:16px" data-used="${id}">Ya lo usé</button>`;
+},
+
+checkin(id){
+  const c=C(id);
+  return `<div class="center stack" style="padding-top:40px;align-items:center;gap:16px" id="ck">
+    <div style="width:220px;height:220px;border-radius:24px;border:3px solid var(--ink);display:grid;place-items:center;position:relative;background:var(--surface)">
+      <div style="width:130px;height:130px">${qrSVG('MESA-'+id)}</div>
+    </div>
+    <h2>Escaneando el QR de la mesa…</h2><p class="small muted">${c.n}</p>
+  </div>`;
+},
+
+canje(id){
+  const c=C(id);
+  pinVal='';
+  return `${back(c.n,'cafe-'+id)}
+  <div class="center stack" style="align-items:center;gap:10px;margin-top:6px">
+    <span class="stamp on pop" style="width:64px;height:64px">${I.beanF}</span>
+    <h1>¡Tu café gratis está listo!</h1>
+    <p class="muted small">Muestra esta pantalla al barista de ${c.n}. Él digita el PIN del local para confirmar.</p>
+  </div>
+  <div class="card pad stack" style="margin-top:18px">
+    <p class="xs muted center">PIN del local (para el prototipo: 1234)</p>
+    <div class="dots" id="dots">${'<i></i>'.repeat(4)}</div>
+    <div class="pinpad">${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>k===''?'<span></span>':`<button data-pin="${k}" aria-label="${k==='⌫'?'Borrar':k}">${k}</button>`).join('')}</div>
+  </div>`;
+},
+
+ranking(id){
+  const c=C(id);
+  return `${back(c.n,'cafe-'+id)}
+  <h1>Catador Mayor</h1><p class="small muted" style="margin-top:4px">${c.n} · Quien registra más visitas en 7 días. Cada lunes se elige uno nuevo.</p>
+  <div class="card pad row" style="margin-top:16px;gap:14px">${I.crown}<div><h2>${RANK[id][0][0]}</h2><p class="small muted">${RANK[id][0][1]} visitas esta semana</p></div></div>
+  <div class="card pad" style="margin-top:12px">${RANK[id].map((r,i)=>`<div class="rank"><b>${i+1}</b><span style="${r[0]===S.apodo?'font-weight:700;color:var(--caramel)':''}">${r[0]}${r[0]===S.apodo?' (tú)':''}</span><span class="muted">${r[1]} visitas</span></div>`).join('')}</div>
+  <div class="sponsor" style="margin-top:12px"><div class="brandmark" style="background:var(--amber);color:var(--amber-ink)">${I.crown}</div><p class="small">El Catador Mayor gana <b>un café gratis cada día de la semana</b>, cortesía de ${c.n}.</p></div>`;
+},
+
+juegos(){
+  const games=[['quiz','¿Qué café eres?','6 preguntas · 2 min','Descubre tu bebida ideal'],['barista','Barista en 60 segundos','3 pedidos · 1 min','Gana granos de oro'],['ruta','Ruta del origen','5 regiones','Desbloquea el mapa del Perú'],['trivia','Trivia cafetera','3 preguntas · semanal','Top 3 gana un cupón']];
+  return `<h1 style="margin-top:6px">Juegos</h1><p class="small muted" style="margin-top:4px">Juega, aprende y gana granos de oro.</p>
+  <div class="card" style="margin-top:16px;background:var(--ink);border-color:var(--ink);color:#fff">
+    <div class="pad stack" style="padding:20px">
+      <span class="pill" style="background:var(--amber);color:var(--amber-ink);align-self:flex-start">Juego de la semana</span>
+      <h2 style="color:#fff;font-size:26px">¿Qué café eres?</h2>
+      <p class="small" style="opacity:.8">Responde 6 preguntas y te decimos qué café va contigo y dónde tomarlo.</p>
+      <button class="btn btn-main" data-go="quiz">Jugar ahora ${I.arrow}</button>
+    </div></div>
+  <div class="stack" style="margin-top:14px">${games.slice(1).map(g=>`
+    <button class="card pad row" data-go="${g[0]}" style="text-align:left;gap:14px">
+      <div class="brandmark" style="background:var(--soft);color:var(--caramel)">${g[0]==='barista'?'60':g[0]==='ruta'?'PE':'?!'}</div>
+      <div style="flex:1"><h3>${g[1]}</h3><p class="xs muted">${g[2]} · ${g[3]}</p></div>${I.arrow}</button>`).join('')}</div>
+  <div class="sponsor" style="margin-top:14px"><div class="brandmark">MA</div><div style="flex:1"><p class="xs muted">Barista en 60 segundos, presentado por</p><h3>Molinos Andinos</h3></div><span class="pill ad">Auspicia</span></div>`;
+},
+
+quiz(){
+  const Q=[
+    ['¿Cómo prefieres empezar el día?',[['Con algo intenso que me active',I.bolt,'espresso'],['Con un café suave, sin apuro',I.sun,'pasado'],['Con algo frío y refrescante',I.ice,'cold'],['Con algo cremoso y reconfortante',I.heart,'flat']]],
+    ['¿Tu plan ideal de domingo?',[['Leer en una cafetería tranquila',I.book,'pasado'],['Salir a la playa en Barranco',I.sun,'cold'],['Brunch con amigos',I.heart,'flat'],['Hacer mil cosas a la vez',I.bolt,'espresso']]],
+    ['¿Qué postre eliges?',[['Un helado',I.ice,'cold'],['Un alfajor',I.heart,'flat'],['Chocolate amargo',I.moon,'espresso'],['Pan con mantequilla',I.sun,'pasado']]],
+    ['¿Cómo te describen tus amigos?',[['Directo y con energía',I.bolt,'espresso'],['Tranquilo y de buena conversación',I.book,'pasado'],['Relajado y con estilo',I.ice,'cold'],['Cálido y detallista',I.heart,'flat']]],
+    ['¿A qué hora tomas tu primer café?',[['Antes de las 7',I.moon,'espresso'],['Con el desayuno',I.sun,'pasado'],['A media mañana',I.heart,'flat'],['En la tarde, con calor',I.ice,'cold']]],
+    ['¿Qué te importa más en un café?',[['La intensidad',I.bolt,'espresso'],['El origen y el aroma',I.map,'pasado'],['Que sea refrescante',I.ice,'cold'],['La textura',I.heart,'flat']]]
+  ];
+  if(!quiz) quiz={i:0,a:[],sel:null};
+  if(quiz.i>=Q.length) return quizResult();
+  const q=Q[quiz.i];
+  return `${back('Juegos','juegos')}
+  <div class="row between"><p class="small muted">Pregunta ${quiz.i+1} de ${Q.length}</p><p class="small muted">¿Qué café eres?</p></div>
+  <div class="prog" style="margin-top:8px"><i style="width:${(quiz.i/Q.length)*100}%"></i></div>
+  <h1 style="margin-top:20px">${q[0]}</h1>
+  <div class="stack" style="margin-top:18px">${q[1].map((o,k)=>`<button class="opt ${quiz.sel===k?'sel':''}" data-q="${k}" data-v="${o[2]}"><span class="em">${o[1]}</span>${o[0]}</button>`).join('')}</div>
+  <button class="btn btn-main btn-block" style="margin-top:20px;${quiz.sel===null?'opacity:.4;pointer-events:none':''}" data-qnext="1">Siguiente ${I.arrow}</button>`;
+},
+
+barista(){
+  const ORD=[{n:'Flat white',ok:{base:'Espresso',leche:'Sí',extra:'Nada'}},{n:'Espresso tonic',ok:{base:'Espresso',leche:'No',extra:'Tónica'}},{n:'Cold brew',ok:{base:'Cold brew',leche:'No',extra:'Hielo'}}];
+  if(!game) return `${back('Juegos','juegos')}
+    <h1>Barista en 60 segundos</h1><p class="muted" style="margin-top:6px">Tienes 1 minuto para armar 3 pedidos. Elige la base, si lleva leche y el toque final.</p>
+    <div class="hero" style="height:180px;margin-top:16px">${img('m_espresso','Espresso','')}</div>
+    <button class="btn btn-main btn-block" style="margin-top:18px" data-bstart="1">Empezar</button>
+    <div class="sponsor" style="margin-top:14px"><div class="brandmark">MA</div><div style="flex:1"><p class="xs muted">Presentado por</p><h3>Molinos Andinos</h3></div></div>`;
+  if(game.done){
+    const pts=game.score;
+    return `${back('Juegos','juegos')}<div class="center stack" style="align-items:center;margin-top:10px">
+      <span class="stamp on pop" style="width:72px;height:72px">${I.beanF}</span>
+      <h1>${pts===3?'¡Pedidos perfectos!':pts>0?'¡Buen turno!':'Se acabó el tiempo'}</h1>
+      <p class="big">${pts} de 3</p><p class="muted small">Ganaste ${pts*5} granos de oro</p></div>
+      <div class="sec card"><div class="ph-wrap" style="height:140px">${img('m_espresso','Máquina de espresso')}</div><div class="pad stack" style="gap:8px"><p class="xs muted">Hazlo en casa con</p><h3>Máquina de espresso · Molinos Andinos</h3><button class="btn btn-dark btn-block" data-toast="Aquí se abre la tienda del auspiciador">Ver en la tienda</button></div></div>
+      <button class="btn btn-line btn-block" style="margin-top:12px" data-breset="1">Jugar otra vez</button>`;
+  }
+  const o=ORD[game.i], ch=game.ch;
+  const grp=(k,opts)=>`<p class="small" style="font-weight:700;margin-top:14px">${k==='base'?'Base':k==='leche'?'¿Leche?':'Toque final'}</p><div class="chips" style="margin-top:8px">${opts.map(v=>`<button class="chip ${ch[k]===v?'on':''}" data-bk="${k}" data-bv="${v}">${v}</button>`).join('')}</div>`;
+  return `<div class="row between" style="margin-top:4px"><p class="small muted">Pedido ${game.i+1} de 3 · ${game.score} correctos</p><span class="timer" id="btimer">0:${String(game.t).padStart(2,'0')}</span></div>
+  <div class="card pad" style="margin-top:12px;background:var(--ink);color:#fff;border-color:var(--ink)"><p class="xs" style="opacity:.7">El cliente pide</p><h1 style="color:#fff">Un ${o.n.toLowerCase()}</h1></div>
+  ${grp('base',['Espresso','Cold brew','Filtrado'])}${grp('leche',['Sí','No'])}${grp('extra',['Nada','Tónica','Hielo','Canela'])}
+  <button class="btn btn-main btn-block" style="margin-top:22px;${Object.keys(ch).length<3?'opacity:.4;pointer-events:none':''}" data-bserve="1">Servir pedido</button>`;
+},
+
+trivia(){
+  const T=[['¿Qué método usa agua fría y muchas horas de reposo?',['Espresso','Cold brew','Moka'],1],['¿Qué lleva un affogato?',['Helado y espresso','Leche y canela','Tónica y limón'],0],['¿Qué especie es la más usada en cafés de especialidad?',['Robusta','Arábica','Liberica'],1]];
+  if(!triv) triv={i:0,score:0,ans:null};
+  if(triv.i>=T.length){
+    const board=[['LaMuyCafetera',3],[S.apodo,triv.score],['Toño_V60',2],['MarianaCold',1]].sort((a,b)=>b[1]-a[1]);
+    return `${back('Juegos','juegos')}<h1>Trivia de la semana</h1>
+    <p class="big" style="margin-top:14px">${triv.score} de 3</p><p class="small muted">Ganaste ${triv.score*5} granos de oro</p>
+    <div class="sec"><h2>Ranking de la semana</h2><div class="card pad">${board.map((r,i)=>`<div class="rank"><b>${i+1}</b><span style="${r[0]===S.apodo?'font-weight:700;color:var(--caramel)':''}">${r[0]}${r[0]===S.apodo?' (tú)':''}</span><span class="muted">${r[1]} pts</span></div>`).join('')}</div>
+    <p class="small muted">El top 3 del domingo gana un cupón en una cafetería aliada.</p></div>
+    <button class="btn btn-line btn-block" style="margin-top:14px" data-treset="1">Jugar otra vez</button>`;
+  }
+  const q=T[triv.i];
+  return `${back('Juegos','juegos')}<p class="small muted">Pregunta ${triv.i+1} de 3</p><div class="prog" style="margin-top:8px"><i style="width:${triv.i/3*100}%"></i></div>
+  <h1 style="margin-top:20px">${q[0]}</h1>
+  <div class="stack" style="margin-top:18px">${q[1].map((o,k)=>{let st='';if(triv.ans!==null){if(k===q[2])st='border-color:var(--ok);background:#EDF6F0';else if(k===triv.ans)st='border-color:#B3261E;background:#FBEDEC';}return `<button class="opt" style="${st}" data-ta="${k}" data-tc="${q[2]}" ${triv.ans!==null?'disabled':''}>${o}</button>`}).join('')}</div>
+  ${triv.ans!==null?`<button class="btn btn-main btn-block" style="margin-top:20px" data-tnext="1">${triv.i<2?'Siguiente':'Ver resultado'} ${I.arrow}</button>`:''}`;
+},
+
+ruta(){
+  const done=['Cajamarca','Junín'];
+  return `${back('Juegos','juegos')}<h1>Ruta del origen</h1><p class="small muted" style="margin-top:4px">Prueba cafés de cada región y desbloquea el mapa. Llevas ${done.length} de 5.</p>
+  <div class="prog" style="margin-top:10px"><i style="width:${done.length/5*100}%"></i></div>
+  <div class="map" style="height:260px;margin-top:14px;background:#F4EFE7">${peruSVG(done)}</div>
+  <div class="stack" style="margin-top:14px">${ORIGENES.map((o,i)=>{const ok=done.includes(o.n);return `<button class="card pad row between" data-origen="${i}" style="text-align:left;${ok?'':'opacity:.65'}"><div><h3>${o.n}</h3><p class="xs muted">${ok?'Desbloqueada · '+o.notas:'Prueba un café de '+o.n+' para desbloquearla'}</p></div><span class="pill ${ok?'':'ad'}">${ok?'Listo':'Bloqueada'}</span></button>`}).join('')}</div>`;
+},
+
+cuenta(){
+  const total=Object.values(S.sellos).reduce((a,b)=>a+b,0);
+  const visited=Object.keys(S.sellos).filter(k=>S.sellos[k]>0).length;
+  return `<h1 style="margin-top:6px">Mi cuenta</h1>
+  <div class="card pad row" style="margin-top:14px;gap:14px">
+    <div class="brandmark" style="background:var(--amber);color:var(--amber-ink);border-radius:50%">${S.apodo.slice(0,2).toUpperCase()}</div>
+    <div style="flex:1"><p class="xs muted">Tu apodo</p><input class="text" id="apodo" value="${S.apodo}" maxlength="20" aria-label="Tu apodo" style="padding:6px 0;border:0;font-weight:700;font-size:17px;background:transparent"></div>
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card pad"><p class="xs muted">Granos de oro</p><p class="big" style="font-size:34px;margin-top:4px">${S.granos}</p></div>
+    <div class="card pad"><p class="xs muted">Sellos en total</p><p class="big" style="font-size:34px;margin-top:4px">${total}</p></div>
+  </div>
+  <div class="sec"><h2>Mis tarjetas de sellos</h2>${CAFES.map(c=>{const n=S.sellos[c.id]||0;return `
+    <button class="card pad stack" data-go="cafe-${c.id}" style="text-align:left;gap:10px"><div class="row between"><h3>${c.n}</h3><span class="link">${n} de 5</span></div><div class="prog"><i style="width:${n/5*100}%"></i></div></button>`}).join('')}</div>
+  <div class="sec"><h2>Insignias</h2><div class="badges">
+    <div class="badge ${visited>=1?'':'off'}"><div class="ic">${I.star}</div>Primera visita</div>
+    <div class="badge ${visited>=5?'':'off'}"><div class="ic">${I.map}</div>Explorador<br><span class="muted">${visited} de 5</span></div>
+    <div class="badge ${S.juegos>=1?'':'off'}"><div class="ic">${I.bolt}</div>Jugador</div>
+    <div class="badge off"><div class="ic">${I.sun}</div>Madrugador</div>
+    <div class="badge off"><div class="ic">${I.crown}</div>Catador Mayor</div>
+    <div class="badge off"><div class="ic">${I.bean}</div>Ruta del origen</div>
+  </div></div>
+  <div class="sec"><h2>Favoritos</h2>${S.favs.length?`<div class="grid2">${S.favs.map(id=>{const r=R(id);return `<button class="card tile" data-go="receta-${id}"><div class="ph-wrap">${img(r.img,r.n)}</div><div class="t"><h3>${r.n}</h3></div></button>`}).join('')}</div>`:'<p class="small muted">Guarda recetas con el ícono de marcador.</p>'}</div>
+  <div class="sec card pad stack" style="background:var(--soft);border-color:var(--soft)">
+    ${S.correo?`<h3>Tu tarjeta está guardada</h3><p class="small muted">La recuperas con ${S.correo} si cambias de celular.</p>`:
+    `<h3>¿Cambias de celular?</h3><p class="small muted">Tu tarjeta vive en este celular. Si quieres, guárdala con tu correo para no perder tus sellos. Es opcional.</p>
+    <form id="mailf" class="stack" style="gap:8px"><input class="text" id="mail" type="email" placeholder="tu@correo.com" aria-label="Correo" required><button class="btn btn-dark" type="submit">Guardar mi tarjeta</button></form>`}
+  </div>`;
+}
+};
+
+function quizResult(){
+  const cnt={}; quiz.a.forEach(v=>cnt[v]=(cnt[v]||0)+1);
+  const k=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];
+  const RES={cold:['Cold Brew','Tranquilo, refrescante y con estilo. No tienes apuro, pero siempre llegas.','coldbrew','coldbrew'],
+    flat:['Flat White','Equilibrado y detallista. Te gustan las cosas bien hechas y la buena compañía.','flatwhite','espresso'],
+    espresso:['Espresso','Directo e intenso. Vas al grano y no pierdes el tiempo.','tonic','espresso'],
+    pasado:['Café pasado','Clásico y de buena conversación. Para ti el café es un ritual.','pasado','v60']};
+  const r=RES[k];
+  if(!quiz.paid){ S.granos+=5; S.juegos++; quiz.paid=true; save(); }
+  return `${back('Juegos','juegos')}
+  <div class="hero" style="height:220px">${img(r[2],r[0],'')}<div class="cap"><p class="small" style="opacity:.85">Eres un</p><h2 style="font-size:30px">${r[0]}</h2></div></div>
+  <p style="margin-top:14px">${r[1]}</p>
+  <p class="small" style="margin-top:8px;color:var(--caramel);font-weight:700">+5 granos de oro</p>
+  <div class="grid2" style="margin-top:16px">
+    <button class="btn btn-main" data-go="cerca-${r[2]}">Tómalo cerca</button>
+    <button class="btn btn-line" data-go="metodo-${r[3]}">Prepáralo en casa</button>
+  </div>
+  <button class="btn btn-block" style="margin-top:8px;color:var(--muted)" data-qreset="1">Volver a jugar</button>`;
+}
+
+function cafeRow(c){
+  return `<div class="card listcafe">
+    <button data-go="cafe-${c.id}" class="ph-wrap" aria-label="Ver ${c.n}">${img(c.img,'Fachada de '+c.n)}</button>
+    <div class="stack" style="gap:4px">
+      <div class="row" style="gap:6px"><span class="pill ad">Auspicia</span>${c.hasCup?'<span class="pill cup">Cupón</span>':''}</div>
+      <button data-go="cafe-${c.id}" style="text-align:left"><h3>${c.n}</h3></button>
+      <p class="xs muted">${c.dist} · Hoy ${c.hor} · ${c.precio}</p>
+      <div class="row" style="gap:6px;margin-top:4px">
+        <button class="btn btn-dark" style="padding:7px 11px;font-size:12px" data-toast="Aquí se abre WhatsApp con la cafetería">${I.wa} WhatsApp</button>
+        <button class="btn btn-line" style="padding:6px 11px;font-size:12px" data-toast="Aquí se abre el mapa con la ruta">Cómo llegar</button>
+      </div>
+    </div></div>`;
+}
+function emptyDist(){ return `<div class="card pad center stack" style="gap:6px"><h3>Aún no hay cafeterías en ${S.dist}</h3><p class="small muted">En este prototipo, las cafeterías de ejemplo están en Barranco.</p><button class="link" data-setdist="Barranco">Cambiar a Barranco</button></div>`; }
+function mapSVG(){
+  return `<svg viewBox="0 0 360 190" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <rect width="360" height="190" fill="#EFEAE2"/>
+  <path d="M0 0h70c-10 40 8 80-6 120s8 50 0 70H0z" fill="#CFE0E6"/>
+  <path d="M64 0c-8 40 10 80-4 120s6 50 0 70" stroke="#D9CDBE" stroke-width="10" fill="none"/>
+  ${[30,70,110,150].map(y=>`<path d="M60 ${y}H360" stroke="#fff" stroke-width="6"/>`).join('')}
+  ${[120,180,240,300].map(x=>`<path d="M${x} 0V190" stroke="#fff" stroke-width="6"/>`).join('')}
+  <path d="M90 180 340 20" stroke="#fff" stroke-width="9"/>
+  <rect x="190" y="82" width="38" height="22" rx="4" fill="#DCE6D3"/>
+  <text x="200" y="128" font-family="DM Sans" font-size="11" fill="#9A8B7E" font-weight="600">BARRANCO</text>
+  </svg>`;
+}
+function peruSVG(done){
+  const pts=ORIGENES.map(o=>`<g><circle cx="${o.x*3.6}" cy="${o.y*2.6}" r="9" fill="${!done||done.includes(o.n)?'#9A5220':'#CDBFAF'}" opacity=".9"/><text x="${o.x*3.6+13}" y="${o.y*2.6+4}" font-family="DM Sans" font-size="12" font-weight="700" fill="#1E140F">${o.n}</text></g>`).join('');
+  return `<svg viewBox="0 0 360 260" aria-label="Regiones cafeteras del Perú" style="width:100%;height:100%">
+   <path d="M150 20 205 14 238 40 270 70 262 110 288 150 300 190 312 236 270 248 236 226 190 206 150 170 120 120 98 80 112 46z" fill="#E7DED2" stroke="#D3C6B5" stroke-width="2"/>
+   ${pts}</svg>`;
+}
+function qrSVG(seed){
+  let h=0; for(const ch of seed) h=(h*31+ch.charCodeAt(0))>>>0;
+  const n=21, cells=[]; let x=h;
+  for(let i=0;i<n*n;i++){ x=(x*1103515245+12345)>>>0; cells.push((x>>16)&1); }
+  const fin=(r,c)=>(r<7&&c<7)||(r<7&&c>=n-7)||(r>=n-7&&c<7);
+  let rects='';
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){ if(fin(r,c))continue; if(cells[r*n+c]) rects+=`<rect x="${c}" y="${r}" width="1" height="1"/>`; }
+  const f=(x,y)=>`<rect x="${x}" y="${y}" width="7" height="7" fill="#1E140F"/><rect x="${x+1}" y="${y+1}" width="5" height="5" fill="#fff"/><rect x="${x+2}" y="${y+2}" width="3" height="3" fill="#1E140F"/>`;
+  return `<svg viewBox="-1 -1 23 23" style="width:100%;height:100%" aria-label="Código QR"><rect x="-1" y="-1" width="23" height="23" fill="#fff"/><g fill="#1E140F">${rects}</g>${f(0,0)}${f(n-7,0)}${f(0,n-7)}</svg>`;
+}
+
+/* ---------- Router ---------- */
+function render(){
+  let h=(location.hash||'#inicio').slice(1);
+  let html, tab;
+  const m=h.match(/^(receta|cerca|metodo|cafe|cupon|canje|ranking|checkin)-([a-z0-9]+)$/);
+  if(h==='recetas-metodos'){ recTab='metodos'; html=P.recetas(); tab='recetas'; }
+  else if(m){ html=P[m[1]](m[2]); tab={receta:'recetas',cerca:'recetas',metodo:'recetas'}[m[1]]||(['cafe','cupon','checkin','canje','ranking'].includes(m[1])?'cafeterias':'inicio'); }
+  else if(P[h]){ html=P[h](); tab=['quiz','barista','trivia','ruta'].includes(h)?'juegos':h; }
+  else { html=P.inicio(); tab='inicio'; }
+  view.innerHTML=html; view.scrollTop=0;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  $('#distName').textContent=S.dist;
+  if(m&&m[1]==='checkin') runCheckin(m[2]);
+}
+window.addEventListener('hashchange',render);
+
+/* ---------- Interacción ---------- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button,[data-go]'); if(!t) return;
+  const d=t.dataset;
+  if(d.go){ if(d.go==='recetas') recTab='recetas'; if(d.go==='quiz'&&quiz&&quiz.paid) quiz=null; if(d.go==='trivia'&&triv&&triv.i>=3) triv=null; go(d.go); return; }
+  if(d.toast){ toast(d.toast); return; }
+  if(d.filter){ recFilter=d.filter; render(); return; }
+  if(d.rtab){ recTab=d.rtab; render(); return; }
+  if(d.cf!==undefined){ cafFilter=d.cf||null; render(); return; }
+  if(d.origen!==undefined){ openOrigen(+d.origen); return; }
+  if(d.fav){ const i=S.favs.indexOf(d.fav); i>=0?S.favs.splice(i,1):S.favs.push(d.fav); save(); render(); toast(i>=0?'Quitada de favoritos':'Guardada en favoritos'); return; }
+  if(d.used){ toast('¡Listo! Que lo disfrutes'); go('cafe-'+d.used); return; }
+  if(d.checkin){ const today=new Date().toDateString(); if(S.hoy[d.checkin]===today){ toast('Ya sumaste tu sello de hoy aquí. Vuelve mañana.'); return; } go('checkin-'+d.checkin); return; }
+  if(d.pin!==undefined){ pinPress(d.pin); return; }
+  if(d.q!==undefined){ quiz.sel=+d.q; quiz.v=d.v; render(); return; }
+  if(d.qnext){ quiz.a.push(quiz.v); quiz.i++; quiz.sel=null; render(); return; }
+  if(d.qreset){ quiz=null; render(); return; }
+  if(d.bstart){ startGame(); return; }
+  if(d.bk){ game.ch[d.bk]=d.bv; render(); return; }
+  if(d.bserve){ serve(); return; }
+  if(d.breset){ game=null; render(); return; }
+  if(d.ta!==undefined){ triv.ans=+d.ta; if(+d.ta===+d.tc) triv.score++; render(); return; }
+  if(d.tnext){ triv.i++; triv.ans=null; if(triv.i>=3){ S.granos+=triv.score*5; S.juegos++; save(); } render(); return; }
+  if(d.treset){ triv=null; render(); return; }
+  if(d.setdist){ S.dist=d.setdist; save(); render(); return; }
+  if(t.id==='distBtn'){ openDist(); return; }
+});
+document.addEventListener('change',e=>{ if(e.target.id==='apodo'){ const v=e.target.value.trim(); if(v){ S.apodo=v; save(); toast('Apodo actualizado'); } } });
+document.addEventListener('submit',e=>{ if(e.target.id==='mailf'){ e.preventDefault(); S.correo=$('#mail').value; save(); render(); toast('Tarjeta guardada con tu correo'); } });
+
+function sheet(html){ const bg=document.createElement('div'); bg.className='sheet-bg'; bg.innerHTML=`<div class="sheet">${html}</div>`; bg.addEventListener('click',ev=>{ if(ev.target===bg||ev.target.closest('[data-close]')) bg.remove(); }); $('#app').appendChild(bg); return bg; }
+function openDist(){
+  const ds=['Barranco','Miraflores','San Isidro','Surco','Lince','Jesús María'];
+  const bg=sheet(`<h2>¿Dónde sueles tomar café?</h2><div class="stack" style="gap:8px">${ds.map(x=>`<button class="radio ${x===S.dist?'sel':''}" data-d="${x}">${x}<i></i></button>`).join('')}</div><button class="btn btn-main btn-block" data-close="1">Listo</button>`);
+  bg.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>{ S.dist=b.dataset.d; save(); bg.remove(); render(); }));
+}
+function openOrigen(i){
+  const o=ORIGENES[i];
+  sheet(`<p class="xs muted">Región cafetera</p><h1>${o.n}</h1>
+    <div class="grid2"><div class="fact"><b>${o.alt}</b><span>altitud</span></div><div class="fact"><b>${o.notas}</b><span>notas de sabor</span></div></div>
+    <div class="sponsor"><div class="brandmark">CA</div><div style="flex:1"><p class="xs muted">Café de esta región</p><h3>Café Andino · ${o.n}</h3></div><span class="pill ad">Auspicia</span></div>
+    <button class="btn btn-main btn-block" data-close="1" data-toast="Aquí se abre la tienda de la marca">Comprar este café</button>`);
+}
+function runCheckin(id){
+  const c=C(id), box=$('#ck');
+  if(S.hoy[id]===new Date().toDateString()){ box.innerHTML=`<h2 style="margin-top:60px">Ya sumaste tu sello de hoy en ${c.n}</h2><p class="small muted">Se suma un sello por día. Vuelve mañana.</p><button class="btn btn-dark btn-block" data-go="cafe-${id}">Volver</button>`; return; }
+  setTimeout(()=>{ if(!box.isConnected) return; box.innerHTML=`<div style="width:90px;height:90px;border-radius:50%;background:var(--soft);display:grid;place-items:center;margin-top:60px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9A5220" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div><h2>Verificando que estás en ${c.n}…</h2><p class="small muted">Usamos la ubicación del celular solo para validar la visita.</p>`; },1100);
+  setTimeout(()=>{ if(!box.isConnected) return;
+    S.sellos[id]=Math.min(5,(S.sellos[id]||0)+1); S.granos+=10; S.hoy[id]=new Date().toDateString(); save();
+    const n=S.sellos[id];
+    box.innerHTML=`<p class="big pop" style="margin-top:30px;color:var(--caramel)">+1 sello</p>
+      <div class="card pad stack" style="width:100%;margin-top:10px"><h3>${c.n}</h3>${stampsHTML(n)}<p class="small muted">${n>=5?'¡Completaste tu tarjeta!':`${n} de 5 · Te ${5-n===1?'falta 1':'faltan '+(5-n)} para tu café gratis`}</p></div>
+      <p class="small" style="color:var(--caramel);font-weight:700">+10 granos de oro</p>
+      ${n>=5?`<button class="btn btn-main btn-block" data-go="canje-${id}">Canjear mi café gratis</button>`:`<button class="btn btn-dark btn-block" data-go="cafe-${id}">Listo</button>`}`; },2400);
+}
+function pinPress(k){
+  if(k==='⌫') pinVal=pinVal.slice(0,-1); else if(pinVal.length<4) pinVal+=k;
+  document.querySelectorAll('#dots i').forEach((d,i)=>d.classList.toggle('f',i<pinVal.length));
+  if(pinVal.length===4){
+    const id=location.hash.split('-')[1];
+    if(pinVal==='1234'){ S.sellos[id]=0; S.canjes.push(id); save();
+      setTimeout(()=>{ view.innerHTML=`<div class="center stack" style="align-items:center;padding-top:70px;gap:12px"><span class="stamp on pop" style="width:84px;height:84px;background:var(--ok)"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></span><h1>Canjeado</h1><p class="muted">${C(id).n} · ${new Date().toLocaleString('es-PE',{dateStyle:'medium',timeStyle:'short'})}</p><p class="small muted">Tu tarjeta vuelve a empezar. ¡Que lo disfrutes!</p><button class="btn btn-dark btn-block" data-go="cafe-${id}">Volver a la cafetería</button></div>`; },250);
+    } else { setTimeout(()=>{ pinVal=''; document.querySelectorAll('#dots i').forEach(d=>d.classList.remove('f')); toast('PIN incorrecto. Pídele al barista que lo intente de nuevo.'); },250); }
+  }
+}
+let gt=null;
+function startGame(){ game={i:0,score:0,t:60,ch:{},done:false}; clearInterval(gt);
+  gt=setInterval(()=>{ if(!game||game.done){clearInterval(gt);return;} game.t--; const el=$('#btimer'); if(el) el.textContent='0:'+String(Math.max(0,game.t)).padStart(2,'0'); if(game.t<=0){ endGame(); } },1000); render(); }
+function serve(){ const ORD=[{base:'Espresso',leche:'Sí',extra:'Nada'},{base:'Espresso',leche:'No',extra:'Tónica'},{base:'Cold brew',leche:'No',extra:'Hielo'}]; const ok=ORD[game.i], ch=game.ch;
+  const good=ch.base===ok.base&&ch.leche===ok.leche&&ch.extra===ok.extra; if(good) game.score++; toast(good?'¡Pedido correcto!':'Ese no era el pedido');
+  game.i++; game.ch={}; if(game.i>=3) endGame(); else render(); }
+function endGame(){ clearInterval(gt); if(game.done) return; game.done=true; S.granos+=game.score*5; S.juegos++; save(); if(location.hash==='#barista') render(); }
+
+/* Bienvenida (solo la primera vez) */
+function welcome(){
+  if(S.welcomed) return;
+  const w=document.createElement('div'); w.className='welcome';
+  w.innerHTML=`<div class="img">${img('hero','Taza de café con arte latte sobre una mesa de madera','')}</div>
+  <div class="body"><h1 style="font-size:34px">Todo el café,<br>y dónde tomarlo</h1><p class="muted">Recetas, métodos y juegos que terminan en una taza real, cerca de ti.</p>
+  <button class="btn btn-main btn-block" id="wgo">Empezar ${I.arrow}</button></div>`;
+  $('#app').appendChild(w);
+  w.querySelector('#wgo').addEventListener('click',()=>{ w.remove(); S.welcomed=true; save(); openDist(); });
+}
+render(); welcome();
+</script>
+</body>
+</html>
