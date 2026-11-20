@@ -403,10 +403,10 @@ rplay.onclick=playReel;rreset.onclick=()=>{SFX.tap();resetGame()};
 draw();
 
 // Sonido de logo al abrir (si el navegador lo bloquea, suena al primer toque)
-(()=>{const ia=new Audio('a/intro.mp3');ia.volume=.85;let done=false;
- const go=()=>{if(done||!SFX.on)return;done=true;ia.play().catch(()=>{done=false})};
- go();const once=()=>{go();if(done){removeEventListener('pointerdown',once,true);removeEventListener('keydown',once,true)}};
- addEventListener('pointerdown',once,true);addEventListener('keydown',once,true);window._introAudio=ia})();
+(()=>{const ia=new Audio('a/intro.mp3');ia.volume=.85;ia.preload='auto';let ok=false,busy=false;const EV=['pointerdown','pointerup','touchend','click','keydown'];
+ const off=()=>EV.forEach(t=>removeEventListener(t,go,true));
+ function go(){if(ok||busy||!SFX.on)return;busy=true;ia.play().then(()=>{ok=true;off()}).catch(()=>{}).finally(()=>{busy=false})}
+ EV.forEach(t=>addEventListener(t,go,true));go();window._introAudio=ia})();
 // Compartir
 const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2200)};
 document.getElementById('shr').onclick=async()=>{SFX.tap&&SFX.tap();const url='https://mnry-no-pdf.onrender.com',text='Mira esto de MNRY, productora audiovisual:';
