@@ -68,7 +68,7 @@ a{color:inherit}
 .rv-wrap video.v{opacity:1}
 .rsk{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .25s}
 .rsk.v{opacity:1}
-.rend{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(14,14,15,.82);font-weight:900;font-size:clamp(18px,4.5vw,30px);line-height:1.2;opacity:0;pointer-events:none;transition:opacity .4s;padding:10px}
+.rend{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;background:#000;font-weight:900;font-size:clamp(18px,4.5vw,30px);line-height:1.2;opacity:0;pointer-events:none;transition:opacity .4s;padding:10px}
 .rend.v{opacity:1}
 #rplay{background:var(--yel);color:var(--ink);font-weight:900;letter-spacing:2px;padding:14px 22px;border-radius:40px;font-size:15px}
 #rplay:disabled{background:#3a3a3c;color:#8c8c8c}
@@ -263,7 +263,7 @@ h2{font-size:clamp(34px,6.4vw,84px);font-weight:900;line-height:1;letter-spacing
       <div class="rv-wrap" id="rvw"></div>
       <img class="rsk" id="rsk" alt="">
       <div class="take" id="rtake">PLANO 1/5</div>
-      <div class="rend" id="rend"><span>Tu reel.<br><span style="color:var(--yel)">Dirigido por ti. Producido por MNRY.</span></span></div>
+      <div class="rend" id="rend"><div><img src="g/logo.png" alt="MNRY Visual Lab · mantarraya.pe" style="width:min(46%,260px);display:block;margin:0 auto 10px"><small style="display:block;font-size:.5em;letter-spacing:2px;color:var(--soft)">TU REEL · DIRIGIDO POR TI</small></div></div>
     </div>
     <div class="gamebar">
       <button id="rplay" disabled>▶ VER MI REEL</button>
@@ -371,17 +371,39 @@ function draw(){tlEl.innerHTML='';for(let k=0;k<NEED;k++){const d=document.creat
  [...sbEl.children].forEach((b,i)=>{const k=seq.indexOf(i);b.classList.toggle('on',k>=0);b.querySelector('i').textContent=k>=0?k+1:''});
  rplay.disabled=seq.length<NEED||playing}
 function pick(i){if(playing)return;const k=seq.indexOf(i);if(k>=0)seq.splice(k,1);else if(seq.length<NEED)seq.push(i);else return;SFX.pick();draw();if(seq.length===NEED)setTimeout(()=>rplay.scrollIntoView({behavior:'smooth',block:'center'}),250)}
-function stopGame(){playing=false;clearTimeout(pbTimer);Object.values(vids).forEach(v=>{v.pause();v.classList.remove('v')});rsk.classList.remove('v');draw()}
+function stopGame(){playing=false;clearTimeout(pbTimer);stopMusic();Object.values(vids).forEach(v=>{v.pause();v.classList.remove('v')});rsk.classList.remove('v');draw()}
 function resetGame(){stopGame();seq=[];rstage.hidden=true;rend.classList.remove('v');loadVids();draw()}
+const DUR={c1:1.5,c2:1.5,c3:1.5,c4:1,c5:1,c6:1.5,c7:1,c8:1.5},BEAT=.5;
+// Música synthwave a 120 bpm, generada en el navegador
+let mctx=null,mbus=null;
+function music(total){if(!SFX.on)return null;try{mctx=mctx||new (window.AudioContext||window.webkitAudioContext)();mctx.resume()}catch(e){return null}
+ const c=mctx,t0=c.currentTime+.08;mbus=c.createGain();mbus.gain.value=.55;mbus.connect(c.destination);
+ const env=(node,t,a,d,v)=>{node.gain.setValueAtTime(0,t);node.gain.linearRampToValueAtTime(v,t+a);node.gain.exponentialRampToValueAtTime(.0001,t+a+d)};
+ const osc=(type,f,t,dur,v,dest=mbus,f2)=>{const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);env(g,t,.005,dur,v);o.connect(g).connect(dest);o.start(t);o.stop(t+dur+.05)};
+ const nbuf=c.createBuffer(1,c.sampleRate*.3,c.sampleRate),nd=nbuf.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
+ const noise=(t,dur,v,hp)=>{const n=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();n.buffer=nbuf;f.type='highpass';f.frequency.value=hp;env(g,t,.002,dur,v);n.connect(f).connect(g).connect(mbus);n.start(t);n.stop(t+dur+.05)};
+ const bass=[[55,55,55,55],[43.65,43.65,43.65,43.65],[65.41,65.41,65.41,65.41],[49,49,49,49]];
+ const arp=[[440,523.25,659.25,523.25],[349.23,440,523.25,440],[523.25,659.25,783.99,659.25],[392,493.88,587.33,493.88]];
+ const beats=Math.ceil(total/BEAT);
+ for(let b=0;b<beats;b++){const t=t0+b*BEAT,bar=Math.floor(b/4)%4;
+  osc('sine',150,t,.35,.9,mbus,45);
+  if(b%2===1)noise(t,.18,.35,1500);
+  noise(t+BEAT/2,.05,.12,7000);noise(t,.04,.08,7000);
+  osc('sawtooth',bass[bar][b%4],t,BEAT*.45,.22);osc('sawtooth',bass[bar][b%4],t+BEAT/2,BEAT*.45,.18);
+  for(let q=0;q<2;q++)osc('square',arp[bar][(b*2+q)%4],t+q*BEAT/2,.18,.045)}
+ return t0}
+function stopMusic(){if(mbus){try{mbus.gain.setTargetAtTime(0,mctx.currentTime,.05)}catch(e){}mbus=null}}
 function playReel(){if(seq.length<NEED)return;loadVids();playing=true;draw();rstage.hidden=false;rend.classList.remove('v');
- rstage.scrollIntoView({behavior:'smooth',block:'center'});let k=0;SFX.whoosh();
- const step=()=>{Object.values(vids).forEach(v=>{v.pause();v.classList.remove('v')});
-  if(k>=NEED){rtake.textContent='FIN';rend.classList.add('v');SFX.fanfare();playing=false;draw();return}
-  const id=REEL[seq[k]][0],v=vids[id];rtake.textContent='PLANO '+(k+1)+'/'+NEED;
-  rsk.src='g/'+id+'.jpg';rsk.classList.add('v');SFX.clap();
-  pbTimer=setTimeout(()=>{v.currentTime=0;v.classList.add('v');v.play().catch(()=>{});rsk.classList.remove('v');
-   const dur=(v.duration&&isFinite(v.duration))?v.duration:1.5;pbTimer=setTimeout(()=>{k++;step()},Math.max(1000,dur*1000-80))},550)};
- step()}
+ rstage.scrollIntoView({behavior:'smooth',block:'center'});
+ const ids=seq.map(i=>REEL[i][0]),total=ids.reduce((a,id)=>a+DUR[id],0)+3;
+ Object.values(vids).forEach(v=>{v.pause();v.classList.remove('v');v.currentTime=0});
+ setTimeout(()=>{music(total);let k=0;
+  const step=()=>{Object.values(vids).forEach(v=>{if(v!==vids[ids[k]]){v.pause();v.classList.remove('v')}});
+   if(k>=NEED){rtake.textContent='';rend.classList.add('v');pbTimer=setTimeout(()=>{stopMusic();playing=false;draw()},3000);return}
+   const v=vids[ids[k]];v.classList.add('v');v.play().catch(()=>{});rtake.textContent='PLANO '+(k+1)+'/'+NEED;
+   if(k+1<NEED){const nx=vids[ids[k+1]];nx.currentTime=0}
+   pbTimer=setTimeout(()=>{k++;step()},DUR[ids[k]]*1000)};
+  step()},80)}
 rplay.onclick=playReel;rreset.onclick=()=>{SFX.tap();resetGame()};
 draw();
 
