@@ -725,7 +725,8 @@ function updateUI() {
     $('nameerr').textContent = '';
   }
 }
-async function loadTop() { try { const r = await fetch('/api/top'); topList = await r.json(); } catch (e) { topList = []; } renderTop(); }
+const API = /keikotaptap|mantarraya/.test(location.hostname) ? 'https://farmeando-cringe.onrender.com' : '';
+async function loadTop() { try { const r = await fetch(API + '/api/top'); topList = await r.json(); } catch (e) { topList = []; } renderTop(); }
 function renderTop() {
   const ol = $('toplist'); ol.innerHTML = '';
   if (!topList.length) { ol.innerHTML = '<li class="empty">Nadie ha farmeado todavía. ¡Sé el primero!</li>'; return; }
@@ -743,7 +744,7 @@ async function submitName(e) {
   if (!name) { $('nameerr').textContent = 'Escribe tu nombre primero'; return; }
   $('send').disabled = true;
   try {
-    const r = await fetch('/api/score', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, score, fighter: pick, stage: stageIdx + 1, dur: runSecs }) });
+    const r = await fetch(API + '/api/score', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, score, fighter: pick, stage: stageIdx + 1, dur: runSecs }) });
     const d = await r.json();
     if (!r.ok) { $('nameerr').textContent = d.error || 'No se pudo guardar'; $('send').disabled = false; return; }
     myEntry = { name: name.slice(0, 12), score }; topList = d.top; renderTop();

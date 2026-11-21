@@ -34,7 +34,7 @@ async function top() {
 }
 
 function send(res, code, obj) {
-  res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+  res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*' });
   res.end(JSON.stringify(obj));
 }
 
@@ -43,6 +43,7 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://x');
+    if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '86400' }); return res.end(); }
     if (url.pathname === '/api/top' && req.method === 'GET') return send(res, 200, await top());
     if (url.pathname === '/api/score' && req.method === 'POST') {
       const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
