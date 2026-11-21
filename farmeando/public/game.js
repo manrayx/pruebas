@@ -786,9 +786,9 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
   await Promise.all([
     ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=14'))),
     ...['kunte', 'espa'].flatMap(c => Object.keys(SILO_POSES).flatMap(pose => [
-      loadImg(c + '_' + pose + '_body', 'assets/silo/' + c + '_' + pose + '_body.png?v=16'),
-      ...['sonrisa', 'grito', 'serio', 'sonrisilla'].map(fn => loadImg(c + '_' + pose + '_face_' + fn, 'assets/silo/' + c + '_' + pose + '_face_' + fn + '.png?v=16')),
-      ...[1, 2, 3, 4].flatMap(i => [loadImg(c + '_' + pose + '_saco_' + i, 'assets/silo/' + c + '_' + pose + '_saco_' + i + '.png?v=16'), loadImg(c + '_' + pose + '_panta_' + i, 'assets/silo/' + c + '_' + pose + '_panta_' + i + '.png?v=16')])
+      loadImg(c + '_' + pose + '_body', 'assets/silo/' + c + '_' + pose + '_body.png?v=17'),
+      ...['sonrisa', 'grito', 'serio', 'sonrisilla'].map(fn => loadImg(c + '_' + pose + '_face_' + fn, 'assets/silo/' + c + '_' + pose + '_face_' + fn + '.png?v=17')),
+      ...[1, 2, 3, 4].flatMap(i => [loadImg(c + '_' + pose + '_saco_' + i, 'assets/silo/' + c + '_' + pose + '_saco_' + i + '.png?v=17'), loadImg(c + '_' + pose + '_panta_' + i, 'assets/silo/' + c + '_' + pose + '_panta_' + i + '.png?v=17')])
     ])),
     fetch('assets/fx/fx.json?v=7').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=7'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
