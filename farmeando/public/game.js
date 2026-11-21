@@ -16,8 +16,8 @@ const STAGES = [
 ];
 const ROUND_TIME = 60, CLOSET = 5;
 const CHARS = {
-  kunte: { name: 'VAGUEZ KUNTE', short: 'KUNTE', aura: '#ff3fd2', accs: ['bombin_negro', 'gorra', 'panama', 'vaquero', 'bombin_cafe'] },
-  espa: { name: 'CAOS ESPÁ', short: 'ESPÁ', aura: '#35c8ff', accs: ['vaquero', 'bombin_cafe', 'gorra', 'bombin_negro', 'panama'] },
+  kunte: { name: 'VAGUEZ KUNTE', short: 'KUNTE', aura: '#ff3fd2', accs: ['panama', 'boina', 'gorra', 'chullo', 'vaquero'] },
+  espa: { name: 'CAOS ESPÁ', short: 'ESPÁ', aura: '#35c8ff', accs: ['vaquero', 'chullo', 'gorra', 'boina', 'panama'] },
 };
 let META = null;
 
@@ -103,22 +103,36 @@ function announce(k) { if (!musicOn || !userStarted) return; const a = ANN[k]; i
 // ---------- Vestuario ----------
 // pieza: {src, look} para saco/pantalón/zapatos; {acc} para el accesorio
 function regY(c, f) { return META[c].top + f * META[c].h; }
-// Sombreros: arte real (fotos de catálogo estilizadas), no más rectángulos.
-// Cada entrada calibrada a ojo sobre la cabeza base (h=300): w = ancho destino en px,
-// ax/ay = ancla dentro del propio sombrero (fracción de su ancho/alto), dx/dy = ajuste fino en px.
-const HATS = {
-  bombin_negro: { img: 'hat_bombin_negro', w: 66, ax: 0.47, ay: 0.55, dx: 0, dy: 5 },
-  bombin_cafe: { img: 'hat_bombin_cafe', w: 66, ax: 0.47, ay: 0.55, dx: 0, dy: 5 },
-  panama: { img: 'hat_panama', w: 70, ax: 0.47, ay: 0.55, dx: 0, dy: 5 },
-  vaquero: { img: 'hat_vaquero', w: 78, ax: 0.50, ay: 0.58, dx: 0, dy: 6 },
-  gorra: { img: 'hat_gorra', w: 62, ax: 0.30, ay: 0.68, dx: 8, dy: 4 },
-};
+const hatDrop = { panama: 3.2, gorra: 3.4, vaquero: 3.6, boina: 3.0, chullo: 2.6 };
 function drawAcc(x, kind, hx, top, h) {
-  const spec = HATS[kind]; const img = spec && IMG[spec.img];
-  if (!spec || !img) return;
-  const sc = (h / 300) * (spec.w / img.width);
-  const w = img.width * sc, hh = img.height * sc;
-  x.drawImage(img, Math.round(hx + spec.dx * (h / 300) - spec.ax * w), Math.round(top + spec.dy * (h / 300) - spec.ay * hh), w, hh);
+  const u = h / 100, R = (a, b, w, hh, col) => { x.fillStyle = col; x.fillRect(Math.round(hx + a * u), Math.round(top + (b + (hatDrop[kind] || 0)) * u), Math.round(w * u), Math.round(hh * u)); };
+  const panama = () => {
+    R(-5.2, -4.2, 10.4, 6.4, '#000'); R(-4.6, -3.7, 9.2, 5.6, '#efe3c2'); R(-4.6, -3.7, 9.2, 1, '#fff7df');
+    R(-4.6, 0, 9.2, 1.4, '#1a1a1a');
+    R(-10.6, 1.6, 21.2, 2.2, '#000'); R(-10, 2, 20, 1.4, '#e6d6ad'); R(-10, 2, 20, 0.5, '#fff3d0');
+  };
+  if (kind === 'panama') panama();
+  else if (kind === 'gorra') {
+    R(-6.4, -4.6, 12.8, 6.2, '#000'); R(-5.8, -4, 11.6, 5, '#141414'); R(-5.8, -0.4, 11.6, 1.3, '#d6a52a');
+    R(-1.4, -3.4, 2.8, 2.8, '#ffcf3a'); R(-0.7, -2.7, 1.4, 1.4, '#a36d00');
+    R(-2, 1.4, 10.5, 1.4, '#000'); R(-1.6, 1.6, 9.8, 0.8, '#333');
+  } else if (kind === 'vaquero') {
+    R(-5.4, -6.2, 10.8, 7.6, '#000'); R(-4.8, -5.6, 9.6, 6.6, '#f1ead6'); R(-1, -5.6, 2, 1.6, '#cfc4a6');
+    R(-4.8, -0.4, 9.6, 1.2, '#8a5a2b');
+    R(-12.6, 1, 25.2, 2.4, '#000'); R(-12, 1.4, 24, 1.4, '#e9e0c6');
+    R(-13.4, -1, 2.4, 3, '#000'); R(-12.8, -0.6, 1.6, 2.2, '#e9e0c6'); R(11, -1, 2.4, 3, '#000'); R(11.2, -0.6, 1.6, 2.2, '#e9e0c6');
+  } else if (kind === 'boina') {
+    R(-6.2, -3.6, 12.4, 5.6, '#7a1f2b'); R(-6.2, -3.6, 12.4, 1, '#9c3242');
+    R(-0.8, -5.4, 1.6, 1.8, '#3d0f16');
+    R(-7.4, 0.6, 14.8, 1.6, '#5c1620');
+  } else if (kind === 'chullo') {
+    R(-5.6, -6.6, 11.2, 3, '#c23b3b'); R(-5.6, -3.8, 11.2, 1.8, '#f2e34c'); R(-5.6, -2.2, 11.2, 1.8, '#2f6fb5'); R(-5.6, -0.6, 11.2, 1.6, '#c23b3b');
+    R(-7.6, 1, 2.8, 7, '#c23b3b'); R(4.8, 1, 2.8, 7, '#2f6fb5');
+    R(-0.8, -8, 1.6, 1.8, '#f2e34c');
+    x.fillStyle = '#f2e34c';
+    x.beginPath(); x.arc(hx + -6.2 * u, top + (8.4 + (hatDrop.chullo || 0)) * u, 1.3 * u, 0, 6.3); x.fill();
+    x.beginPath(); x.arc(hx + 6.2 * u, top + (8.4 + (hatDrop.chullo || 0)) * u, 1.3 * u, 0, 6.3); x.fill();
+  }
 }
 const AX = 0.42; // ancla horizontal (centro de piernas) dentro del cuadro
 function PM(c, pose) { return (META[c] && META[c][pose]) || META[c].guard; }
@@ -137,7 +151,7 @@ function makeComposite(f, pose) {
     x.clearRect(0, y0, M.fw, y1 - y0);
     x.drawImage(poseImg(p.src, pose), p.look * M.fw, sy0, M.fw, sy1 - sy0, 0, y0, M.fw, y1 - y0);
   });
-  if (f.slots[0] && (pose === 'guard' || pose === 'win1' || pose === 'win2')) { const m = PM(c, pose); drawAcc(x, f.slots[0].acc, m.hx * M.fw, m.top, 300); }
+  if (f.slots[0] && pose === 'guard') { const m = PM(c, pose); drawAcc(x, f.slots[0].acc, m.hx * M.fw, m.top, 300); }
 }
 function comp(f, pose) {
   if (f.dirty) { f.cvOk = {}; f.dirty = false; }
@@ -432,16 +446,16 @@ function drawFighter(f) {
     if (img) { const h = 250, w = img.width * h / img.height; g.save(); g.translate(f.x, GROUND); if (f.side > 0) g.scale(-1, 1); g.rotate(-Math.min(0.25, stateT * 0.4)); g.drawImage(img, -w / 2, -h, w, h); g.restore(); return; }
   }
   if (f.win && state === 'ko') {
+    const cvs = comp(f, 'guard');
     const prog = Math.min(1, Math.max(0, (stateT - 0.3) / 1.0));
-    const laughing = prog > 0.95;
-    const bounce = laughing && Math.floor(T * 5) % 2 === 1;
-    const cvs = comp(f, bounce ? 'win2' : 'win1');
     const cx = f.x + (W / 2 - f.x) * prog;
     const sc = 1 + 0.25 * prog;
     const w = META.fw * FS * sc, h = META.fh * FS * sc, ax = META.fw * AX * FS * sc;
-    const bobY = bounce ? -14 : 0;
+    const laughing = prog > 0.95;
+    const bobY = laughing ? -Math.abs(Math.sin(T * 10)) * 20 : 0;
+    const wiggle = laughing ? Math.sin(T * 14) * 0.08 : 0;
     g.fillStyle = 'rgba(0,0,0,0.35)'; g.beginPath(); g.ellipse(cx, GROUND - 3, 60 * sc, 11, 0, 0, 6.3); g.fill();
-    g.save(); g.translate(cx, GROUND + bobY); if (f.side > 0) g.scale(-1, 1);
+    g.save(); g.translate(cx, GROUND + bobY); g.rotate(wiggle); if (f.side > 0) g.scale(-1, 1);
     g.drawImage(cvs, -ax, -h, w, h);
     g.restore();
     if (laughing) txt('¡JA JA JA!', cx, GROUND - h - 14, 14, '#ffd400', 'center', 4);
@@ -455,7 +469,7 @@ function drawFighter(f) {
   const kick = pose === 'attack' ? 26 : pose === 'hit' ? -22 : pose === 'block' ? -6 : 0;
   const lx = dir * (f.lunge * 12 + kick * Math.min(1, f.squash * 2 + 0.6)) + (f.hurt ? (Math.random() - 0.5) * 8 * f.hurt : 0);
   const breathe = Math.sin(T * 4.5 + (f.side > 0 ? 1.3 : 0));
-  const bob = 0;
+  const bob = f.win && state === 'ko' ? -Math.abs(Math.sin(T * 8)) * 18 : 0;
   const sx = 1 + 0.07 * f.squash + 0.006 * breathe, sy = 1 - 0.06 * f.squash + 0.012 * breathe;
   const charging = f === R && R.st === 'charge' && state === 'fight';
   // aura de carga (detrás)
@@ -711,13 +725,12 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
 
 (async function boot() {
   fit(); requestAnimationFrame(loop);
-  try { META = await (await fetch('assets/meta.json?v=8')).json(); } catch (e) { }
+  try { META = await (await fetch('assets/meta.json?v=7')).json(); } catch (e) { }
   await Promise.all([
-    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=8'))),
-    ...Object.values(HATS).map(h => loadImg(h.img, 'assets/' + h.img + '.png?v=8')),
-    fetch('assets/fx/fx.json?v=8').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=8'))); }).catch(() => { }),
-    loadImg('kunte_ko', 'assets/kunte_ko.png?v=8'), loadImg('espa_ko', 'assets/espa_ko.png?v=8'),
-    loadImg('kunte_win', 'assets/kunte_win.png?v=8'), loadImg('espa_win', 'assets/espa_win.png?v=8'),
+    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=7'))),
+    fetch('assets/fx/fx.json?v=7').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=7'))); }).catch(() => { }),
+    loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
+    loadImg('kunte_win', 'assets/kunte_win.png'), loadImg('espa_win', 'assets/espa_win.png'),
     ...STAGES.map(s => loadImg('bg_' + s.key, 'assets/bg_' + s.key + '.jpg')),
     document.fonts ? document.fonts.load('20px "Press Start 2P"') : null,
   ]);
