@@ -58,7 +58,7 @@ const server = http.createServer(async (req, res) => {
       const stage = Math.max(1, Math.min(4, Math.floor(Number(d.stage)) || 1));
       const fighter = d.fighter === 'kunte' ? 'kunte' : 'espa';
       // Puntaje imposible: tope por etapa y por segundo jugado
-      if (!Number.isFinite(score) || score < 0 || score > 60000 * stage || !Number.isFinite(dur) || dur < 10 || score > dur * 900 + 5000 * stage)
+      if (!Number.isFinite(score) || score < 0 || score > 120000 * stage || !Number.isFinite(dur) || dur < 10 || score > dur * 2500 + 5000 * stage)
         return send(res, 400, { error: 'Puntaje no válido' });
       lastPost.set(ip, now);
       if (pool) await pool.query('INSERT INTO scores (name, score, fighter, stage) VALUES ($1,$2,$3,$4)', [name, score, fighter, stage]);

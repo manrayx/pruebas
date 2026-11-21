@@ -22,23 +22,25 @@
   body{display:flex;align-items:center;justify-content:center}
   #wrap{position:relative}
   #cv{width:100%;height:100%;display:block;image-rendering:auto}
-  #pad{position:absolute;left:0;right:0;bottom:0;display:none;grid-template-columns:repeat(5,1fr);gap:calc(6px*var(--s));padding:calc(6px*var(--s));}
-  #pad button{font-family:inherit;font-size:calc(13px*var(--s));color:#fff;background:rgba(20,5,40,.72);border:calc(3px*var(--s)) solid #ff3fd2;border-radius:calc(10px*var(--s));padding:calc(11px*var(--s)) 0;touch-action:none}
-  #pad button small{display:block;font-size:calc(8px*var(--s));opacity:.55;margin-top:calc(4px*var(--s))}
-  #pad button.on{background:#ff3fd2;color:#000;transform:scale(.96)}
-  #flex{display:none;position:absolute;right:calc(24px*var(--s));bottom:calc(110px*var(--s));font-family:inherit;font-size:calc(20px*var(--s));padding:calc(18px*var(--s)) calc(22px*var(--s));background:#ffd400;color:#000;border:calc(4px*var(--s)) solid #fff;border-radius:calc(14px*var(--s));animation:pulse .4s infinite alternate}
-  @keyframes pulse{to{transform:scale(1.1);background:#ff3fd2}}
+  #pad{position:absolute;left:0;right:0;top:calc(668px*var(--s));bottom:calc(12px*var(--s));display:none;grid-template-columns:1fr 1fr;gap:calc(12px*var(--s));padding:0 calc(12px*var(--s))}
+  #pad button{font-family:inherit;font-size:calc(20px*var(--s));color:#fff;border-radius:calc(22px*var(--s));touch-action:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(10px*var(--s));box-shadow:0 calc(8px*var(--s)) 0 rgba(0,0,0,.5)}
+  #pad .r{background:#5a0f4a;border:calc(5px*var(--s)) solid #ff3fd2}
+  #pad .b{background:#0b2d55;border:calc(5px*var(--s)) solid #4db8ff}
+  #pad .ic{font-size:calc(64px*var(--s));line-height:1}
+  #pad small{font-size:calc(9px*var(--s));opacity:.7;font-family:inherit}
+  #pad button.on{transform:translateY(calc(6px*var(--s)));box-shadow:0 calc(2px*var(--s)) 0 rgba(0,0,0,.5)}
+  #pad .r.on{background:#ff3fd2}#pad .b.on{background:#4db8ff}
   .panel{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:calc(14px*var(--s));padding:calc(20px*var(--s));text-align:center}
   .panel h2{margin:0;font-size:calc(24px*var(--s));color:#ffd400;text-shadow:3px 3px 0 #000}
   .panel p{margin:0;font-size:calc(12px*var(--s));line-height:1.6}
   .big{font-size:calc(36px*var(--s));color:#7cf6ff;text-shadow:4px 4px 0 #000}
-  input{font-family:inherit;font-size:calc(18px*var(--s));padding:calc(12px*var(--s));width:calc(340px*var(--s));text-align:center;background:#000;color:#ffd400;border:calc(3px*var(--s)) solid #ff3fd2;border-radius:calc(8px*var(--s));text-transform:uppercase}
+  input{font-family:inherit;font-size:calc(18px*var(--s));padding:calc(12px*var(--s));width:calc(420px*var(--s));text-align:center;background:#000;color:#ffd400;border:calc(3px*var(--s)) solid #ff3fd2;border-radius:calc(8px*var(--s));text-transform:uppercase}
   .btn{font-family:inherit;font-size:calc(13px*var(--s));padding:calc(12px*var(--s)) calc(18px*var(--s));background:#ff3fd2;color:#000;border:0;border-radius:calc(8px*var(--s));cursor:pointer}
   .btn.alt{background:#25d366}
   .btn.ghost{background:transparent;color:#fff;border:calc(2px*var(--s)) solid #fff}
   .err{color:#ff6b81;font-size:calc(10px*var(--s));min-height:1em}
-  #toplist{list-style:none;margin:0;padding:0;width:calc(560px*var(--s));font-size:calc(12px*var(--s))}
-  #toplist li{display:grid;grid-template-columns:calc(40px*var(--s)) 1fr calc(80px*var(--s)) calc(120px*var(--s));gap:calc(8px*var(--s));padding:calc(6px*var(--s)) calc(10px*var(--s));background:rgba(0,0,0,.55);margin-bottom:calc(4px*var(--s));text-align:left}
+  #toplist{list-style:none;margin:0;padding:0;width:calc(500px*var(--s));font-size:calc(12px*var(--s))}
+  #toplist li{display:grid;grid-template-columns:calc(40px*var(--s)) 1fr calc(130px*var(--s));gap:calc(8px*var(--s));padding:calc(6px*var(--s)) calc(10px*var(--s));background:rgba(0,0,0,.55);margin-bottom:calc(4px*var(--s));text-align:left}
   #toplist li:nth-child(1){color:#ffd400}
   #toplist li.me{background:#ff3fd2;color:#000}
   #toplist .sc{text-align:right}#toplist .who{opacity:.7}
@@ -54,15 +56,11 @@
 </head>
 <body>
 <div id="wrap">
-  <canvas id="cv" width="960" height="540"></canvas>
+  <canvas id="cv" width="540" height="960"></canvas>
   <div id="pad">
-    <button data-s="0">ACCES.<small>1</small></button>
-    <button data-s="1">CAMISA<small>2</small></button>
-    <button data-s="2">SACO<small>3</small></button>
-    <button data-s="3">PANTALÓN<small>4</small></button>
-    <button data-s="4">ZAPATOS<small>5</small></button>
+    <button id="btnBlock" class="b"><span class="ic">🛡</span>BLOQUEAR<small>cuando brilla en rojo</small></button>
+    <button id="btnRay" class="r"><span class="ic">⚡</span>RAYO<small>róbale la ropa</small></button>
   </div>
-  <button id="flex">¡FLEX!</button>
   <button id="toptitle">TOP 10</button>
   <button id="mute">♪ ON</button>
   <form class="panel" id="namebox" autocomplete="off">
@@ -77,13 +75,12 @@
   <div class="panel" id="topbox">
     <h2>TOP 10 · MÁS CRINGE</h2>
     <ol id="toplist"></ol>
-    <div class="row">
+    <div class="row" style="flex-direction:column">
       <button class="btn" id="again">JUGAR OTRA VEZ</button>
       <button class="btn alt" id="share">COMPARTIR EN WHATSAPP</button>
     </div>
   </div>
 </div>
-<div id="rotate"><b>📱</b>Gira tu celular<br>para pelear en horizontal</div>
 <script src="game.js"></script>
 </body>
 </html>
