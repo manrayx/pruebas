@@ -125,7 +125,7 @@ function makeComposite(f, pose) {
     x.clearRect(0, y0, M.fw, y1 - y0);
     x.drawImage(poseImg(p.src, pose), p.look * M.fw, sy0, M.fw, sy1 - sy0, 0, y0, M.fw, y1 - y0);
   });
-  if (f.slots[0] && pose === 'guard') { const m = PM(c, pose); drawAcc(x, f.slots[0].acc, m.hx * M.fw, m.top, 300); }
+  if (f.slots[0] && (pose === 'guard' || pose === 'win1' || pose === 'win2')) { const m = PM(c, pose); drawAcc(x, f.slots[0].acc, m.hx * M.fw, m.top, 300); }
 }
 function comp(f, pose) {
   if (f.dirty) { f.cvOk = {}; f.dirty = false; }
@@ -420,16 +420,16 @@ function drawFighter(f) {
     if (img) { const h = 250, w = img.width * h / img.height; g.save(); g.translate(f.x, GROUND); if (f.side > 0) g.scale(-1, 1); g.rotate(-Math.min(0.25, stateT * 0.4)); g.drawImage(img, -w / 2, -h, w, h); g.restore(); return; }
   }
   if (f.win && state === 'ko') {
-    const cvs = comp(f, 'guard');
     const prog = Math.min(1, Math.max(0, (stateT - 0.3) / 1.0));
+    const laughing = prog > 0.95;
+    const bounce = laughing && Math.floor(T * 5) % 2 === 1;
+    const cvs = comp(f, bounce ? 'win2' : 'win1');
     const cx = f.x + (W / 2 - f.x) * prog;
     const sc = 1 + 0.25 * prog;
     const w = META.fw * FS * sc, h = META.fh * FS * sc, ax = META.fw * AX * FS * sc;
-    const laughing = prog > 0.95;
-    const bobY = laughing ? -Math.abs(Math.sin(T * 10)) * 20 : 0;
-    const wiggle = laughing ? Math.sin(T * 14) * 0.08 : 0;
+    const bobY = bounce ? -14 : 0;
     g.fillStyle = 'rgba(0,0,0,0.35)'; g.beginPath(); g.ellipse(cx, GROUND - 3, 60 * sc, 11, 0, 0, 6.3); g.fill();
-    g.save(); g.translate(cx, GROUND + bobY); g.rotate(wiggle); if (f.side > 0) g.scale(-1, 1);
+    g.save(); g.translate(cx, GROUND + bobY); if (f.side > 0) g.scale(-1, 1);
     g.drawImage(cvs, -ax, -h, w, h);
     g.restore();
     if (laughing) txt('¡JA JA JA!', cx, GROUND - h - 14, 14, '#ffd400', 'center', 4);
@@ -443,7 +443,7 @@ function drawFighter(f) {
   const kick = pose === 'attack' ? 26 : pose === 'hit' ? -22 : pose === 'block' ? -6 : 0;
   const lx = dir * (f.lunge * 12 + kick * Math.min(1, f.squash * 2 + 0.6)) + (f.hurt ? (Math.random() - 0.5) * 8 * f.hurt : 0);
   const breathe = Math.sin(T * 4.5 + (f.side > 0 ? 1.3 : 0));
-  const bob = f.win && state === 'ko' ? -Math.abs(Math.sin(T * 8)) * 18 : 0;
+  const bob = 0;
   const sx = 1 + 0.07 * f.squash + 0.006 * breathe, sy = 1 - 0.06 * f.squash + 0.012 * breathe;
   const charging = f === R && R.st === 'charge' && state === 'fight';
   // aura de carga (detrás)
@@ -699,9 +699,9 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
 
 (async function boot() {
   fit(); requestAnimationFrame(loop);
-  try { META = await (await fetch('assets/meta.json?v=7')).json(); } catch (e) { }
+  try { META = await (await fetch('assets/meta.json?v=9')).json(); } catch (e) { }
   await Promise.all([
-    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=7'))),
+    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=9'))),
     fetch('assets/fx/fx.json?v=7').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=7'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
     loadImg('kunte_win', 'assets/kunte_win.png'), loadImg('espa_win', 'assets/espa_win.png'),
