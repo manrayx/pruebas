@@ -148,6 +148,9 @@ function faceFor(f, pose) {
   if (pose === 'attack') return 'grito';
   if (pose === 'block') return 'serio';
   if (f.st === 'charge') return 'sonrisilla';
+  // Se burla un instante cuando acaba de darle al otro.
+  const foe = f === P ? R : P;
+  if (foe && foe.hurt > 0.15) return 'sonrisa';
   if (f === P && combo >= 3) return 'sonrisilla';
   return 'serio';
 }
@@ -158,7 +161,8 @@ function makeCompositeSilo(f, pose, face) {
   const cvs = f.cv[key] || (f.cv[key] = document.createElement('canvas'));
   cvs.width = M.fw; cvs.height = M.fh;
   const x = cvs.getContext('2d'); x.clearRect(0, 0, M.fw, M.fh);
-  const base = IMG[c + '_' + pose + '_body']; if (base) x.drawImage(base, 0, 0);
+  // Sin cuerpo base debajo: cada pieza (pantalón, saco, cabeza) se reemplaza
+  // entera, así no asoman restos de otro sprite por detrás.
   [2, 1].forEach(slot => {
     const p = f.slots[slot]; if (!p) return;
     const img = siloImg(pose, p.src, slot, p.look); if (img) x.drawImage(img, 0, 0);
@@ -239,7 +243,7 @@ function newFighter(c, side, look) {
   const f = {
     char: c, side, x: side < 0 ? 150 : 390, slots: [{ acc: accs[(look - 1) % accs.length] }, { src: c, look }, { src: c, look }, { src: c, look }],
     closet: [], dirty: true, cvs: null, lunge: 0, hurt: 0, shield: 0, stun: 0, cool: 0, ko: false, win: false,
-    st: 'idle', stT: 0, stDur: 1, feint: false, pose: 'guard', poseT: 0, lastPose: 'guard', squash: 0, ghost: null,
+    st: 'idle', stT: 0, stDur: 1, feint: false, pose: 'guard', poseT: 0, lastPose: 'guard', squash: 0,
     energy: 100, bcool: 0, fly: null,
   };
   for (let i = 0; i < CLOSET; i++) f.closet.push({ look: ((look + i) % 4) + 1, acc: accs[(look + i) % accs.length] });
@@ -411,7 +415,6 @@ function update(dt) {
   [P, R].forEach(f => {
     if (!f) return;
     f.lunge = Math.max(0, f.lunge - dt * 5); f.hurt = Math.max(0, f.hurt - dt * 3); f.poseT -= dt; f.squash = Math.max(0, f.squash - dt * 7);
-    if (f.ghost) { f.ghost.t -= dt; if (f.ghost.t <= 0) f.ghost = null; }
     if (f.fly) { f.fly.t += dt; f.fly.x += f.fly.vx * dt; f.fly.y += f.fly.vy * dt; f.fly.vy += 640 * dt; f.fly.rot += f.fly.vr * dt; }
   });
   shake = Math.max(0, shake - dt); flash = Math.max(0, flash - dt * 2);
@@ -504,7 +507,7 @@ function drawFighter(f) {
     return;
   }
   const pose = curPose(f);
-  if (pose !== f.lastPose) { f.ghost = { pose: f.lastKey, t: 0.12 }; f.squash = 1; f.lastPose = pose; }
+  if (pose !== f.lastPose) { f.squash = 1; f.lastPose = pose; }
   const cvs = comp(f, pose);
   const w = META.fw * FS, h = META.fh * FS, ax = META.fw * AX * FS;
   const dir = f.side < 0 ? 1 : -1;
@@ -519,7 +522,6 @@ function drawFighter(f) {
   // sombra
   g.fillStyle = 'rgba(0,0,0,0.35)'; g.beginPath(); g.ellipse(f.x + lx * 0.5, GROUND - 3, 58, 10, 0, 0, 6.3); g.fill();
   g.save(); g.translate(f.x + lx, GROUND + bob); if (f.side > 0) g.scale(-1, 1); g.scale(sx, sy);
-  if (f.ghost && f.cv && f.cv[f.ghost.pose]) { g.globalAlpha = f.ghost.t / 0.12 * 0.45; g.drawImage(f.cv[f.ghost.pose], -ax - 10, -h, w, h); g.globalAlpha = 1; }
   if (charging) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.3 + 0.2 * Math.sin(T * 40); g.drawImage(cvs, -ax, -h, w, h); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
   g.drawImage(cvs, -ax, -h, w, h);
   if (f.hurt > 0.4) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = (f.hurt - 0.4) * 0.8; g.drawImage(cvs, -ax, -h, w, h); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
@@ -786,9 +788,8 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
   await Promise.all([
     ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=14'))),
     ...['kunte', 'espa'].flatMap(c => Object.keys(SILO_POSES).flatMap(pose => [
-      loadImg(c + '_' + pose + '_body', 'assets/silo/' + c + '_' + pose + '_body.png?v=17'),
-      ...['sonrisa', 'grito', 'serio', 'sonrisilla'].map(fn => loadImg(c + '_' + pose + '_face_' + fn, 'assets/silo/' + c + '_' + pose + '_face_' + fn + '.png?v=17')),
-      ...[1, 2, 3, 4].flatMap(i => [loadImg(c + '_' + pose + '_saco_' + i, 'assets/silo/' + c + '_' + pose + '_saco_' + i + '.png?v=17'), loadImg(c + '_' + pose + '_panta_' + i, 'assets/silo/' + c + '_' + pose + '_panta_' + i + '.png?v=17')])
+      ...['sonrisa', 'grito', 'serio', 'sonrisilla'].map(fn => loadImg(c + '_' + pose + '_face_' + fn, 'assets/silo/' + c + '_' + pose + '_face_' + fn + '.png?v=18')),
+      ...[1, 2, 3, 4].flatMap(i => [loadImg(c + '_' + pose + '_saco_' + i, 'assets/silo/' + c + '_' + pose + '_saco_' + i + '.png?v=18'), loadImg(c + '_' + pose + '_panta_' + i, 'assets/silo/' + c + '_' + pose + '_panta_' + i + '.png?v=18')])
     ])),
     fetch('assets/fx/fx.json?v=7').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=7'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
