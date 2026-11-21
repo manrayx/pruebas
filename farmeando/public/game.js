@@ -154,27 +154,34 @@ function faceFor(f, pose) {
   if (f === P && combo >= 3) return 'sonrisilla';
   return 'serio';
 }
-function makeCompositeSilo(f, pose, face) {
+// Golpeado y celebración no tienen arte propio: usan las piezas de guardia
+// (siempre las prendas reales que lleva puestas) con la cara que toca.
+const SILO_ALIAS = { hit: ['guard', 'grito'], win1: ['guard', 'sonrisa'], win2: ['guard', 'sonrisilla'] };
+function makeCompositeSilo(f, pose, face, key) {
   const c = f.char, M = META;
   f.cv = f.cv || {};
-  const key = pose + ':' + face;
+  key = key || pose + ':' + face;
   const cvs = f.cv[key] || (f.cv[key] = document.createElement('canvas'));
   cvs.width = M.fw; cvs.height = M.fh;
   const x = cvs.getContext('2d'); x.clearRect(0, 0, M.fw, M.fh);
-  // Sin cuerpo base debajo: cada pieza (pantalón, saco, cabeza) se reemplaza
-  // entera, así no asoman restos de otro sprite por detrás.
-  [2, 1].forEach(slot => {
-    const p = f.slots[slot]; if (!p) return;
-    const img = siloImg(pose, p.src, slot, p.look); if (img) x.drawImage(img, 0, 0);
-  });
-  // La cabeza va siempre al frente de todo: así tapa el "muñón" donde el
-  // cuello de la prenda no calza exacto con la foto del cuerpo, en vez de
-  // que el cuello quede por encima tapando parte de la cara.
+  // Cada prenda se reemplaza entera: si le robaron una, va la pieza "sin
+  // ropa" de ese personaje (torso desnudo / short) en su lugar. Nunca hay un
+  // cuerpo de fondo, así que no asoman restos de otro sprite.
+  const piece = slot => {
+    const p = f.slots[slot];
+    return (p && siloImg(pose, p.src, slot, p.look)) || IMG[c + '_' + pose + '_' + (slot === 1 ? 'saco' : 'panta') + '_0'];
+  };
+  const saco = piece(1), panta = piece(2);
+  // Torso desnudo va debajo del pantalón (la pretina lo tapa); un saco va encima.
+  const order = f.slots[1] ? [panta, saco] : [saco, panta];
+  order.forEach(img => { if (img) x.drawImage(img, 0, 0); });
+  // La cabeza va siempre al frente de todo, sobre el cuello de la prenda.
   const head = IMG[c + '_' + pose + '_face_' + face]; if (head) x.drawImage(head, 0, 0);
   return key;
 }
 function makeComposite(f, pose, face) {
   if (SILO_POSES[pose]) return makeCompositeSilo(f, pose, face);
+  if (SILO_ALIAS[pose]) return makeCompositeSilo(f, SILO_ALIAS[pose][0], SILO_ALIAS[pose][1], pose);
   const c = f.char, M = META;
   f.cv = f.cv || {};
   const cvs = f.cv[pose] || (f.cv[pose] = document.createElement('canvas'));
@@ -521,7 +528,7 @@ function drawFighter(f) {
   if (charging) drawSpr('fire', f.x, GROUND - h * 0.42, 1.25, T, { loop: true, alpha: 0.85, hue: 0 });
   // sombra
   g.fillStyle = 'rgba(0,0,0,0.35)'; g.beginPath(); g.ellipse(f.x + lx * 0.5, GROUND - 3, 58, 10, 0, 0, 6.3); g.fill();
-  g.save(); g.translate(f.x + lx, GROUND + bob); if (f.side > 0) g.scale(-1, 1); g.scale(sx, sy);
+  g.save(); g.translate(f.x + lx, GROUND + bob); if (f.side > 0) g.scale(-1, 1); if (pose === 'hit') g.rotate(-0.16); g.scale(sx, sy);
   if (charging) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.3 + 0.2 * Math.sin(T * 40); g.drawImage(cvs, -ax, -h, w, h); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
   g.drawImage(cvs, -ax, -h, w, h);
   if (f.hurt > 0.4) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = (f.hurt - 0.4) * 0.8; g.drawImage(cvs, -ax, -h, w, h); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
@@ -788,8 +795,8 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
   await Promise.all([
     ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=14'))),
     ...['kunte', 'espa'].flatMap(c => Object.keys(SILO_POSES).flatMap(pose => [
-      ...['sonrisa', 'grito', 'serio', 'sonrisilla'].map(fn => loadImg(c + '_' + pose + '_face_' + fn, 'assets/silo/' + c + '_' + pose + '_face_' + fn + '.png?v=18')),
-      ...[1, 2, 3, 4].flatMap(i => [loadImg(c + '_' + pose + '_saco_' + i, 'assets/silo/' + c + '_' + pose + '_saco_' + i + '.png?v=18'), loadImg(c + '_' + pose + '_panta_' + i, 'assets/silo/' + c + '_' + pose + '_panta_' + i + '.png?v=18')])
+      ...['sonrisa', 'grito', 'serio', 'sonrisilla'].map(fn => loadImg(c + '_' + pose + '_face_' + fn, 'assets/silo/' + c + '_' + pose + '_face_' + fn + '.png?v=19')),
+      ...[0, 1, 2, 3, 4].flatMap(i => [loadImg(c + '_' + pose + '_saco_' + i, 'assets/silo/' + c + '_' + pose + '_saco_' + i + '.png?v=19'), loadImg(c + '_' + pose + '_panta_' + i, 'assets/silo/' + c + '_' + pose + '_panta_' + i + '.png?v=19')])
     ])),
     fetch('assets/fx/fx.json?v=7').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=7'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
