@@ -30,6 +30,12 @@
   #pad small{font-size:calc(9px*var(--s));opacity:.7;font-family:inherit}
   #pad button.on{transform:translateY(calc(6px*var(--s)));box-shadow:0 calc(2px*var(--s)) 0 rgba(0,0,0,.5)}
   #pad .r.on{background:#ff3fd2}#pad .b.on{background:#4db8ff}
+  #pad .meter{width:72%;height:calc(9px*var(--s));background:rgba(0,0,0,.4);border-radius:calc(5px*var(--s));overflow:hidden;border:calc(1px*var(--s)) solid rgba(255,255,255,.3)}
+  #pad .meter i{display:block;height:100%;width:100%;background:#fff;border-radius:calc(5px*var(--s))}
+  #pad .r .meter i{background:#ff3fd2}
+  #pad .b .meter i{background:#4db8ff}
+  #pad button.locked .meter i{background:#ff4d6d}
+  #pad button.low .meter i{background:#555}
   .panel{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:calc(14px*var(--s));padding:calc(20px*var(--s));text-align:center}
   .panel h2{margin:0;font-size:calc(24px*var(--s));color:#ffd400;text-shadow:3px 3px 0 #000}
   .panel p{margin:0;font-size:calc(12px*var(--s));line-height:1.6}
@@ -68,8 +74,8 @@
 <div id="wrap">
   <canvas id="cv" width="540" height="960"></canvas>
   <div id="pad">
-    <button id="btnBlock" class="b"><span class="ic">🛡</span>BLOQUEAR<small>cuando brilla en rojo</small></button>
-    <button id="btnRay" class="r"><span class="ic">⚡</span>RAYO<small>róbale la ropa</small></button>
+    <button id="btnBlock" class="b"><span class="ic">🛡</span>BLOQUEAR<small>aguanta 2 segundos</small><div class="meter"><i id="blockBar"></i></div></button>
+    <button id="btnRay" class="r"><span class="ic">⚡</span>RAYO<small>róbale la ropa</small><div class="meter"><i id="rayBar"></i></div></button>
   </div>
   <button id="toptitle">TOP 10</button>
   <button id="mute">♪ ON</button>
@@ -104,6 +110,6 @@
     </div>
   </div>
 </div>
-<script src="game.js?v=5"></script>
+<script src="game.js?v=6"></script>
 </body>
 </html>

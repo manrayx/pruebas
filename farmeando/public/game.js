@@ -156,7 +156,7 @@ function makeComposite(f, pose) {
     x.clearRect(0, y0, M.fw, y1 - y0);
     x.drawImage(poseImg(p.src, pose), p.look * M.fw, sy0, M.fw, sy1 - sy0, 0, y0, M.fw, y1 - y0);
   });
-  if (f.slots[0]) { const m = PM(c, pose); drawAcc(x, f.slots[0].acc, m.hx * M.fw, m.top, 300); }
+  if (f.slots[0] && pose === 'guard') { const m = PM(c, pose); drawAcc(x, f.slots[0].acc, m.hx * M.fw, m.top, 300); }
 }
 function comp(f, pose) {
   if (f.dirty) { f.cvOk = {}; f.dirty = false; }
@@ -204,6 +204,7 @@ function newFighter(c, side, look) {
     char: c, side, x: side < 0 ? 150 : 390, slots: [{ acc: accs[(look - 1) % accs.length] }, { src: c, look }, { src: c, look }, { src: c, look }],
     closet: [], dirty: true, cvs: null, lunge: 0, hurt: 0, shield: 0, stun: 0, cool: 0, ko: false, win: false,
     st: 'idle', stT: 0, stDur: 1, feint: false, pose: 'guard', poseT: 0, lastPose: 'guard', squash: 0, ghost: null,
+    energy: 100, bcool: 0, fly: null,
   };
   for (let i = 0; i < CLOSET; i++) f.closet.push({ look: ((look + i) % 4) + 1, acc: accs[(look + i) % accs.length] });
   return f;
@@ -264,10 +265,13 @@ function steal(att, vic) {
 }
 
 // ---------- Controles ----------
+const RAY_COST = 30;
 function rayo() {
   audioInit();
   if (state !== 'fight' || !P || P.stun > T || P.cool > T) return;
-  P.cool = T + 0.2; P.lunge = 1; SFX.zap();
+  if (P.energy < RAY_COST) { SFX.stun(); say('¡SIN ENERGÍA!', '#777'); return; }
+  P.energy -= RAY_COST;
+  P.cool = T + 0.22; P.lunge = 1; SFX.zap();
   const rs = R.st;
   if (rs === 'guard') {
     ray(P, R, '#9aa', true, () => {
@@ -288,10 +292,11 @@ function rayo() {
   ray(P, R, CHARS[P.char].aura, false, () => { steal(P, R); SFX.hit(); });
   if (combo === 8) { say('¡RACHA HUACHAFA!', '#ff3fd2', true); announce('bonus'); SFX.combo(); spr('lines', W / 2, SCENE_Y + SCENE_H / 2, 2.4); flash = 0.8; flashCol = CHARS[P.char].aura; setTimeout(() => { if (state === 'fight') steal(P, R); }, 250); }
 }
+const BLOCK_DUR = 2;
 function bloquear() {
   audioInit();
-  if (state !== 'fight' || !P || P.stun > T || P.bcool > T) return;
-  P.shield = T + 0.4; P.bcool = T + 0.75;
+  if (state !== 'fight' || !P || P.stun > T || P.shield > T || P.bcool > T) return;
+  P.shield = T + BLOCK_DUR; P.shieldFrom = T; P.bcool = T + BLOCK_DUR + 0.3;
 }
 function ray(a, b, col, missed, done) {
   setPose(a, 'attack', 0.32);
@@ -348,27 +353,40 @@ function hazards(dt) {
     }
     if (hz.water > 0) hz.water -= dt * 1.5;
     if (hz.glitch > 0) hz.glitch -= dt;
-    if (!hz.crowd) hz.crowd = [];
-    if (Math.random() < dt * 0.7) hz.crowd.push({ x: Math.random() < 0.5 ? -50 : W + 50, dir: 0, h: 60 + Math.random() * 40, sp: 120 + Math.random() * 100 });
-    hz.crowd.forEach(c => { if (!c.dir) c.dir = c.x < 0 ? 1 : -1; c.x += c.dir * c.sp * dt; });
-    hz.crowd = hz.crowd.filter(c => c.x > -70 && c.x < W + 70);
     if (Math.random() < dt * 0.5) fx.push({ k: 'rosary', x: Math.random() < 0.5 ? -30 : W + 30, y: SCENE_Y + 60 + Math.random() * 120, t: 0, d: 2.2 });
   }
 }
 
 // ---------- Bucle ----------
+let slowmo = 0;
 function update(dt) {
+  const realDt = dt;
+  if (slowmo > 0) { dt *= 0.22; slowmo = Math.max(0, slowmo - realDt); }
   T += dt; stateT += dt;
   if (state === 'intro' && stateT > 2.3) { setState('fight'); R.st = 'idle'; R.stT = 0; R.stDur = 1.0; }
   if (state === 'fight') {
     timeLeft = Math.max(0, timeLeft - dt);
     rivalUpdate(dt); hazards(dt);
+    P.energy = Math.min(100, P.energy + dt * 16);
     const pl = P.slots.some(Boolean) || P.closet.length, rl = R.slots.some(Boolean) || R.closet.length;
     if (!pl || !rl || timeLeft <= 0) endRound();
   }
   if (state === 'ko' && stateT > 3.4) afterKO();
-  [P, R].forEach(f => { if (!f) return; f.lunge = Math.max(0, f.lunge - dt * 5); f.hurt = Math.max(0, f.hurt - dt * 3); f.poseT -= dt; f.squash = Math.max(0, f.squash - dt * 7); if (f.ghost) { f.ghost.t -= dt; if (f.ghost.t <= 0) f.ghost = null; } });
+  [P, R].forEach(f => {
+    if (!f) return;
+    f.lunge = Math.max(0, f.lunge - dt * 5); f.hurt = Math.max(0, f.hurt - dt * 3); f.poseT -= dt; f.squash = Math.max(0, f.squash - dt * 7);
+    if (f.ghost) { f.ghost.t -= dt; if (f.ghost.t <= 0) f.ghost = null; }
+    if (f.fly) { f.fly.t += dt; f.fly.x += f.fly.vx * dt; f.fly.y += f.fly.vy * dt; f.fly.vy += 640 * dt; f.fly.rot += f.fly.vr * dt; }
+  });
   shake = Math.max(0, shake - dt); flash = Math.max(0, flash - dt * 2);
+  if (P && (state === 'fight' || state === 'intro')) {
+    const rb = $('rayBar'), bb = $('blockBar');
+    if (rb) rb.style.width = Math.max(0, Math.min(100, P.energy)) + '%';
+    $('btnRay') && $('btnRay').classList.toggle('low', P.energy < RAY_COST);
+    const blocking = P.shield > T;
+    if (bb) bb.style.width = blocking ? Math.max(0, Math.min(100, (P.shield - T) / BLOCK_DUR * 100)) + '%' : (P.bcool > T ? 0 : 100) + '%';
+    $('btnBlock') && $('btnBlock').classList.toggle('locked', blocking);
+  }
   const doneCbs = [];
   fx = fx.filter(e => { e.t += dt; if (e.t >= e.d) { if (e.done) doneCbs.push(e.done); return false; } return true; });
   doneCbs.forEach(cb => cb());
@@ -382,6 +400,9 @@ function endRound() {
   fx = fx.filter(e => e.k !== 'fly');
   loser.slots.forEach((p, i) => { if (p) fx.push({ k: 'drop', img: pieceImage(p, i), x: loser.x, y: slotY(loser, i), t: 0, d: 1, up: 1 }); });
   loser.slots = [null, null, null, null]; loser.closet = []; loser.dirty = true; loser.ko = true; winner.win = true;
+  const dir = loser.side < 0 ? -1 : 1;
+  loser.fly = { t: 0, x: 0, y: 0, rot: 0, vx: dir * 300, vy: -520, vr: dir * 3.2 };
+  slowmo = 1.3;
   SFX.ko(); flash = 1; flashCol = '#fff'; shake = 0.6;
   spr('boom', loser.x, chestPos(loser).y, 1.8); spr('ko', loser.x, GROUND - 30, 1.6); spr('lines', W / 2, SCENE_Y + SCENE_H / 2, 2.4);
   if (won) score += lives(P) * 150 + 1000;
@@ -414,6 +435,18 @@ function drawBG(key, dim = 0, full = false) {
 function drawFighter(f) {
   if (!f) return;
   if (f.ko) {
+    if (f.fly) {
+      const t = f.fly.t;
+      if (t < 1.7) {
+        const cvs = comp(f, 'hit');
+        const w = META.fw * FS, h = META.fh * FS, ax = META.fw * AX * FS;
+        const alpha = t > 1.2 ? Math.max(0, 1 - (t - 1.2) / 0.5) : 1;
+        g.save(); g.globalAlpha = alpha; g.translate(f.x + f.fly.x, GROUND + f.fly.y); g.rotate(f.fly.rot); if (f.side > 0) g.scale(-1, 1);
+        g.drawImage(cvs, -ax, -h, w, h);
+        g.restore();
+      }
+      return;
+    }
     const img = IMG[f.char + '_ko'];
     if (img) { const h = 250, w = img.width * h / img.height; g.save(); g.translate(f.x, GROUND); if (f.side > 0) g.scale(-1, 1); g.rotate(-Math.min(0.25, stateT * 0.4)); g.drawImage(img, -w / 2, -h, w, h); g.restore(); return; }
   }
@@ -492,7 +525,6 @@ function render() {
   if (state === 'select') { drawSelect(); g.restore(); return; }
   if (state === 'name' || state === 'top') { drawBG('misa', 0.8, true); g.restore(); return; }
   drawBG(STAGES[stageIdx].key);
-  if (hz.crowd) hz.crowd.forEach(c => { g.fillStyle = 'rgba(20,10,30,0.85)'; g.fillRect(c.x - 16, GROUND + 30 - c.h, 32, c.h); g.beginPath(); g.arc(c.x, GROUND + 24 - c.h, 12, 0, 6.3); g.fill(); });
   drawFighter(P); drawFighter(R);
   fx.forEach(e => {
     if (e.t < 0) return;
@@ -682,10 +714,10 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
 
 (async function boot() {
   fit(); requestAnimationFrame(loop);
-  try { META = await (await fetch('assets/meta.json?v=5')).json(); } catch (e) { }
+  try { META = await (await fetch('assets/meta.json?v=6')).json(); } catch (e) { }
   await Promise.all([
-    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=5'))),
-    fetch('assets/fx/fx.json?v=5').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=5'))); }).catch(() => { }),
+    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=6'))),
+    fetch('assets/fx/fx.json?v=6').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=6'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
     loadImg('kunte_win', 'assets/kunte_win.png'), loadImg('espa_win', 'assets/espa_win.png'),
     ...STAGES.map(s => loadImg('bg_' + s.key, 'assets/bg_' + s.key + '.jpg')),
