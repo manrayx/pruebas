@@ -100,6 +100,8 @@ function playMusic(k) {
 }
 function announce(k) { if (!musicOn || !userStarted) return; const a = ANN[k]; if (!a) return; try { a.currentTime = 0; a.play().catch(() => { }); } catch (_) { } }
 const RANK_SND = new Audio('assets/audio/peruano.mp3'); RANK_SND.preload = 'none'; RANK_SND.volume = 0.7;
+// Sonido de derrota: cuando el jugador pierde la partida.
+const LOSE_SND = new Audio('assets/audio/pierde.mp3'); LOSE_SND.preload = 'auto'; LOSE_SND.volume = 0.9;
 
 // ---------- Easter egg: Moya ----------
 const MOYA_SND = [1, 2, 3, 4].map(i => { const a = new Audio('assets/audio/moya_' + i + '.mp3'); a.preload = 'none'; a.volume = 0.85; return a; });
@@ -453,7 +455,11 @@ function endRound() {
   SFX.ko(); flash = 1; flashCol = '#fff'; shake = 0.6;
   spr('boom', loser.x, chestPos(loser).y, 1.8); spr('ko', loser.x, GROUND - 30, 1.6); spr('lines', W / 2, SCENE_Y + SCENE_H / 2, 2.4);
   if (won) score += lives(P) * 150 + 1000;
-  setTimeout(() => { if (state === 'ko') SFX[won ? 'win' : 'lose'](); }, 550);
+  setTimeout(() => {
+    if (state !== 'ko') return;
+    if (won) { SFX.win(); return; }
+    if (musicOn && userStarted) { try { LOSE_SND.currentTime = 0; LOSE_SND.play().catch(() => SFX.lose()); } catch (_) { SFX.lose(); } } else SFX.lose();
+  }, 550);
   if (won && stageIdx === STAGES.length - 1) setTimeout(() => { if (state === 'ko') SFX.final(); }, 1300);
   setState('ko');
 }
