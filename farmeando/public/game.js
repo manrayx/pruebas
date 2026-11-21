@@ -558,8 +558,8 @@ function render() {
   drawHUD();
   msgs.forEach((m, i) => { const y = SCENE_Y + 110 + i * 36 - m.t * 30; g.globalAlpha = Math.min(1, 2 - m.t * 1.8); txt(m.text, W / 2, y, m.big ? 24 : 19, m.col); g.globalAlpha = 1; });
   if (state === 'intro') {
-    g.fillStyle = 'rgba(0,0,0,0.55)'; g.fillRect(0, SCENE_Y + 70, W, 170);
-    if (stateT < 1.6) { txt('ESCENARIO ' + (stageIdx + 1) + ' DE 4', W / 2, SCENE_Y + 110, 13, '#7cf6ff'); txt(STAGES[stageIdx].name, W / 2, SCENE_Y + 165, STAGES[stageIdx].name.length > 14 ? 19 : 34, '#ffd400'); txt(STAGES[stageIdx].sub, W / 2, SCENE_Y + 210, 11, '#fff'); }
+    g.fillStyle = 'rgba(0,0,0,0.72)'; g.fillRect(0, SCENE_Y + 70, W, 170);
+    if (stateT < 1.6) { txt('ESCENARIO ' + (stageIdx + 1) + ' DE 4', W / 2, SCENE_Y + 110, 13, '#7cf6ff'); txt(STAGES[stageIdx].name, W / 2, SCENE_Y + 165, STAGES[stageIdx].name.length > 14 ? 19 : 34, '#ffd400', 'center', 8); txt(STAGES[stageIdx].sub, W / 2, SCENE_Y + 210, 11, '#fff'); }
     else txt('¡A FARMEAR!', W / 2, SCENE_Y + 170, 34, '#ff3fd2');
   }
   if (state === 'ko') {
@@ -699,13 +699,13 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
 
 (async function boot() {
   fit(); requestAnimationFrame(loop);
-  try { META = await (await fetch('assets/meta.json?v=10')).json(); } catch (e) { }
+  try { META = await (await fetch('assets/meta.json?v=11')).json(); } catch (e) { }
   await Promise.all([
-    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=10'))),
+    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=11'))),
     fetch('assets/fx/fx.json?v=7').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=7'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
     loadImg('kunte_win', 'assets/kunte_win.png'), loadImg('espa_win', 'assets/espa_win.png'),
-    loadImg('bg_lima', 'assets/bg_lima.jpg?v=10'),
+    loadImg('bg_lima', 'assets/bg_lima.jpg?v=11'),
     ...STAGES.map(s => loadImg('bg_' + s.key, 'assets/bg_' + s.key + '.jpg')),
     document.fonts ? document.fonts.load('20px "Press Start 2P"') : null,
   ]);
