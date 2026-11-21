@@ -112,7 +112,26 @@ const AX = 0.42; // ancla horizontal (centro de piernas) dentro del cuadro
 function PM(c, pose) { return (META[c] && META[c][pose]) || META[c].guard; }
 function bandPx(c, pose, slot) { const m = PM(c, pose); return slot === 1 ? m.torso : slot === 2 ? m.legs : [m.feetY, META.fh]; }
 function poseImg(c, pose) { return IMG[c + '_' + pose] || IMG[c + '_guard']; }
+// Guardia: en vez de cortar franjas horizontales de una foto ya compuesta
+// (que no calzan entre personajes ni entre looks), cada prenda es su propio
+// recorte con alfa (silueta real) sobre el mismo cuerpo base compartido. Así
+// una prenda robada nunca deja un corte ni piel de más: solo cubre donde la
+// prenda misma cubre.
+function siloImg(src, slot, look) { return IMG[src + '_silo_' + (slot === 1 ? 'saco' : 'panta') + '_' + look]; }
+function makeCompositeSilo(f) {
+  const c = f.char, M = META;
+  f.cv = f.cv || {};
+  const cvs = f.cv.guard || (f.cv.guard = document.createElement('canvas'));
+  cvs.width = M.fw; cvs.height = M.fh;
+  const x = cvs.getContext('2d'); x.clearRect(0, 0, M.fw, M.fh);
+  const base = IMG[c + '_silo_base']; if (base) x.drawImage(base, 0, 0);
+  [2, 1].forEach(slot => {
+    const p = f.slots[slot]; if (!p) return;
+    const img = siloImg(p.src, slot, p.look); if (img) x.drawImage(img, 0, 0);
+  });
+}
 function makeComposite(f, pose) {
+  if (pose === 'guard') return makeCompositeSilo(f);
   const c = f.char, M = META;
   f.cv = f.cv || {};
   const cvs = f.cv[pose] || (f.cv[pose] = document.createElement('canvas'));
@@ -140,9 +159,14 @@ function pieceImage(p, slot) {
   const M = META, c = document.createElement('canvas');
   if (slot === 0) { c.width = 90; c.height = 70; drawAcc(c.getContext('2d'), p.acc, 45, 30, 300); }
   else {
-    const [y0, y1] = bandPx(p.src, 'guard', slot);
-    c.width = M.fw; c.height = Math.round(y1 - y0);
-    c.getContext('2d').drawImage(poseImg(p.src, 'guard'), p.look * M.fw, y0, M.fw, y1 - y0, 0, 0, c.width, c.height);
+    // El pantalón ya trae el calzado pegado (misma pieza de arte), así que
+    // el ícono de "zapatos" (slot 3) reusa la silueta del pantalón. Se recorta
+    // a la franja donde vive cada prenda (igual en todos los looks, mismo
+    // cuerpo base) solo para que el ícono no quede con medio cuadro vacío.
+    const img = siloImg(p.src, slot === 1 ? 1 : 2, p.look);
+    const [cy0, cy1] = slot === 1 ? [110, 275] : [195, 380];
+    c.width = M.fw; c.height = cy1 - cy0;
+    if (img) c.getContext('2d').drawImage(img, 0, cy0, M.fw, cy1 - cy0, 0, 0, M.fw, cy1 - cy0);
   }
   pieceCache.set(key, c); return c;
 }
@@ -556,7 +580,15 @@ function render() {
   if (state === 'fight' && P.stun > T) { g.fillStyle = 'rgba(90,90,100,0.35)'; g.fillRect(0, SCENE_Y, W, SCENE_H); }
   rivalLabel();
   drawHUD();
-  msgs.forEach((m, i) => { const y = SCENE_Y + 110 + i * 36 - m.t * 30; g.globalAlpha = Math.min(1, 2 - m.t * 1.8); txt(m.text, W / 2, y, m.big ? 24 : 19, m.col); g.globalAlpha = 1; });
+  msgs.forEach((m, i) => {
+    const y = SCENE_Y + 110 + i * 36 - m.t * 30, size = m.big ? 24 : 19;
+    g.globalAlpha = Math.min(1, 2 - m.t * 1.8);
+    g.font = size + 'px "Press Start 2P", monospace';
+    const tw = g.measureText(m.text).width;
+    g.fillStyle = 'rgba(0,0,0,0.55)'; g.fillRect(W / 2 - tw / 2 - 10, y - size, tw + 20, size + 10);
+    txt(m.text, W / 2, y, size, m.col, 'center', 7);
+    g.globalAlpha = 1;
+  });
   if (state === 'intro') {
     g.fillStyle = 'rgba(0,0,0,0.72)'; g.fillRect(0, SCENE_Y + 70, W, 170);
     if (stateT < 1.6) { txt('ESCENARIO ' + (stageIdx + 1) + ' DE 4', W / 2, SCENE_Y + 110, 13, '#7cf6ff'); txt(STAGES[stageIdx].name, W / 2, SCENE_Y + 165, STAGES[stageIdx].name.length > 14 ? 19 : 34, '#ffd400', 'center', 8); txt(STAGES[stageIdx].sub, W / 2, SCENE_Y + 210, 11, '#fff'); }
@@ -699,13 +731,15 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
 
 (async function boot() {
   fit(); requestAnimationFrame(loop);
-  try { META = await (await fetch('assets/meta.json?v=13')).json(); } catch (e) { }
+  try { META = await (await fetch('assets/meta.json?v=14')).json(); } catch (e) { }
   await Promise.all([
-    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=13'))),
+    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=14'))),
+    ...['kunte', 'espa'].flatMap(c => [loadImg(c + '_silo_base', 'assets/silo/' + c + '_base.png?v=14'),
+      ...[1, 2, 3, 4].flatMap(i => [loadImg(c + '_silo_saco_' + i, 'assets/silo/' + c + '_saco_' + i + '.png?v=14'), loadImg(c + '_silo_panta_' + i, 'assets/silo/' + c + '_panta_' + i + '.png?v=14')])]),
     fetch('assets/fx/fx.json?v=7').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=7'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
     loadImg('kunte_win', 'assets/kunte_win.png'), loadImg('espa_win', 'assets/espa_win.png'),
-    loadImg('bg_lima', 'assets/bg_lima.jpg?v=13'),
+    loadImg('bg_lima', 'assets/bg_lima.jpg?v=14'),
     ...STAGES.map(s => loadImg('bg_' + s.key, 'assets/bg_' + s.key + '.jpg')),
     document.fonts ? document.fonts.load('20px "Press Start 2P"') : null,
   ]);
