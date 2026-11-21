@@ -682,10 +682,10 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
 
 (async function boot() {
   fit(); requestAnimationFrame(loop);
-  try { META = await (await fetch('assets/meta.json?v=4')).json(); } catch (e) { }
+  try { META = await (await fetch('assets/meta.json?v=5')).json(); } catch (e) { }
   await Promise.all([
-    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=4'))),
-    fetch('assets/fx/fx.json?v=4').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=4'))); }).catch(() => { }),
+    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=5'))),
+    fetch('assets/fx/fx.json?v=5').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=5'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
     loadImg('kunte_win', 'assets/kunte_win.png'), loadImg('espa_win', 'assets/espa_win.png'),
     ...STAGES.map(s => loadImg('bg_' + s.key, 'assets/bg_' + s.key + '.jpg')),
