@@ -349,8 +349,10 @@ function rayo() {
   else if (rs === 'stun') pts = 150;
   score += pts * mult;
   if (combo > 1 && combo % 3 === 0) say('COMBO x' + mult, '#ffd400');
+  // Easter egg: Moya aparece en la Misa desde una racha de 3 golpes (una vez por partida).
+  if (combo >= 3) triggerMoya();
   ray(P, R, CHARS[P.char].aura, false, () => { steal(P, R); SFX.hit(); });
-  if (combo === 8) { say('¡RACHA HUACHAFA!', '#ff3fd2', true); announce('bonus'); SFX.combo(); spr('lines', W / 2, SCENE_Y + SCENE_H / 2, 2.4); flash = 0.8; flashCol = CHARS[P.char].aura; triggerMoya(); setTimeout(() => { if (state === 'fight') steal(P, R); }, 250); }
+  if (combo === 8) { say('¡RACHA HUACHAFA!', '#ff3fd2', true); announce('bonus'); SFX.combo(); spr('lines', W / 2, SCENE_Y + SCENE_H / 2, 2.4); flash = 0.8; flashCol = CHARS[P.char].aura; setTimeout(() => { if (state === 'fight') steal(P, R); }, 250); }
 }
 const BLOCK_DUR = 2;
 function bloquear() {
