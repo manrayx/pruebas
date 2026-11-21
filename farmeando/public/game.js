@@ -102,6 +102,14 @@ function announce(k) { if (!musicOn || !userStarted) return; const a = ANN[k]; i
 const RANK_SND = new Audio('assets/audio/peruano.mp3'); RANK_SND.preload = 'none'; RANK_SND.volume = 0.7;
 // Sonido de derrota: cuando el jugador pierde la partida.
 const LOSE_SND = new Audio('assets/audio/pierde.mp3'); LOSE_SND.preload = 'auto'; LOSE_SND.volume = 0.9;
+// Aviso: en el primer round, cuando al jugador le queda un solo outfit en el perchero.
+const LAST_SND = new Audio('assets/audio/ultimo.mp3'); LAST_SND.preload = 'auto'; LAST_SND.volume = 0.9;
+let lastOutfitWarned = false;
+function checkLastOutfit(f) {
+  if (f !== P || stageIdx !== 0 || lastOutfitWarned || f.closet.length !== 1) return;
+  lastOutfitWarned = true;
+  if (musicOn && userStarted) { try { LAST_SND.currentTime = 0; LAST_SND.play().catch(() => { }); } catch (_) { } }
+}
 
 // ---------- Easter egg: Moya ----------
 const MOYA_SND = [1, 2, 3, 4].map(i => { const a = new Audio('assets/audio/moya_' + i + '.mp3'); a.preload = 'none'; a.volume = 0.85; return a; });
@@ -260,7 +268,7 @@ function newFighter(c, side, look) {
 }
 function lives(f) { return f.closet.length + f.slots.filter(Boolean).length; }
 function startRun() { score = 0; stageIdx = 0; stolenTotal = 0; moya.shown = false; moya.active = false; runStart = performance.now(); startStage(); }
-function startStage() {
+function startStage() { lastOutfitWarned = false;
   P = newFighter(pick, -1, stageIdx + 1); R = newFighter(other(pick), 1, ((stageIdx + 2) % 4) + 1);
   fx = []; parts = []; msgs = []; combo = 0; shake = 0; flash = 0; stolenStage = 0;
   timeLeft = ROUND_TIME; hz = { t: 0, next: 7 + Math.random() * 3 };
@@ -306,6 +314,7 @@ function steal(att, vic) {
   } });
   if (vic.closet.length) {
     const h = vic.closet.shift();
+    checkLastOutfit(vic);
     const np = slot === 0 ? { acc: h.acc } : { src: vic.char, look: h.look };
     const cx = vic.side < 0 ? 70 : W - 70;
     fx.push({ k: 'fly', img: pieceImage(np, slot), x0: cx, y0: 150, x1: vic.x, y1: slotY(vic, slot), t: -0.15, d: 0.3, flip: vic.side > 0, small: true, done: () => { vic.slots[slot] = np; vic.dirty = true; SFX.closet(); } });
@@ -397,7 +406,7 @@ function hazards(dt) {
       hz.next = hz.t + 8 + Math.random() * 4;
       if (Math.random() < 0.55) {
         hz.water = 1; SFX.water(); say('¡BALDAZO DE AGUA!', '#7cf6ff');
-        [P, R].forEach(f => { if (f.slots[1]) { const p = f.slots[1]; f.slots[1] = null; f.dirty = true; fx.push({ k: 'drop', img: pieceImage(p, 1), x: f.x, y: slotY(f, 1), t: 0, d: 0.8, flip: f.side > 0 }); if (f.closet.length) { const h = f.closet.shift(); setTimeout(() => { if (!f.slots[1]) { f.slots[1] = { src: f.char, look: h.look }; f.dirty = true; } }, 450); } } });
+        [P, R].forEach(f => { if (f.slots[1]) { const p = f.slots[1]; f.slots[1] = null; f.dirty = true; fx.push({ k: 'drop', img: pieceImage(p, 1), x: f.x, y: slotY(f, 1), t: 0, d: 0.8, flip: f.side > 0 }); if (f.closet.length) { const h = f.closet.shift(); checkLastOutfit(f); setTimeout(() => { if (!f.slots[1]) { f.slots[1] = { src: f.char, look: h.look }; f.dirty = true; } }, 450); } } });
       } else { hz.glitch = 2.5; say('¡SE CAYERON LAS PANTALLAS!', '#ff4d6d'); SFX.glitch(); }
     }
     if (hz.water > 0) hz.water -= dt * 1.5;
