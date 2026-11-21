@@ -571,7 +571,7 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
 
 (async function boot() {
   fit(); requestAnimationFrame(loop);
-  try { META = await (await fetch('assets/meta.json')).json(); } catch (e) { }
+  try { META = await (await fetch('assets/meta.json?v=2')).json(); } catch (e) { }
   await Promise.all([
     loadImg('kunte', 'assets/kunte.png'), loadImg('espa', 'assets/espa.png'),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),

@@ -72,7 +72,7 @@ const server = http.createServer(async (req, res) => {
     fs.readFile(file, (err, data) => {
       if (err) { res.writeHead(404); return res.end('No encontrado'); }
       const ext = path.extname(file);
-      res.writeHead(200, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=86400' });
+      res.writeHead(200, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': (ext === '.html' || ext === '.js' || ext === '.json') ? 'no-cache' : 'public, max-age=86400' });
       res.end(data);
     });
   } catch (e) {
