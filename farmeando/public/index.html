@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Farmeando Cringe · Combate de huachafería</title>
+<meta name="description" content="Caos Espá vs. Vaguez Kunte: róbale la pinta a tu rival con rayos de aura. Cuatro escenarios, un top ten y cero vergüenza.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Farmeando Cringe · Combate de huachafería">
+<meta property="og:description" content="Caos Espá vs. Vaguez Kunte: róbale la pinta a tu rival con rayos de aura. ¿Entras al top ten?">
+<meta property="og:image" content="https://farmeando-cringe.onrender.com/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://farmeando-cringe.onrender.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#12061f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:#12061f;overflow:hidden;font-family:"Press Start 2P",monospace;color:#fff;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+  body{display:flex;align-items:center;justify-content:center}
+  #wrap{position:relative}
+  #cv{width:100%;height:100%;display:block;image-rendering:auto}
+  #pad{position:absolute;left:0;right:0;bottom:0;display:none;grid-template-columns:repeat(5,1fr);gap:calc(6px*var(--s));padding:calc(6px*var(--s));}
+  #pad button{font-family:inherit;font-size:calc(13px*var(--s));color:#fff;background:rgba(20,5,40,.72);border:calc(3px*var(--s)) solid #ff3fd2;border-radius:calc(10px*var(--s));padding:calc(11px*var(--s)) 0;touch-action:none}
+  #pad button small{display:block;font-size:calc(8px*var(--s));opacity:.55;margin-top:calc(4px*var(--s))}
+  #pad button.on{background:#ff3fd2;color:#000;transform:scale(.96)}
+  #flex{display:none;position:absolute;right:calc(24px*var(--s));bottom:calc(110px*var(--s));font-family:inherit;font-size:calc(20px*var(--s));padding:calc(18px*var(--s)) calc(22px*var(--s));background:#ffd400;color:#000;border:calc(4px*var(--s)) solid #fff;border-radius:calc(14px*var(--s));animation:pulse .4s infinite alternate}
+  @keyframes pulse{to{transform:scale(1.1);background:#ff3fd2}}
+  .panel{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:calc(14px*var(--s));padding:calc(20px*var(--s));text-align:center}
+  .panel h2{margin:0;font-size:calc(24px*var(--s));color:#ffd400;text-shadow:3px 3px 0 #000}
+  .panel p{margin:0;font-size:calc(12px*var(--s));line-height:1.6}
+  .big{font-size:calc(36px*var(--s));color:#7cf6ff;text-shadow:4px 4px 0 #000}
+  input{font-family:inherit;font-size:calc(18px*var(--s));padding:calc(12px*var(--s));width:calc(340px*var(--s));text-align:center;background:#000;color:#ffd400;border:calc(3px*var(--s)) solid #ff3fd2;border-radius:calc(8px*var(--s));text-transform:uppercase}
+  .btn{font-family:inherit;font-size:calc(13px*var(--s));padding:calc(12px*var(--s)) calc(18px*var(--s));background:#ff3fd2;color:#000;border:0;border-radius:calc(8px*var(--s));cursor:pointer}
+  .btn.alt{background:#25d366}
+  .btn.ghost{background:transparent;color:#fff;border:calc(2px*var(--s)) solid #fff}
+  .err{color:#ff6b81;font-size:calc(10px*var(--s));min-height:1em}
+  #toplist{list-style:none;margin:0;padding:0;width:calc(560px*var(--s));font-size:calc(12px*var(--s))}
+  #toplist li{display:grid;grid-template-columns:calc(40px*var(--s)) 1fr calc(80px*var(--s)) calc(120px*var(--s));gap:calc(8px*var(--s));padding:calc(6px*var(--s)) calc(10px*var(--s));background:rgba(0,0,0,.55);margin-bottom:calc(4px*var(--s));text-align:left}
+  #toplist li:nth-child(1){color:#ffd400}
+  #toplist li.me{background:#ff3fd2;color:#000}
+  #toplist .sc{text-align:right}#toplist .who{opacity:.7}
+  #toplist .empty{display:block;text-align:center}
+  .row{display:flex;gap:calc(10px*var(--s));flex-wrap:wrap;justify-content:center}
+  #mute,#toptitle{position:absolute;top:calc(8px*var(--s));font-family:inherit;font-size:calc(12px*var(--s));background:rgba(0,0,0,.5);color:#fff;border:calc(2px*var(--s)) solid #fff;border-radius:calc(6px*var(--s));padding:calc(6px*var(--s)) calc(10px*var(--s))}
+  #mute{left:calc(10px*var(--s))}
+  #toptitle{right:calc(10px*var(--s))}
+  #rotate{position:fixed;inset:0;background:#12061f;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;font-size:14px;text-align:center;padding:20px;z-index:9;line-height:1.7}
+  #rotate b{font-size:40px;display:block;animation:rot 1.5s infinite}
+  @keyframes rot{50%{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="cv" width="960" height="540"></canvas>
+  <div id="pad">
+    <button data-s="0">ACCES.<small>1</small></button>
+    <button data-s="1">CAMISA<small>2</small></button>
+    <button data-s="2">SACO<small>3</small></button>
+    <button data-s="3">PANTALÓN<small>4</small></button>
+    <button data-s="4">ZAPATOS<small>5</small></button>
+  </div>
+  <button id="flex">¡FLEX!</button>
+  <button id="toptitle">TOP 10</button>
+  <button id="mute">♪ ON</button>
+  <form class="panel" id="namebox" autocomplete="off">
+    <h2>FIN DEL COMBATE</h2>
+    <p id="finalmsg"></p>
+    <div class="big" id="finalscore">0</div>
+    <p>Escribe tu nombre para el top ten</p>
+    <input id="nm" maxlength="12" placeholder="TU NOMBRE" enterkeyhint="send">
+    <div class="err" id="nameerr"></div>
+    <div class="row"><button class="btn" id="send" type="submit">GUARDAR</button></div>
+  </form>
+  <div class="panel" id="topbox">
+    <h2>TOP 10 · MÁS CRINGE</h2>
+    <ol id="toplist"></ol>
+    <div class="row">
+      <button class="btn" id="again">JUGAR OTRA VEZ</button>
+      <button class="btn alt" id="share">COMPARTIR EN WHATSAPP</button>
+    </div>
+  </div>
+</div>
+<div id="rotate"><b>📱</b>Gira tu celular<br>para pelear en horizontal</div>
+<script src="game.js"></script>
+</body>
+</html>
