@@ -534,7 +534,7 @@ function render() {
   if (state === 'loading') { g.fillStyle = '#12061f'; g.fillRect(0, 0, W, H); txt('CARGANDO...', W / 2, H / 2, 18, '#ff3fd2'); g.restore(); return; }
   if (state === 'title') { drawTitle(); g.restore(); return; }
   if (state === 'select') { drawSelect(); g.restore(); return; }
-  if (state === 'name' || state === 'top') { drawBG('misa', 0.8, true); g.restore(); return; }
+  if (state === 'name' || state === 'top') { drawBG('lima', 0.8, true); g.restore(); return; }
   drawBG(STAGES[stageIdx].key);
   drawFighter(P); drawFighter(R);
   fx.forEach(e => {
@@ -596,7 +596,7 @@ function render() {
   g.restore();
 }
 function drawTitle() {
-  drawBG('misa', 0.55, true);
+  drawBG('lima', 0.55, true);
   const kk = IMG.kunte_win, ee = IMG.espa_win;
   if (ee) { const h = 300, w = ee.width * h / ee.height; g.drawImage(ee, 20, 740 - h, w, h); }
   if (kk) { const h = 300, w = kk.width * h / kk.height; g.save(); g.translate(W - 20, 740 - h); g.scale(-1, 1); g.drawImage(kk, 0, 0, w, h); g.restore(); }
@@ -613,7 +613,7 @@ function drawTitle() {
 }
 const SEL = {};
 function drawSelect() {
-  drawBG('rusia', 0.55, true);
+  drawBG('lima', 0.55, true);
   txt('ELIGE A TU VIEJO', W / 2, 150, 24, '#ffd400');
   ['espa', 'kunte'].forEach((c, i) => {
     const f = SEL[c]; const fcv = comp(f, 'guard');
@@ -731,6 +731,7 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
     fetch('assets/fx/fx.json?v=7').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=7'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
     loadImg('kunte_win', 'assets/kunte_win.png'), loadImg('espa_win', 'assets/espa_win.png'),
+    loadImg('bg_lima', 'assets/bg_lima.jpg?v=9'),
     ...STAGES.map(s => loadImg('bg_' + s.key, 'assets/bg_' + s.key + '.jpg')),
     document.fonts ? document.fonts.load('20px "Press Start 2P"') : null,
   ]);
