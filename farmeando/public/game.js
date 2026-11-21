@@ -564,7 +564,7 @@ function render() {
   }
   if (state === 'ko') {
     g.fillStyle = 'rgba(0,0,0,0.45)'; g.fillRect(0, SCENE_Y + 80, W, 140);
-    txt(result ? '¡HUACHAFO!' : '¡EN SHORT!', W / 2, SCENE_Y + 150, 42, result ? '#ffd400' : '#ff4d6d', 'center', 8);
+    txt(result ? '¡HUACHAFO!' : '¡TE CALATEÓ!', W / 2, SCENE_Y + 150, 42, result ? '#ffd400' : '#ff4d6d', 'center', 8);
     if (stateT > 1.1) txt(result ? (stageIdx < 3 ? 'Le robaste ' + stolenStage + ' prendas' : '¡GANASTE LA MISA!') : 'Te dejaron sin ropa', W / 2, SCENE_Y + 195, 12, '#fff');
   }
   g.restore();
@@ -699,13 +699,13 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
 
 (async function boot() {
   fit(); requestAnimationFrame(loop);
-  try { META = await (await fetch('assets/meta.json?v=9')).json(); } catch (e) { }
+  try { META = await (await fetch('assets/meta.json?v=10')).json(); } catch (e) { }
   await Promise.all([
-    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=9'))),
+    ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=10'))),
     fetch('assets/fx/fx.json?v=7').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=7'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
     loadImg('kunte_win', 'assets/kunte_win.png'), loadImg('espa_win', 'assets/espa_win.png'),
-    loadImg('bg_lima', 'assets/bg_lima.jpg?v=9'),
+    loadImg('bg_lima', 'assets/bg_lima.jpg?v=10'),
     ...STAGES.map(s => loadImg('bg_' + s.key, 'assets/bg_' + s.key + '.jpg')),
     document.fonts ? document.fonts.load('20px "Press Start 2P"') : null,
   ]);
