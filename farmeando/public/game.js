@@ -99,6 +99,28 @@ function playMusic(k) {
   const a = MUS[k]; if (!a) return; a.currentTime = 0; a.play().catch(() => { });
 }
 function announce(k) { if (!musicOn || !userStarted) return; const a = ANN[k]; if (!a) return; try { a.currentTime = 0; a.play().catch(() => { }); } catch (_) { } }
+const RANK_SND = new Audio('assets/audio/peruano.mp3'); RANK_SND.preload = 'none'; RANK_SND.volume = 0.7;
+
+// ---------- Easter egg: Moya ----------
+const MOYA_SND = [1, 2, 3, 4].map(i => { const a = new Audio('assets/audio/moya_' + i + '.mp3'); a.preload = 'none'; a.volume = 0.85; return a; });
+let moyaBag = [];
+function moyaNextSound() {
+  if (!moyaBag.length) moyaBag = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
+  const i = moyaBag.pop();
+  return MOYA_SND[i];
+}
+const MOYA_FRAMES = 40, MOYA_MS = 50, MOYA_DUR = MOYA_FRAMES * MOYA_MS / 1000;
+let moya = { active: false, t: 0, shown: false };
+function triggerMoya() {
+  if (moya.shown || moya.active) return;
+  if (stageIdx !== STAGES.length - 1) return;
+  moya.shown = true; moya.active = true; moya.t = 0;
+  if (musicOn && userStarted) { try { const a = moyaNextSound(); a.currentTime = 0; a.play().catch(() => { }); } catch (_) { } }
+}
+function showTop() {
+  loadTop(); setState('top');
+  if (musicOn && userStarted) { try { RANK_SND.currentTime = 0; RANK_SND.play().catch(() => { }); } catch (_) { } }
+}
 
 // ---------- Vestuario ----------
 // pieza: {src, look} para saco/pantalón/zapatos; {acc} para el accesorio
@@ -112,30 +134,43 @@ const AX = 0.42; // ancla horizontal (centro de piernas) dentro del cuadro
 function PM(c, pose) { return (META[c] && META[c][pose]) || META[c].guard; }
 function bandPx(c, pose, slot) { const m = PM(c, pose); return slot === 1 ? m.torso : slot === 2 ? m.legs : [m.feetY, META.fh]; }
 function poseImg(c, pose) { return IMG[c + '_' + pose] || IMG[c + '_guard']; }
-// Guardia: en vez de cortar franjas horizontales de una foto ya compuesta
-// (que no calzan entre personajes ni entre looks), cada prenda es su propio
-// recorte con alfa (silueta real) sobre el mismo cuerpo base compartido. Así
-// una prenda robada nunca deja un corte ni piel de más: solo cubre donde la
-// prenda misma cubre.
-function siloImg(src, slot, look) { return IMG[src + '_silo_' + (slot === 1 ? 'saco' : 'panta') + '_' + look]; }
-function makeCompositeSilo(f) {
+// Guardia, ataque y bloqueo: en vez de cortar franjas horizontales de una
+// foto ya compuesta (que no calzan entre personajes ni entre looks), cada
+// prenda es su propio recorte con alfa (silueta real) sobre el mismo cuerpo
+// base compartido de esa pose. Así una prenda robada nunca deja un corte ni
+// piel de más: solo cubre donde la prenda misma cubre.
+const SILO_POSES = { guard: 1, attack: 1, block: 1 };
+function siloImg(pose, src, slot, look) { return IMG[src + '_' + pose + '_' + (slot === 1 ? 'saco' : 'panta') + '_' + look]; }
+// Expresión facial según lo que esté haciendo el personaje: la cabeza es su
+// propia pieza (va al frente de todo) para poder cambiarla sin recomponer
+// el resto, y para que siempre tape cualquier borde de la prenda.
+function faceFor(f, pose) {
+  if (pose === 'attack') return 'grito';
+  if (pose === 'block') return 'serio';
+  if (f.st === 'charge') return 'sonrisilla';
+  if (f === P && combo >= 3) return 'sonrisilla';
+  return 'serio';
+}
+function makeCompositeSilo(f, pose, face) {
   const c = f.char, M = META;
   f.cv = f.cv || {};
-  const cvs = f.cv.guard || (f.cv.guard = document.createElement('canvas'));
+  const key = pose + ':' + face;
+  const cvs = f.cv[key] || (f.cv[key] = document.createElement('canvas'));
   cvs.width = M.fw; cvs.height = M.fh;
   const x = cvs.getContext('2d'); x.clearRect(0, 0, M.fw, M.fh);
-  const base = IMG[c + '_silo_base']; if (base) x.drawImage(base, 0, 0);
+  const base = IMG[c + '_' + pose + '_body']; if (base) x.drawImage(base, 0, 0);
   [2, 1].forEach(slot => {
     const p = f.slots[slot]; if (!p) return;
-    const img = siloImg(p.src, slot, p.look); if (img) x.drawImage(img, 0, 0);
+    const img = siloImg(pose, p.src, slot, p.look); if (img) x.drawImage(img, 0, 0);
   });
   // La cabeza va siempre al frente de todo: así tapa el "muñón" donde el
   // cuello de la prenda no calza exacto con la foto del cuerpo, en vez de
   // que el cuello quede por encima tapando parte de la cara.
-  const head = IMG[c + '_silo_head']; if (head) x.drawImage(head, 0, 0);
+  const head = IMG[c + '_' + pose + '_face_' + face]; if (head) x.drawImage(head, 0, 0);
+  return key;
 }
-function makeComposite(f, pose) {
-  if (pose === 'guard') return makeCompositeSilo(f);
+function makeComposite(f, pose, face) {
+  if (SILO_POSES[pose]) return makeCompositeSilo(f, pose, face);
   const c = f.char, M = META;
   f.cv = f.cv || {};
   const cvs = f.cv[pose] || (f.cv[pose] = document.createElement('canvas'));
@@ -149,12 +184,16 @@ function makeComposite(f, pose) {
     x.drawImage(poseImg(p.src, pose), p.look * M.fw, sy0, M.fw, sy1 - sy0, 0, y0, M.fw, y1 - y0);
   });
   if (f.slots[0] && (pose === 'guard' || pose === 'win1' || pose === 'win2')) { const m = PM(c, pose); drawAcc(x, f.slots[0].acc, m.hx * M.fw, m.top, 300); }
+  return pose;
 }
 function comp(f, pose) {
   if (f.dirty) { f.cvOk = {}; f.dirty = false; }
   f.cvOk = f.cvOk || {};
-  if (!f.cvOk[pose]) { makeComposite(f, pose); f.cvOk[pose] = true; }
-  return f.cv[pose];
+  const face = SILO_POSES[pose] ? faceFor(f, pose) : null;
+  const key = face ? pose + ':' + face : pose;
+  if (!f.cvOk[key]) { makeComposite(f, pose, face); f.cvOk[key] = true; }
+  f.lastKey = key;
+  return f.cv[key];
 }
 const pieceCache = new Map();
 function pieceImage(p, slot) {
@@ -167,7 +206,7 @@ function pieceImage(p, slot) {
     // el ícono de "zapatos" (slot 3) reusa la silueta del pantalón. Se recorta
     // a la franja donde vive cada prenda (igual en todos los looks, mismo
     // cuerpo base) solo para que el ícono no quede con medio cuadro vacío.
-    const img = siloImg(p.src, slot === 1 ? 1 : 2, p.look);
+    const img = siloImg('guard', p.src, slot === 1 ? 1 : 2, p.look);
     const [cy0, cy1] = slot === 1 ? [110, 275] : [195, 380];
     c.width = M.fw; c.height = cy1 - cy0;
     if (img) c.getContext('2d').drawImage(img, 0, cy0, M.fw, cy1 - cy0, 0, 0, M.fw, cy1 - cy0);
@@ -207,7 +246,7 @@ function newFighter(c, side, look) {
   return f;
 }
 function lives(f) { return f.closet.length + f.slots.filter(Boolean).length; }
-function startRun() { score = 0; stageIdx = 0; stolenTotal = 0; runStart = performance.now(); startStage(); }
+function startRun() { score = 0; stageIdx = 0; stolenTotal = 0; moya.shown = false; moya.active = false; runStart = performance.now(); startStage(); }
 function startStage() {
   P = newFighter(pick, -1, stageIdx + 1); R = newFighter(other(pick), 1, ((stageIdx + 2) % 4) + 1);
   fx = []; parts = []; msgs = []; combo = 0; shake = 0; flash = 0; stolenStage = 0;
@@ -217,7 +256,7 @@ function startStage() {
   crowdLoop(STAGES[stageIdx].key === 'misa');
   setTimeout(() => announce(String(stageIdx + 1)), 350);
 }
-function setState(s) { state = s; stateT = 0; updateUI(); }
+function setState(s) { if (state === 'top' && s !== 'top') { try { RANK_SND.pause(); } catch (_) { } } state = s; stateT = 0; updateUI(); }
 function say(text, col = '#ffd400', big = false) { msgs.push({ text, col, t: 0, big }); if (msgs.length > 3) msgs.shift(); }
 
 function slotY(f, slot) {
@@ -287,7 +326,7 @@ function rayo() {
   score += pts * mult;
   if (combo > 1 && combo % 3 === 0) say('COMBO x' + mult, '#ffd400');
   ray(P, R, CHARS[P.char].aura, false, () => { steal(P, R); SFX.hit(); });
-  if (combo === 8) { say('¡RACHA HUACHAFA!', '#ff3fd2', true); announce('bonus'); SFX.combo(); spr('lines', W / 2, SCENE_Y + SCENE_H / 2, 2.4); flash = 0.8; flashCol = CHARS[P.char].aura; setTimeout(() => { if (state === 'fight') steal(P, R); }, 250); }
+  if (combo === 8) { say('¡RACHA HUACHAFA!', '#ff3fd2', true); announce('bonus'); SFX.combo(); spr('lines', W / 2, SCENE_Y + SCENE_H / 2, 2.4); flash = 0.8; flashCol = CHARS[P.char].aura; triggerMoya(); setTimeout(() => { if (state === 'fight') steal(P, R); }, 250); }
 }
 const BLOCK_DUR = 2;
 function bloquear() {
@@ -376,6 +415,7 @@ function update(dt) {
     if (f.fly) { f.fly.t += dt; f.fly.x += f.fly.vx * dt; f.fly.y += f.fly.vy * dt; f.fly.vy += 640 * dt; f.fly.rot += f.fly.vr * dt; }
   });
   shake = Math.max(0, shake - dt); flash = Math.max(0, flash - dt * 2);
+  if (moya.active) { moya.t += realDt; if (moya.t >= MOYA_DUR) moya.active = false; }
   if (P && (state === 'fight' || state === 'intro')) {
     const rb = $('rayBar'), bb = $('blockBar');
     if (rb) rb.style.width = Math.max(0, Math.min(100, P.energy)) + '%';
@@ -464,7 +504,7 @@ function drawFighter(f) {
     return;
   }
   const pose = curPose(f);
-  if (pose !== f.lastPose) { f.ghost = { pose: f.lastPose, t: 0.12 }; f.squash = 1; f.lastPose = pose; }
+  if (pose !== f.lastPose) { f.ghost = { pose: f.lastKey, t: 0.12 }; f.squash = 1; f.lastPose = pose; }
   const cvs = comp(f, pose);
   const w = META.fw * FS, h = META.fh * FS, ax = META.fw * AX * FS;
   const dir = f.side < 0 ? 1 : -1;
@@ -581,6 +621,12 @@ function render() {
   if (hz.dark > 0) { const lit = Math.floor(T * 7) % 3 === 0; g.fillStyle = lit ? 'rgba(80,0,50,0.3)' : 'rgba(0,0,0,0.92)'; g.fillRect(0, SCENE_Y, W, SCENE_H); }
   if (hz.water > 0) { g.fillStyle = `rgba(90,180,255,${hz.water * 0.45})`; g.fillRect(0, SCENE_Y, W, SCENE_H); for (let i = 0; i < 40; i++) { g.fillStyle = 'rgba(200,240,255,0.8)'; g.fillRect(Math.random() * W, SCENE_Y + Math.random() * SCENE_H, 3, 18); } }
   if (flash > 0) { g.globalAlpha = flash * 0.6; g.fillStyle = flashCol; g.fillRect(0, 0, W, H); g.globalAlpha = 1; }
+  if (moya.active && IMG.moya_strip) {
+    const img = IMG.moya_strip, cw = img.width / MOYA_FRAMES, ch = img.height;
+    const fr = Math.min(MOYA_FRAMES - 1, Math.floor(moya.t * 1000 / MOYA_MS));
+    const dh = 400, dw = cw * dh / ch;
+    g.drawImage(img, fr * cw, 0, cw, ch, W / 2 - dw / 2, GROUND - dh, dw, dh);
+  }
   if (state === 'fight' && P.stun > T) { g.fillStyle = 'rgba(90,90,100,0.35)'; g.fillRect(0, SCENE_Y, W, SCENE_H); }
   rivalLabel();
   drawHUD();
@@ -674,6 +720,7 @@ async function submitName(e) {
     myEntry = { name: name.slice(0, 12), score }; topList = d.top; renderTop();
     try { localStorage.setItem('fc_name', name); } catch (_) { }
     setState('top');
+    if (musicOn && userStarted) { try { RANK_SND.currentTime = 0; RANK_SND.play().catch(() => { }); } catch (_) { } }
     setTimeout(() => { if (state === 'top') $('support').hidden = false; }, 1800);
   } catch (err) { $('nameerr').textContent = 'Sin conexión. Intenta de nuevo.'; }
   $('send').disabled = false;
@@ -708,7 +755,7 @@ $('namebox').addEventListener('submit', submitName);
 $('again').addEventListener('click', () => { myEntry = null; setState('select'); playMusic('title'); });
 $('share').addEventListener('click', shareWA);
 $('mute').addEventListener('click', () => { musicOn = !musicOn; sfxMute = !musicOn; $('mute').textContent = musicOn ? '♪ ON' : '♪ OFF'; if (musicOn) { userStarted = true; const k = curMusic; curMusic = null; playMusic(k || 'title'); if (crowdAud && state === 'fight' && STAGES[stageIdx].key === 'misa') crowdAud.play().catch(() => { }); } else { Object.values(MUS).forEach(a => a.pause()); if (crowdAud) crowdAud.pause(); } });
-$('toptitle').addEventListener('click', () => { loadTop(); setState('top'); });
+$('toptitle').addEventListener('click', () => { showTop(); });
 // Cierre: Yape y MNRY
 $('yapeBtn').addEventListener('click', () => { $('support').hidden = false; });
 $('supCl').addEventListener('click', () => { $('support').hidden = true; });
@@ -738,11 +785,14 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
   try { META = await (await fetch('assets/meta.json?v=14')).json(); } catch (e) { }
   await Promise.all([
     ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=14'))),
-    ...['kunte', 'espa'].flatMap(c => [loadImg(c + '_silo_base', 'assets/silo/' + c + '_base.png?v=15'),
-      loadImg(c + '_silo_head', 'assets/silo/' + c + '_head.png?v=15'),
-      ...[1, 2, 3, 4].flatMap(i => [loadImg(c + '_silo_saco_' + i, 'assets/silo/' + c + '_saco_' + i + '.png?v=15'), loadImg(c + '_silo_panta_' + i, 'assets/silo/' + c + '_panta_' + i + '.png?v=15')])]),
+    ...['kunte', 'espa'].flatMap(c => Object.keys(SILO_POSES).flatMap(pose => [
+      loadImg(c + '_' + pose + '_body', 'assets/silo/' + c + '_' + pose + '_body.png?v=16'),
+      ...['sonrisa', 'grito', 'serio', 'sonrisilla'].map(fn => loadImg(c + '_' + pose + '_face_' + fn, 'assets/silo/' + c + '_' + pose + '_face_' + fn + '.png?v=16')),
+      ...[1, 2, 3, 4].flatMap(i => [loadImg(c + '_' + pose + '_saco_' + i, 'assets/silo/' + c + '_' + pose + '_saco_' + i + '.png?v=16'), loadImg(c + '_' + pose + '_panta_' + i, 'assets/silo/' + c + '_' + pose + '_panta_' + i + '.png?v=16')])
+    ])),
     fetch('assets/fx/fx.json?v=7').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=7'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
+    loadImg('moya_strip', 'assets/fx/moya.png?v=1'),
     loadImg('kunte_win', 'assets/kunte_win.png'), loadImg('espa_win', 'assets/espa_win.png'),
     loadImg('bg_lima', 'assets/bg_lima.jpg?v=14'),
     ...STAGES.map(s => loadImg('bg_' + s.key, 'assets/bg_' + s.key + '.jpg')),
