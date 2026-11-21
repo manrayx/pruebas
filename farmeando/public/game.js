@@ -11,7 +11,7 @@ const $ = id => document.getElementById(id);
 const STAGES = [
   { key: 'rusia', name: 'RUSIA', sub: 'Plaza Roja', idle: [0.6, 1.2], guard: [0.8, 1.3], charge: 0.85, feint: 0 },
   { key: 'casa', name: 'CASA DE LA LITERATURA', sub: 'Silencio, por favor', idle: [0.5, 1.0], guard: [0.7, 1.2], charge: 0.72, feint: 0.1 },
-  { key: 'tauro', name: 'CINE TAURO', sub: 'Función de medianoche', idle: [0.45, 0.9], guard: [0.6, 1.1], charge: 0.62, feint: 0.2 },
+  { key: 'tauro', name: 'CINE TAURO', sub: 'Función de medianoche', idle: [0.45, 0.9], guard: [0.6, 1.1], charge: 0.62, feint: 0.2, bgAnchor: 0.9 },
   { key: 'misa', name: 'LA MISA DEL PAPA', sub: 'Las Palmas · caos total', idle: [0.4, 0.8], guard: [0.5, 1.0], charge: 0.55, feint: 0.3 },
 ];
 const ROUND_TIME = 60, CLOSET = 5;
@@ -129,6 +129,10 @@ function makeCompositeSilo(f) {
     const p = f.slots[slot]; if (!p) return;
     const img = siloImg(p.src, slot, p.look); if (img) x.drawImage(img, 0, 0);
   });
+  // La cabeza va siempre al frente de todo: así tapa el "muñón" donde el
+  // cuello de la prenda no calza exacto con la foto del cuerpo, en vez de
+  // que el cuello quede por encima tapando parte de la cara.
+  const head = IMG[c + '_silo_head']; if (head) x.drawImage(head, 0, 0);
 }
 function makeComposite(f, pose) {
   if (pose === 'guard') return makeCompositeSilo(f);
@@ -413,14 +417,14 @@ function txt(t, x, y, size, col = '#fff', align = 'center', stroke = 6) {
   g.font = size + 'px "Press Start 2P", monospace'; g.textAlign = align; g.lineJoin = 'round';
   g.lineWidth = stroke; g.strokeStyle = '#000'; g.strokeText(t, x, y); g.fillStyle = col; g.fillText(t, x, y);
 }
-function drawBG(key, dim = 0, full = false) {
+function drawBG(key, dim = 0, full = false, anchorX = 0.5) {
   const img = IMG['bg_' + key];
   g.fillStyle = '#12061f'; g.fillRect(0, 0, W, H);
   if (img) {
     const y0 = full ? 0 : SCENE_Y, ah = full ? H : SCENE_H;
     const sc = Math.max(W / img.width, ah / img.height), w = img.width * sc, h = img.height * sc;
     g.save(); g.beginPath(); g.rect(0, y0, W, ah); g.clip();
-    g.drawImage(img, (W - w) / 2, y0 + ah - h, w, h); g.restore();
+    g.drawImage(img, (W - w) * anchorX, y0 + ah - h, w, h); g.restore();
     if (!full) { g.fillStyle = '#ff3fd2'; g.fillRect(0, y0 + ah, W, 3); }
   }
   if (dim) { g.fillStyle = `rgba(10,0,25,${dim})`; g.fillRect(0, 0, W, H); }
@@ -533,7 +537,7 @@ function render() {
   if (state === 'title') { drawTitle(); g.restore(); return; }
   if (state === 'select') { drawSelect(); g.restore(); return; }
   if (state === 'name' || state === 'top') { drawBG('lima', 0.8, true); g.restore(); return; }
-  drawBG(STAGES[stageIdx].key);
+  drawBG(STAGES[stageIdx].key, 0, false, STAGES[stageIdx].bgAnchor ?? 0.5);
   drawFighter(P); drawFighter(R);
   fx.forEach(e => {
     if (e.t < 0) return;
@@ -734,8 +738,9 @@ function loop(now) { const dt = Math.min(0.05, (now - last) / 1000 || 0); last =
   try { META = await (await fetch('assets/meta.json?v=14')).json(); } catch (e) { }
   await Promise.all([
     ...['kunte', 'espa'].flatMap(c => ['guard', 'attack', 'block', 'hit', 'win1', 'win2'].map(p => loadImg(c + '_' + p, 'assets/' + c + '_' + p + '.png?v=14'))),
-    ...['kunte', 'espa'].flatMap(c => [loadImg(c + '_silo_base', 'assets/silo/' + c + '_base.png?v=14'),
-      ...[1, 2, 3, 4].flatMap(i => [loadImg(c + '_silo_saco_' + i, 'assets/silo/' + c + '_saco_' + i + '.png?v=14'), loadImg(c + '_silo_panta_' + i, 'assets/silo/' + c + '_panta_' + i + '.png?v=14')])]),
+    ...['kunte', 'espa'].flatMap(c => [loadImg(c + '_silo_base', 'assets/silo/' + c + '_base.png?v=15'),
+      loadImg(c + '_silo_head', 'assets/silo/' + c + '_head.png?v=15'),
+      ...[1, 2, 3, 4].flatMap(i => [loadImg(c + '_silo_saco_' + i, 'assets/silo/' + c + '_saco_' + i + '.png?v=15'), loadImg(c + '_silo_panta_' + i, 'assets/silo/' + c + '_panta_' + i + '.png?v=15')])]),
     fetch('assets/fx/fx.json?v=7').then(r => r.json()).then(j => { FXM = j; return Promise.all(Object.keys(j).map(k => loadImg('fx_' + k, 'assets/fx/' + k + '.png?v=7'))); }).catch(() => { }),
     loadImg('kunte_ko', 'assets/kunte_ko.png'), loadImg('espa_ko', 'assets/espa_ko.png'),
     loadImg('kunte_win', 'assets/kunte_win.png'), loadImg('espa_win', 'assets/espa_win.png'),
