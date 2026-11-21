@@ -103,37 +103,11 @@ function announce(k) { if (!musicOn || !userStarted) return; const a = ANN[k]; i
 // ---------- Vestuario ----------
 // pieza: {src, look} para saco/pantalón/zapatos; {acc} para el accesorio
 function regY(c, f) { return META[c].top + f * META[c].h; }
-const hatDrop = { panama: 3.2, gorra: 3.4, vaquero: 3.6, boina: 3.0, chullo: 2.6 };
-function drawAcc(x, kind, hx, top, h) {
-  const u = h / 100, R = (a, b, w, hh, col) => { x.fillStyle = col; x.fillRect(Math.round(hx + a * u), Math.round(top + (b + (hatDrop[kind] || 0)) * u), Math.round(w * u), Math.round(hh * u)); };
-  const panama = () => {
-    R(-5.2, -4.2, 10.4, 6.4, '#000'); R(-4.6, -3.7, 9.2, 5.6, '#efe3c2'); R(-4.6, -3.7, 9.2, 1, '#fff7df');
-    R(-4.6, 0, 9.2, 1.4, '#1a1a1a');
-    R(-10.6, 1.6, 21.2, 2.2, '#000'); R(-10, 2, 20, 1.4, '#e6d6ad'); R(-10, 2, 20, 0.5, '#fff3d0');
-  };
-  if (kind === 'panama') panama();
-  else if (kind === 'gorra') {
-    R(-6.4, -4.6, 12.8, 6.2, '#000'); R(-5.8, -4, 11.6, 5, '#141414'); R(-5.8, -0.4, 11.6, 1.3, '#d6a52a');
-    R(-1.4, -3.4, 2.8, 2.8, '#ffcf3a'); R(-0.7, -2.7, 1.4, 1.4, '#a36d00');
-    R(-2, 1.4, 10.5, 1.4, '#000'); R(-1.6, 1.6, 9.8, 0.8, '#333');
-  } else if (kind === 'vaquero') {
-    R(-5.4, -6.2, 10.8, 7.6, '#000'); R(-4.8, -5.6, 9.6, 6.6, '#f1ead6'); R(-1, -5.6, 2, 1.6, '#cfc4a6');
-    R(-4.8, -0.4, 9.6, 1.2, '#8a5a2b');
-    R(-12.6, 1, 25.2, 2.4, '#000'); R(-12, 1.4, 24, 1.4, '#e9e0c6');
-    R(-13.4, -1, 2.4, 3, '#000'); R(-12.8, -0.6, 1.6, 2.2, '#e9e0c6'); R(11, -1, 2.4, 3, '#000'); R(11.2, -0.6, 1.6, 2.2, '#e9e0c6');
-  } else if (kind === 'boina') {
-    R(-6.2, -3.6, 12.4, 5.6, '#7a1f2b'); R(-6.2, -3.6, 12.4, 1, '#9c3242');
-    R(-0.8, -5.4, 1.6, 1.8, '#3d0f16');
-    R(-7.4, 0.6, 14.8, 1.6, '#5c1620');
-  } else if (kind === 'chullo') {
-    R(-5.6, -6.6, 11.2, 3, '#c23b3b'); R(-5.6, -3.8, 11.2, 1.8, '#f2e34c'); R(-5.6, -2.2, 11.2, 1.8, '#2f6fb5'); R(-5.6, -0.6, 11.2, 1.6, '#c23b3b');
-    R(-7.6, 1, 2.8, 7, '#c23b3b'); R(4.8, 1, 2.8, 7, '#2f6fb5');
-    R(-0.8, -8, 1.6, 1.8, '#f2e34c');
-    x.fillStyle = '#f2e34c';
-    x.beginPath(); x.arc(hx + -6.2 * u, top + (8.4 + (hatDrop.chullo || 0)) * u, 1.3 * u, 0, 6.3); x.fill();
-    x.beginPath(); x.arc(hx + 6.2 * u, top + (8.4 + (hatDrop.chullo || 0)) * u, 1.3 * u, 0, 6.3); x.fill();
-  }
-}
+// Sombreros desactivados por ahora (ninguna de las dos versiones probadas
+// en producción funcionó bien: ni los rectángulos procedurales ni las
+// fotos recortadas). drawAcc queda como no-op hasta tener un reemplazo
+// verificado en todas las pantallas antes de volver a desplegar.
+function drawAcc(x, kind, hx, top, h) { }
 const AX = 0.42; // ancla horizontal (centro de piernas) dentro del cuadro
 function PM(c, pose) { return (META[c] && META[c][pose]) || META[c].guard; }
 function bandPx(c, pose, slot) { const m = PM(c, pose); return slot === 1 ? m.torso : slot === 2 ? m.legs : [m.feetY, META.fh]; }
