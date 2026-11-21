@@ -46,6 +46,16 @@
   #toplist .sc{text-align:right}#toplist .who{opacity:.7}
   #toplist .empty{display:block;text-align:center}
   .row{display:flex;gap:calc(10px*var(--s));flex-wrap:wrap;justify-content:center}
+  .btn.yape{background:#ffd400;animation:beat 1.2s infinite}
+  @keyframes beat{50%{box-shadow:0 0 calc(24px*var(--s)) calc(4px*var(--s)) #ffd400}}
+  .credit{font-size:calc(9px*var(--s));color:#ccc;text-decoration:none}.credit b{color:#ffd400}
+  .modal{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:#0d0418e6;padding:calc(24px*var(--s))}
+  .modal[hidden]{display:none}
+  .modal .card{background:#2a0a3a;border:calc(4px*var(--s)) solid #ffd400;border-radius:calc(16px*var(--s));padding:calc(20px*var(--s));display:flex;flex-direction:column;gap:calc(12px*var(--s));align-items:center;text-align:center}
+  .modal h2{margin:0;font-size:calc(18px*var(--s));color:#ffd400}
+  .modal .lead{margin:0;font-family:system-ui,sans-serif;font-weight:700;font-size:calc(15px*var(--s))}
+  .modal .hint{margin:0;font-family:system-ui,sans-serif;font-size:calc(12px*var(--s));color:#d9c7ff}
+  .modal .qr{width:calc(300px*var(--s));aspect-ratio:1;background:#fff;border-radius:calc(8px*var(--s));-webkit-touch-callout:default;user-select:auto}
   #mute,#toptitle{position:absolute;top:calc(8px*var(--s));font-family:inherit;font-size:calc(12px*var(--s));background:rgba(0,0,0,.5);color:#fff;border:calc(2px*var(--s)) solid #fff;border-radius:calc(6px*var(--s));padding:calc(6px*var(--s)) calc(10px*var(--s))}
   #mute{left:calc(10px*var(--s))}
   #toptitle{right:calc(10px*var(--s))}
@@ -78,9 +88,22 @@
     <div class="row" style="flex-direction:column">
       <button class="btn" id="again">JUGAR OTRA VEZ</button>
       <button class="btn alt" id="share">COMPARTIR EN WHATSAPP</button>
+      <button class="btn yape" id="yapeBtn">♥ APOYA EL CRINGE · con tu Yape</button>
+      <button class="btn ghost" id="mnryBtn">★ ¿UN JUEGO PARA TU MARCA? · MNRY</button>
+    </div>
+    <a class="credit" href="https://mantarraya.pe" target="_blank" rel="noopener">Desarrollado por <b>MNRY</b> · mantarraya.pe</a>
+  </div>
+  <div id="support" class="modal" hidden>
+    <div class="card" role="dialog" aria-label="Apoya el cringe">
+      <h2>♥ APOYA EL CRINGE ♥</h2>
+      <p class="lead">Tu yapeo es el auspicio que necesitamos para seguir haciendo juegos como este.</p>
+      <img id="supQr" src="assets/yape-qr.png" alt="Código QR para yapear. Tócalo para guardarlo." class="qr" role="button" tabindex="0">
+      <p class="hint">Toca el QR para guardarlo. Luego, en Yape, elige <b>Escanear</b> y sube la imagen desde tu galería.</p>
+      <button id="supSave" class="btn" type="button">GUARDAR QR</button>
+      <button id="supCl" class="btn ghost" type="button">CERRAR</button>
     </div>
   </div>
 </div>
-<script src="game.js?v=2"></script>
+<script src="game.js?v=4"></script>
 </body>
 </html>
