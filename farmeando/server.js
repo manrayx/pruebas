@@ -2,6 +2,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { Pool } = require('pg');
 
 const PORT = process.env.PORT || 3000;
@@ -16,6 +17,7 @@ async function init() {
   await pool.query(`CREATE TABLE IF NOT EXISTS scores (
     id SERIAL PRIMARY KEY, name TEXT NOT NULL, score INTEGER NOT NULL,
     fighter TEXT, stage INTEGER, created_at TIMESTAMPTZ DEFAULT now())`);
+  await pool.query('ALTER TABLE scores ADD COLUMN IF NOT EXISTS token TEXT');
 }
 
 const BAD = ['puta','puto','mierda','verga','pinga','cojud','conchatu','csm','ctm','maric','cabro','huevon','webon','imbecil','idiota','nazi','culo','pene','vagina','sexo','chuch'];
@@ -28,7 +30,7 @@ function cleanName(n) {
 
 const lastPost = new Map();
 async function top() {
-  if (!pool) return memScores.slice().sort((a, b) => b.score - a.score).slice(0, 10);
+  if (!pool) return memScores.slice().sort((a, b) => b.score - a.score).slice(0, 10).map(({ name, score, fighter, stage }) => ({ name, score, fighter, stage }));
   const r = await pool.query('SELECT name, score, fighter, stage FROM scores ORDER BY score DESC, created_at ASC LIMIT 10');
   return r.rows;
 }
@@ -62,9 +64,22 @@ const server = http.createServer(async (req, res) => {
       if (!Number.isFinite(score) || score < 0 || score > 120000 * stage || !Number.isFinite(dur) || dur < 10 || score > dur * 2500 + 5000 * stage)
         return send(res, 400, { error: 'Puntaje no válido' });
       lastPost.set(ip, now);
-      if (pool) await pool.query('INSERT INTO scores (name, score, fighter, stage) VALUES ($1,$2,$3,$4)', [name, score, fighter, stage]);
-      else memScores.push({ name, score, fighter, stage });
-      return send(res, 200, { ok: true, top: await top() });
+      // Nivel secreto: el total reemplaza al puntaje que el mismo jugador guardó antes (se prueba con su id + token).
+      const repId = Math.floor(Number(d.replaceId)), repTok = typeof d.replaceToken === 'string' ? d.replaceToken.slice(0, 64) : '';
+      if (repId > 0 && repTok) {
+        if (pool) {
+          const u = await pool.query('UPDATE scores SET name=$1, score=$2, fighter=$3, stage=$4 WHERE id=$5 AND token=$6 AND score <= $2 RETURNING id', [name, score, fighter, stage, repId, repTok]);
+          if (u.rowCount) return send(res, 200, { ok: true, id: repId, token: repTok, top: await top() });
+        } else {
+          const m = memScores.find(x => x.id === repId && x.token === repTok && x.score <= score);
+          if (m) { Object.assign(m, { name, score, fighter, stage }); return send(res, 200, { ok: true, id: repId, token: repTok, top: await top() }); }
+        }
+      }
+      const token = crypto.randomBytes(12).toString('hex');
+      let id;
+      if (pool) id = (await pool.query('INSERT INTO scores (name, score, fighter, stage, token) VALUES ($1,$2,$3,$4,$5) RETURNING id', [name, score, fighter, stage, token])).rows[0].id;
+      else { id = memScores.length + 1; memScores.push({ id, name, score, fighter, stage, token }); }
+      return send(res, 200, { ok: true, id, token, top: await top() });
     }
     let p = decodeURIComponent(url.pathname);
     if (p === '/') p = '/index.html';
