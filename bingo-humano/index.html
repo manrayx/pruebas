@@ -25,7 +25,8 @@ main{display:grid;grid-template-columns:380px 1fr;gap:24px;padding:0 22px 22px;a
 .iphone .bezel{background:#000;border-radius:51px;padding:10px}
 .iphone .btn{position:absolute;width:4px;background:linear-gradient(90deg,#444,#8a8a8a,#444);border-radius:3px}
 .b1{left:-3px;top:110px;height:28px}.b2{left:-3px;top:160px;height:52px}.b3{left:-3px;top:222px;height:52px}.b4{right:-3px;top:180px;height:84px}
-.scr{position:relative;border-radius:42px;overflow:hidden;background:linear-gradient(180deg,#FFF9DB,#FFFFFF 40%);color:var(--ink);height:660px}
+.scr{position:relative;border-radius:42px;overflow:hidden;background:linear-gradient(180deg,#FFFFFF,#F2F2F5);color:var(--ink);height:660px;transition:background .3s}
+.scr.dark{background:#000;color:#fff}.scr.dark .homebar{background:#fff}
 .island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:100px;height:28px;background:#000;border-radius:20px;z-index:5}
 .island:after{content:"";position:absolute;right:10px;top:9px;width:10px;height:10px;border-radius:50%;background:#10131f;box-shadow:inset 0 0 0 2px #1d2540}
 .status{position:absolute;top:0;left:0;right:0;height:46px;display:flex;justify-content:space-between;align-items:center;padding:6px 26px 0 30px;font-weight:800;font-size:14px;z-index:4}
@@ -39,14 +40,22 @@ main{display:grid;grid-template-columns:380px 1fr;gap:24px;padding:0 22px 22px;a
 input{font:inherit;font-weight:700;padding:12px 15px;border-radius:16px;border:3px solid #e6e6ef;width:100%}
 input:focus{outline:0;border-color:var(--ye);box-shadow:0 0 0 4px #fff3a0}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.sq{aspect-ratio:1;border-radius:17px;padding:5px;font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;cursor:pointer;line-height:1.1;color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.12);transition:transform .12s}
-.sq:hover{transform:translateY(-2px) rotate(-1deg)}
-.sq .e{font-size:22px}
-.sq.done{cursor:default;position:relative;justify-content:flex-end;padding-bottom:4px}
-.sq.done:hover{transform:none}
-.sq.done svg.sf{width:78%;background:none;border-radius:0}
-.sq.done .ck{position:absolute;top:4px;right:5px;background:#fff;border-radius:999px;width:18px;height:18px;font-size:11px;display:flex;align-items:center;justify-content:center}
-.sq.done b{font-family:Fredoka,sans-serif;font-size:12.5px;font-weight:600}
+.sq{aspect-ratio:1;border-radius:16px;padding:6px;font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;cursor:pointer;line-height:1.12;color:#3a3a4f;background:#EEEEF1;border:2px dashed #D0D0D9;position:relative;overflow:hidden}
+.sq:hover{background:#E6E6EA}
+.sq .cam{width:20px;height:20px;opacity:.45}
+.sq.done{cursor:default;padding:0;border:0;background:#DDF0FB}
+.sq.done:hover{background:#DDF0FB}
+.sq.done svg.ph{position:absolute;inset:0;width:100%;height:100%}
+.sq.done .nm{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(0,0,0,.72),rgba(0,0,0,0));color:#fff;font-family:Fredoka,sans-serif;font-weight:500;font-size:12px;padding:14px 3px 4px}
+.souv{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.souv .who{font-family:Fredoka,sans-serif;font-size:30px;font-weight:600;line-height:1.05;color:#fff}
+.souv .sub{font-size:10.5px;letter-spacing:.2em;color:#9a9a9a;font-weight:800}
+.souv .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;margin:8px 0 6px}
+.souv .sc{display:flex;flex-direction:column;gap:2px;align-items:center}
+.souv .pw{width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;position:relative;background:#1b1b1b}
+.souv .pw svg{position:absolute;inset:0;width:100%;height:100%}
+.souv .sc b{font-family:Fredoka,sans-serif;font-weight:500;font-size:12.5px;color:#fff;margin-top:3px}
+.souv .sc small{font-size:9.5px;color:#9a9a9a;font-weight:700;line-height:1.1}
 .prog{height:11px;border-radius:999px;background:#ececf4;overflow:hidden}
 .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--ye),#FFB300);border-radius:999px;transition:width .4s}
 .sheet{background:#fff;border-radius:18px;padding:13px;box-shadow:0 6px 20px rgba(26,26,46,.12);display:flex;flex-direction:column;gap:10px}
@@ -84,7 +93,7 @@ canvas#cf{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 <main>
 <div class="iphone"><i class="btn b1"></i><i class="btn b2"></i><i class="btn b3"></i><i class="btn b4"></i>
 <div class="body"><div class="bezel"><div class="scr"><div class="island"></div>
-<div class="status"><span id="clk">9:41</span><span class="ic"><svg width="18" height="12" viewBox="0 0 18 12" style="background:none;width:18px"><rect x="0" y="8" width="3" height="4" rx="1" fill="#1a1a2e"/><rect x="5" y="5" width="3" height="7" rx="1" fill="#1a1a2e"/><rect x="10" y="2" width="3" height="10" rx="1" fill="#1a1a2e"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#1a1a2e"/></svg><svg width="26" height="12" viewBox="0 0 26 12" style="background:none;width:26px"><rect x=".5" y=".5" width="21" height="11" rx="3.5" fill="none" stroke="#1a1a2e" opacity=".5"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#1a1a2e"/><rect x="23" y="4" width="2" height="4" rx="1" fill="#1a1a2e" opacity=".5"/></svg></span></div>
+<div class="status"><span id="clk">9:41</span><span class="ic"><svg width="18" height="12" viewBox="0 0 18 12" style="background:none;width:18px"><rect x="0" y="8" width="3" height="4" rx="1" fill="currentColor"/><rect x="5" y="5" width="3" height="7" rx="1" fill="currentColor"/><rect x="10" y="2" width="3" height="10" rx="1" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg><svg width="26" height="12" viewBox="0 0 26 12" style="background:none;width:26px"><rect x=".5" y=".5" width="21" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="16" height="8" rx="2" fill="currentColor"/><rect x="23" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg></span></div>
 <div class="ps" id="ps"></div><div class="homebar"></div></div></div></div></div>
 <div>
  <div class="screen">
@@ -101,27 +110,21 @@ const LN="ABCDEFGHJLMPRSTV";
 const RETOS=["Ha viajado a más de 5 países","Habla otro idioma","Tiene mascota","Toca un instrumento","Le gusta cocinar","Nació fuera de Lima","Trabaja en marketing","Hace deporte","Tiene hermanos gemelos o mellizos"];
 const EM=["✈️","🗣️","🐾","🎸","🍳","📍","💼","⚽","👯"];
 const PREG=["¿Cuál es tu comida favorita?","¿Qué lugar te gustaría visitar?","¿Qué serie recomiendas?","¿Cuál fue tu primer trabajo?","¿Qué hacías de niño los sábados?","¿Qué canción no puede faltar en una fiesta?"];
-const COL=["#FFEE00","#FF8FA0","#5EEAD4","#C4B5FD","#BEF264","#FFC15E","#7DD3FC","#FFA6D2","#FFE08A"];
 const CONF=["#FFEE00","#FFFFFF","#ACACAC","#FFC400","#E5E5E5"];
-const SKIN=["#F6D2B0","#E8B88E","#C98F63","#9B6A45","#F2C9A5"];
-const HAIR=["#2b1d14","#4a2e1b","#1a1a1a","#7a4b22","#3b2a20"];
 const FEM=new Set(["ana","marta","rosa","sofía","sofia","lucía","lucia","valeria","camila","milagros","daniela","elena","paola","nora","karla","julia","alicia","carmen","rocío","rocio","beatriz","isabel","mercedes","pilar","luz","inés","ines","andrea","maría","maria","patricia","gabriela","fiorella","claudia","diana","ivette","úrsula","ursula","fabiana","manuela","cami"]);
 const MAS=new Set(["luis","diego","carlos","jorge","pedro","andrés","andres","renzo","hugo","mateo","raúl","raul","iván","ivan","fabio","óscar","oscar","percy","rodrigo","miguel","juan","josé","jose","luca","jaime","hans","gonzalo","eduardo","ricardo","javier","sebastián","sebastian","manasés","santiago","pablo","david","daniel","alex","fernando","jesús","jesus","manray"]);
 function gender(name){const w=String(name).trim().toLowerCase().split(/\s+/)[0];if(FEM.has(w))return"f";if(MAS.has(w))return"m";if(/[aä]$/.test(w)&&!/(luca|joshua|nikita)$/.test(w))return"f";if(/o$/.test(w))return"m";return"n"}
-function head(cx,cy,g,sk,hr){
- let s="";
- if(g==="f")s+=`<path d="M${cx-15},${cy+16} Q${cx-19},${cy-16} ${cx},${cy-17} Q${cx+19},${cy-16} ${cx+15},${cy+16} Q${cx+10},${cy+4} ${cx},${cy-6} Q${cx-10},${cy+4} ${cx-15},${cy+16}Z" fill="${hr}"/>`;
- s+=`<circle cx="${cx}" cy="${cy}" r="13" fill="${sk}"/>`;
- if(g==="m")s+=`<path d="M${cx-13},${cy-3} Q${cx-13},${cy-16} ${cx},${cy-15} Q${cx+13},${cy-16} ${cx+13},${cy-3} Q${cx+6},${cy-9} ${cx-2},${cy-8} Q${cx-9},${cy-8} ${cx-13},${cy-3}Z" fill="${hr}"/>`;
- else if(g==="f")s+=`<path d="M${cx-13},${cy-2} Q${cx-12},${cy-15} ${cx},${cy-15} Q${cx+12},${cy-15} ${cx+13},${cy-2} Q${cx+3},${cy-10} ${cx-13},${cy-2}Z" fill="${hr}"/>`;
- else s+=`<path d="M${cx-13},${cy-3} Q${cx-12},${cy-14} ${cx},${cy-14} Q${cx+12},${cy-14} ${cx+13},${cy-3} Q${cx},${cy-9} ${cx-13},${cy-3}Z" fill="#8a8a8a"/>`;
- s+=`<circle cx="${cx-4.5}" cy="${cy+1}" r="1.6" fill="#1a1a2e"/><circle cx="${cx+4.5}" cy="${cy+1}" r="1.6" fill="#1a1a2e"/><path d="M${cx-4},${cy+6} Q${cx},${cy+10} ${cx+4},${cy+6}" stroke="#1a1a2e" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
- return s}
-function selfie(a,b){
- const ga=gender(a.name),gb=gender(b.name);
- return `<svg class="sf" viewBox="0 0 80 62"><rect x="33" y="3" width="14" height="22" rx="3.5" fill="#1a1a2e"/><circle cx="40" cy="9" r="2" fill="#555"/><path d="M26,5 l-4,-3 M54,5 l4,-3 M24,13 l-5,0 M56,13 l5,0" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
- <path d="M18,62 Q20,48 30,46 Q40,52 40,62Z M40,62 Q40,52 50,46 Q60,48 62,62Z" fill="rgba(26,26,46,.82)"/>
- ${head(28,38,ga,SKIN[a.id%5],HAIR[a.id%5])}${head(52,38,gb,SKIN[b.id%5],HAIR[b.id%5])}</svg>`}
+function person(x,y,sc,g,id){
+ const C=g==="f"?{b:"#0F8B8D",l:"#27B8B4",d:"#0A6366"}:g==="m"?{b:"#0A2F6B",l:"#3068B8",d:"#061E47"}:{b:"#2F5E8C",l:"#6A9AC8",d:"#1F4468"};
+ let hair="",back="";
+ if(g==="f"){ if(id%2===0){hair=`<path d="M-14,-4 Q-16,-22 0,-23 Q15,-22 14,-4 Q8,-14 -2,-13 Q-10,-13 -14,-4Z" fill="${C.d}"/><circle cx="15" cy="-15" r="6.5" fill="${C.d}"/>`}
+  else{back=`<path d="M-15,-6 Q-18,-26 0,-26 Q18,-26 15,-6 L17,24 Q10,28 4,22 L-4,22 Q-10,28 -17,24Z" fill="${C.d}"/>`;hair=`<path d="M-14,-4 Q-15,-21 0,-22 Q15,-21 14,-4 Q6,-13 -2,-12 Q-10,-12 -14,-4Z" fill="${C.d}"/>`}}
+ else if(g==="m")hair=`<path d="M-14,-5 Q-17,-23 -3,-24 Q12,-27 15,-12 Q16,-7 13,-4 Q8,-12 -2,-12 Q-10,-12 -14,-5Z" fill="${C.d}"/><path d="M-5,-23 Q0,-31 8,-25 Q3,-24 -1,-22Z" fill="${C.d}"/>`;
+ else hair=`<path d="M-14,-5 Q-15,-20 0,-21 Q15,-20 14,-5 Q4,-12 -14,-5Z" fill="${C.d}"/>`;
+ const cl=g==="f"?`<path d="M-9,30 L-3,46 M9,30 L3,46" stroke="${C.l}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`:`<path d="M-9,30 L0,43 L9,30" stroke="${C.l}" stroke-width="2.2" fill="none" stroke-linejoin="round"/>`;
+ return `<g transform="translate(${x},${y}) scale(${sc})">${back}<path d="M-38,80 Q-34,34 -8,29 L8,29 Q34,34 38,80Z" fill="${C.b}"/><rect x="-6" y="12" width="12" height="22" rx="4" fill="${C.b}"/><ellipse cx="-13" cy="1" rx="2.6" ry="4" fill="${C.b}"/><ellipse cx="13" cy="1" rx="2.6" ry="4" fill="${C.b}"/><ellipse cx="0" cy="0" rx="13" ry="16" fill="${C.b}"/>${hair}${cl}</g>`}
+function photo(a,b){
+ return `<svg class="ph" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#DDF0FB"/><circle cx="52" cy="46" r="42" fill="#EAF7FE"/>${person(68,46,.86,gender(b.name),b.id)}${person(35,40,1.04,gender(a.name),a.id)}</svg>`}
 let G=null;
 function mkNames(n){const a=[];for(let i=0;i<n;i++){const f=FN[i%FN.length];a.push(i<FN.length?f:f+" "+LN[(i*7)%LN.length]+".")}return a}
 function layout(n){
@@ -139,20 +142,32 @@ function reset(){
  pod.classList.remove("on");
  viewName();draw();
 }
+const CAM=`<svg class="cam" viewBox="0 0 24 24" fill="none" stroke="#3a3a4f" stroke-width="1.8" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.4"/></svg>`;
+function setDark(v){document.querySelector(".scr").classList.toggle("dark",v)}
 function viewName(){
- ps.innerHTML=`<span class="badge">BINGO HUMANO</span><h2>¡Bienvenido/a! 👋</h2><p class="m">Escribe tu nombre para entrar al juego. No necesitas descargar nada.</p><input id="nm" placeholder="Tu nombre" maxlength="18"><button id="go">Entrar al juego</button><p class="m" style="margin-top:auto">Sala: <b>BINGO-482</b></p>`;
+ setDark(false);
+ ps.innerHTML=`<span class="badge">BINGO HUMANO</span><h2>Bienvenido/a</h2><p class="m">Escribe tu nombre para entrar al juego. No necesitas descargar nada.</p><input id="nm" placeholder="Tu nombre" maxlength="18"><button id="go">Entrar al juego</button><p class="m" style="margin-top:auto">Sala: <b>BINGO-482</b></p>`;
  go.onclick=()=>{const v=nm.value.trim();if(!v)return;
   const p=G.players[G.players.length-1];p.name=v;p.bot=false;G.me=p;viewCard();draw()}
 }
 function viewCard(msg){
+ setDark(false);
  const me=G.me,done=G.card.filter(Boolean).length;
- ps.innerHTML=`<span class="badge">BINGO HUMANO</span><h2>¡Hola, ${esc(me.name)}! 🙌</h2><p class="m">Toca una casilla, tómate la selfie y elige a la persona.</p>
- <div class="grid">${RETOS.map((r,i)=>{const c=G.card[i];return c?`<div class="sq done" style="background:${COL[i]}"><span class="ck">✓</span>${selfie(me,c)}<b>${esc(c.name)}</b></div>`:`<div class="sq" data-i="${i}" style="background:${COL[i]}"><span class="e">${EM[i]}</span>${r}</div>`}).join("")}</div>
- <div class="prog"><i style="width:${done/9*100}%"></i></div><p class="m"><b>${done} de 9</b> casillas${G.over?" · el juego terminó":""}</p><div class="err">${msg||""}</div>`;
+ ps.innerHTML=`<span class="badge">BINGO HUMANO</span><h2>Hola, ${esc(me.name)}</h2><p class="m">Toca una casilla, tómate la selfie y elige a la persona.</p>
+ <div class="grid">${RETOS.map((r,i)=>{const c=G.card[i];return c?`<div class="sq done">${photo(me,c)}<span class="nm">${esc(c.name)}</span></div>`:`<div class="sq" data-i="${i}">${CAM}${r}</div>`}).join("")}</div>
+ <div class="prog"><i style="width:${done/9*100}%"></i></div><p class="m"><b>${done} de 9</b> casillas${G.over?" · el juego terminó":""}</p><div class="err">${msg||""}</div>${G.over?'<button id="vs">Ver mi tarjeta de recuerdo</button>':""}`;
  if(!G.over)ps.querySelectorAll(".sq:not(.done)").forEach(e=>e.onclick=()=>viewPick(+e.dataset.i));
+ else vs.onclick=viewSouv;
+}
+function viewSouv(){
+ setDark(true);const me=G.me;
+ ps.innerHTML=`<div class="souv"><img src="logo.png" alt="MNRY" style="height:30px"><div class="sub">BINGO HUMANO</div><div class="who">${esc(me.name)}</div>
+ <div class="sg">${RETOS.map((r,i)=>{const c=G.card[i];return `<div class="sc"><div class="pw">${c?photo(me,c):""}</div><b>${c?esc(c.name):"—"}</b><small>${r}</small></div>`}).join("")}</div>
+ <button class="s" id="vb">Volver</button></div>`;
+ vb.onclick=()=>viewCard();
 }
 function viewPick(i){
- ps.innerHTML=`<span class="badge">${EM[i]} RETO</span><h2>${RETOS[i]}</h2><div class="sheet"><div class="r">📸 Selfie tomada (queda solo en tu celular)</div><div class="q">${PREG[i%6]}</div></div>
+ ps.innerHTML=`<span class="badge">RETO</span><h2>${RETOS[i]}</h2><div class="sheet"><div class="r">Selfie tomada · queda solo en tu celular</div><div class="q">${PREG[i%6]}</div></div>
  <p class="m">¿Con quién te la tomaste? Escribe unas letras:</p><input id="bs" placeholder="Buscar nombre" autocomplete="off"><div class="opts" id="op"></div><div class="err" id="er"></div><button class="s" id="bk">Volver</button>`;
  bk.onclick=()=>viewCard();
  bs.oninput=()=>{const q=bs.value.trim().toLowerCase();op.innerHTML="";if(!q)return;
@@ -163,7 +178,7 @@ function pick(i,p){
  const me=G.me;
  if(p===me)return er.textContent="No puedes elegirte a ti mismo/a.";
  if(G.card.some(c=>c&&c.id===p.id))return er.textContent=p.name+" ya está en tu tarjeta. Elige a otra persona.";
- G.card[i]=p;connect(me,p,i);G.cur=i;draw();burst(innerWidth*.2,innerHeight*.5,26);viewCard();check(me);
+ G.card[i]=p;connect(me,p,i);G.cur=i;draw();viewCard();check(me);
 }
 function connect(a,b,ri){a.conn.add(b.id);b.conn.add(a.id);a.retos.add(ri);const t=Date.now();G.links.push([a.id,b.id,t]);a.t.push(t);G.feed.unshift(a.name+" · "+RETOS[ri]);G.feed=G.feed.slice(0,6);draw()}
 function check(p){if(!G.over&&p.t.length>=9)finish()}
@@ -188,8 +203,7 @@ function draw(){
   if(on)s+=`<circle cx="${p.x}" cy="${p.y}" r="${11+sc}" fill="#fff" opacity=".5" filter="url(#bl)"/>`;
   s+=`<circle cx="${p.x}" cy="${p.y}" r="${on?5+sc*.5:3}" fill="${me?"#FFEE00":on?"#fff":"#b5b5b5"}" fill-opacity="${on||me?1:.65}"${me?' stroke="#fff" stroke-width="2.5"':''}/>`;
   if(on||me||P.length<=80)s+=`<text x="${p.x}" y="${p.y+(on?19:13)}" fill="${on||me?"#fff":"#cfcfcf"}" fill-opacity="${on||me?1:.7}" font-family="Nunito,sans-serif" font-weight="${on||me?800:700}" font-size="${on||me?12.5:9}" text-anchor="middle">${esc(p.name)}${me?" (tú)":""}</text>`});
- s+=`<text x="${cx}" y="${cy-30}" font-size="30" text-anchor="middle">${EM[cur]}</text>`;
- s+=`<text x="${cx}" y="${cy+30}" fill="#fff" font-family="Fredoka,sans-serif" font-weight="700" font-size="72" text-anchor="middle">${lit.length}</text>`;
+  s+=`<text x="${cx}" y="${cy+30}" fill="#fff" font-family="Fredoka,sans-serif" font-weight="700" font-size="72" text-anchor="middle">${lit.length}</text>`;
  s+=`<text x="${cx}" y="${cy+56}" fill="#FFEE00" font-family="Fredoka,sans-serif" font-weight="500" font-size="16" text-anchor="middle">${esc(RETOS[cur])}</text>`;
  s+=`<text x="20" y="28" fill="#d6d6d6" font-family="Fredoka,sans-serif" font-size="12" letter-spacing="3">BINGO HUMANO · ${P.length} PERSONAS</text>`;
  map.innerHTML=s;
@@ -203,8 +217,8 @@ function finish(){
  G.over=true;clearInterval(G.timer);clearInterval(G.fade);const r=ranking().slice(0,3);
  const h=[120,88,66],c=["#FFEE00","#E5E5E5","#C9A27A"],o=[1,0,2],md=["🥇","🥈","🥉"];
  podx.innerHTML=o.filter(i=>r[i]).map(i=>`<div style="height:${h[i]}px;background:${c[i]}"><span class="md">${md[i]}</span>${esc(r[i].name)}<br>${score(r[i])}/9</div>`).join("");
- podt.textContent=G.me&&r[0]===G.me?"¡Ganaste! 🎉":"¡Juego terminado! 🎉";
- pod.classList.add("on");draw();if(G.me)viewCard();
+ podt.textContent=G.me&&r[0]===G.me?"¡Ganaste!":"¡Juego terminado!";
+ pod.classList.add("on");draw();if(G.me){if(G.me.t.length>=9)viewSouv();else viewCard()}
  burst(innerWidth*.5,innerHeight*.35,160);setTimeout(()=>burst(innerWidth*.3,innerHeight*.4,90),400);setTimeout(()=>burst(innerWidth*.7,innerHeight*.4,90),700);
 }
 /* confeti */
