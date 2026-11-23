@@ -7,7 +7,7 @@
 <meta property="og:image" content="https://bingo-humano.onrender.com/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:type" content="website">
 <style>
-:root{--dk:#0B1424;--dk2:#1B2A44;--lt:#F4F6FA;--a1:#F5A623;--a2:#2EC4B6;--a3:#E85D75;--a4:#5B8DEF;--mut:#8E9AAF}
+:root{--dk:#000000;--dk2:#1c1c1c;--lt:#F2F2F2;--a1:#FFEE00;--a2:#ACACAC;--a3:#818181;--a4:#D9D9D9;--mut:#9a9a9a}
 *{box-sizing:border-box;margin:0}
 body{font-family:Calibri,Segoe UI,Arial,sans-serif;background:var(--dk);color:#fff;min-height:100vh}
 header{padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
@@ -34,15 +34,15 @@ input:focus{outline:0;border-color:var(--a1)}
 .sheet .r{font-weight:700}
 .opts{display:flex;flex-direction:column;gap:6px;max-height:190px;overflow:auto}
 .opt{padding:10px;border-radius:8px;background:var(--lt);cursor:pointer;font-weight:600}
-.opt:hover{background:#ffe7b8}
+.opt:hover{background:#fff7a8}
 .err{color:#c0334a;font-size:13px;font-weight:700;min-height:16px}
-.q{background:#fff4dc;border-radius:10px;padding:10px;font-size:14px}
+.q{background:#fffbd1;border-radius:10px;padding:10px;font-size:14px}
 .screen{background:var(--dk2);border-radius:16px;padding:14px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
 .top b{font-family:Cambria,Georgia,serif;font-size:18px}
 .cols{display:grid;grid-template-columns:1fr 230px;gap:12px}
 @media(max-width:700px){.cols{grid-template-columns:1fr}}
-svg{width:100%;background:radial-gradient(ellipse at 50% 40%,#2a3652,#0B1424 75%);border-radius:12px;display:block}
+svg{width:100%;background:radial-gradient(ellipse at 50% 40%,#2b2b2b,#000000 75%);border-radius:12px;display:block}
 .rank{background:var(--dk);border-radius:12px;padding:10px;font-size:14px}
 .rank h3{font-size:13px;color:var(--mut);letter-spacing:.15em;margin-bottom:6px}
 .row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--dk2)}
@@ -53,17 +53,17 @@ svg{width:100%;background:radial-gradient(ellipse at 50% 40%,#2a3652,#0B1424 75%
 .pod div{width:90px;border-radius:8px 8px 0 0;padding:8px 4px;font-weight:700;color:var(--dk)}
 .note{font-size:12px;color:var(--mut);margin-top:10px}
 </style></head><body>
-<header><div><div class="logo">MNRY VISUAL LAB</div><h1>Bingo Humano Digital · Prototipo</h1></div>
-<div class="bar"><select id="selN" style="font:inherit;padding:9px;border-radius:10px;border:0;background:#1B2A44;color:#fff;font-weight:700"><option value="30">30 personas</option><option value="80" selected>80 personas</option><option value="150">150 personas</option></select><button class="s" id="bTime">Terminar el tiempo</button><button class="s" id="bReset">Reiniciar</button></div></header>
+<header><div><img src="logo.png" alt="MNRY Visual Lab" style="height:46px;display:block;margin-bottom:6px"><h1>Bingo Humano Digital · Prototipo</h1></div>
+<div class="bar"><select id="selN" style="font:inherit;padding:9px;border-radius:10px;border:0;background:#1c1c1c;color:#fff;font-weight:700"><option value="30">30 personas</option><option value="80" selected>80 personas</option><option value="150">150 personas</option></select><button class="s" id="bTime">Terminar el tiempo</button><button class="s" id="bReset">Reiniciar</button></div></header>
 <main>
 <div class="phone"><div class="ps" id="ps"></div></div>
 <div>
  <div class="screen">
   <div class="top"><b>Pantalla del evento</b><span id="stat" style="color:var(--mut);font-size:14px"></span></div>
-  <div class="cols"><svg id="map" viewBox="0 0 800 520"></svg><div class="rank"><h3>RANKING</h3><div id="rk"></div><h3 style="margin-top:12px">ÚLTIMAS SELFIES</h3><div id="feed" style="font-size:13px;color:#cfd6e4"></div></div></div>
+  <div class="cols"><svg id="map" viewBox="0 0 800 520"></svg><div class="rank"><h3>RANKING</h3><div id="rk"></div><h3 style="margin-top:12px">ÚLTIMAS SELFIES</h3><div id="feed" style="font-size:13px;color:#d0d0d0"></div></div></div>
   <div class="podium" id="pod"><div style="font-family:Cambria,Georgia,serif;font-size:20px">¡Juego terminado!</div><div class="pod" id="podx"></div></div>
  </div>
- <p class="note">Simulación: el centro muestra un reto y cuántas personas ya lo cumplieron; esas personas se iluminan y cambia de reto solo. Tú eres un punto más (el naranja). Los otros jugadores son de ejemplo y se conectan solos. Cambia arriba entre 30, 80 y 150 personas para ver cómo se llena la pantalla. En el evento real cada persona usa su propio celular y las fotos se quedan en el celular.</p>
+ <p class="note">Simulación: el centro muestra un reto y cuántas personas ya lo cumplieron; esas personas se iluminan y cambia de reto solo. Tú eres un punto más (el amarillo). Los otros jugadores son de ejemplo y se conectan solos. Cambia arriba entre 30, 80 y 150 personas para ver cómo se llena la pantalla. En el evento real cada persona usa su propio celular y las fotos se quedan en el celular.</p>
 </div>
 </main>
 <script>
@@ -72,7 +72,7 @@ const LN="ABCDEFGHJLMPRSTV";
 function mkNames(n){const a=[];for(let i=0;i<n;i++){const f=FN[i%FN.length];a.push(i<FN.length?f:f+" "+LN[(i*7)%LN.length]+".")}return a}
 const RETOS=["Ha viajado a más de 5 países","Habla otro idioma","Tiene mascota","Toca un instrumento","Le gusta cocinar","Nació fuera de Lima","Trabaja en marketing","Hace deporte","Tiene hermanos gemelos o mellizos"];
 const PREG=["¿Cuál es tu comida favorita?","¿Qué lugar te gustaría visitar?","¿Qué serie recomiendas?","¿Cuál fue tu primer trabajo?","¿Qué hacías de niño los sábados?","¿Qué canción no puede faltar en una fiesta?"];
-const COL=["#F5A623","#2EC4B6","#E85D75","#5B8DEF","#FFD27F"];
+const COL=["#FFEE00","#2EC4B6","#E85D75","#5B8DEF","#FFD27F"];
 const EMO=["🤳","😄","📸","🙌","😎","🤝"];
 let G=null;
 function layout(n){
@@ -138,11 +138,11 @@ function draw(){
  lit.forEach(p=>{s+=`<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="#fff" stroke-opacity=".55" stroke-width="1"/>`});
  P.forEach(p=>{const on=litIds.has(p.id),me=p===G.me,sc=score(p);
   if(on)s+=`<circle cx="${p.x}" cy="${p.y}" r="${9+sc}" fill="url(#gl)" opacity=".55"/>`;
-  s+=`<circle cx="${p.x}" cy="${p.y}" r="${on?4.5+sc*.45:2.6}" fill="${me?"#F5A623":"#fff"}" fill-opacity="${on||me?1:.35}"/>`;
+  s+=`<circle cx="${p.x}" cy="${p.y}" r="${on?4.5+sc*.45:2.6}" fill="${me?"#FFEE00":"#fff"}" fill-opacity="${on||me?1:.35}"/>`;
   if(on||me||P.length<=80)s+=`<text x="${p.x}" y="${p.y+(on?18:12)}" fill="#fff" fill-opacity="${on||me?1:.4}" font-size="${on||me?12:9}" letter-spacing=".08em" text-anchor="middle">${esc(p.name.toUpperCase())}${me?" (TÚ)":""}</text>`});
  s+=`<text x="${cx}" y="${cy+14}" fill="#fff" font-family="Cambria,Georgia,serif" font-size="56" text-anchor="middle">${lit.length}</text>`;
- s+=`<text x="${cx}" y="${cy+40}" fill="#cfd6e4" font-size="14" text-anchor="middle">${esc(RETOS[cur])}</text>`;
- s+=`<text x="20" y="28" fill="#8E9AAF" font-size="11" letter-spacing=".25em">BINGO HUMANO · ${P.length} PERSONAS</text>`;
+ s+=`<text x="${cx}" y="${cy+40}" fill="#d0d0d0" font-size="14" text-anchor="middle">${esc(RETOS[cur])}</text>`;
+ s+=`<text x="20" y="28" fill="#ACACAC" font-size="11" letter-spacing=".25em">BINGO HUMANO · ${P.length} PERSONAS</text>`;
  map.innerHTML=s;
  rk.innerHTML=r.slice(0,10).map((p,i)=>`<div class="row ${p===G.me?"me":""}"><span>${i+1}. ${esc(p.name)}</span><span>${score(p)}/9</span></div>`).join("");
  feed.innerHTML=G.feed.map(f=>`<div>${esc(f)}</div>`).join("");
@@ -151,7 +151,7 @@ function draw(){
 }
 function finish(){
  G.over=true;clearInterval(G.timer);clearInterval(G.fade);const r=ranking().slice(0,3);
- const h=[110,80,60],c=["#F5A623","#C9D1E0","#E8A87C"],o=[1,0,2];
+ const h=[110,80,60],c=["#FFEE00","#C9D1E0","#E8A87C"],o=[1,0,2];
  podx.innerHTML=o.filter(i=>r[i]).map(i=>`<div style="height:${h[i]}px;background:${c[i]}">${i+1}º<br>${esc(r[i].name)}<br>${score(r[i])}/9</div>`).join("");
  pod.classList.add("on");draw();if(G.me)viewCard();
 }
