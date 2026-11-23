@@ -84,9 +84,9 @@ function layout(n){
 function reset(){
  clearInterval(G&&G.timer);clearInterval(G&&G.fade);
  const n=+selN.value,nm=mkNames(n),pts=layout(n);
- G={me:null,players:nm.map((name,i)=>({id:i,name,conn:new Set(),retos:new Set(),t:[],bot:true,x:pts[i].x,y:pts[i].y})),
+ G={me:null,players:nm.map((name,i)=>({id:i,name,conn:new Set(),retos:new Set(),t:[],bot:true,p:1/(12+Math.random()*14),x:pts[i].x,y:pts[i].y})),
   links:[],cur:0,over:false,card:Array(9).fill(null),feed:[],k:Math.max(1,Math.ceil(n/14))};
- G.timer=setInterval(botStep,1700);G.fade=setInterval(()=>{G.cur=(G.cur+1)%9;draw()},4500);
+ G.timer=setInterval(botStep,1000);G.fade=setInterval(()=>{G.cur=(G.cur+1)%9;draw()},4500);
  document.getElementById("pod").classList.remove("on");
  viewName();draw();
 }
@@ -121,14 +121,13 @@ function connect(a,b,ri){a.conn.add(b.id);b.conn.add(a.id);a.retos.add(ri);const
 function check(p){if(!G.over&&p.t.length>=9)finish()}
 function botStep(){
  if(G.over)return;
- for(let k=0;k<G.k;k++){
-  const bots=G.players.filter(p=>p.bot&&p.t.length<9);
-  if(!bots.length)break;
-  const a=bots[Math.floor(Math.random()*bots.length)];
+ for(const a of G.players){
+  if(!a.bot||a.t.length>=9||Math.random()>a.p)continue;
   const c=G.players.filter(p=>p!==a&&!a.conn.has(p.id)&&p!==G.me);
   if(!c.length)continue;
   const b=c[Math.floor(Math.random()*c.length)];
-  const fr=[0,1,2,3,4,5,6,7,8].filter(x=>!a.retos.has(x));connect(a,b,fr[Math.floor(Math.random()*fr.length)]);check(a);if(G.over)return}
+  const fr=[0,1,2,3,4,5,6,7,8].filter(x=>!a.retos.has(x));
+  connect(a,b,fr[Math.floor(Math.random()*fr.length)]);check(a);if(G.over)return}
 }
 function score(p){return p.t.length}
 function ranking(){return [...G.players].sort((a,b)=>score(b)-score(a)||(a.t[a.t.length-1]||1e15)-(b.t[b.t.length-1]||1e15))}
