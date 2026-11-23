@@ -8,55 +8,68 @@
 <meta property="og:type" content="website">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--ye:#FFEE00;--co:#FF5A6E;--tu:#19D3C5;--vi:#A78BFA;--li:#A3E635;--or:#FF9F1C;--sk:#38BDF8;--pk:#FF6FB5;--ink:#1a1a2e;--mut:#9a9a9a}
+:root{--ye:#FFEE00;--ink:#1a1a2e;--mut:#a8a8a8}
 *{box-sizing:border-box;margin:0}
-body{font-family:Nunito,Segoe UI,Arial,sans-serif;background:#000;color:#fff;min-height:100vh}
+body{font-family:Nunito,Segoe UI,Arial,sans-serif;color:#fff;min-height:100vh;background:radial-gradient(ellipse at 50% -10%,#3a3a3a,#1c1c1c 55%,#111 100%) fixed}
 header{padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 h1{font-family:Fredoka,Nunito,sans-serif;font-size:24px;font-weight:600}
 .bar{display:flex;gap:8px;flex-wrap:wrap}
 button,select{font:inherit;cursor:pointer;border:0;border-radius:999px;padding:10px 18px;font-weight:800;background:var(--ye);color:#000}
-button.s,select{background:#1f1f1f;color:#fff}
-button:disabled{opacity:.4;cursor:default}
+button.s,select{background:#2c2c2c;color:#fff}
 button:active{transform:scale(.97)}
-main{display:grid;grid-template-columns:370px 1fr;gap:20px;padding:0 22px 22px;align-items:start}
+main{display:grid;grid-template-columns:380px 1fr;gap:24px;padding:0 22px 22px;align-items:start}
 @media(max-width:900px){main{grid-template-columns:1fr}}
-.phone{background:#111;border-radius:38px;padding:12px;border:2px solid #2a2a2a;max-width:370px;margin:auto;width:100%}
-.ps{background:linear-gradient(180deg,#FFF9DB,#FFFFFF 40%);color:var(--ink);border-radius:28px;min-height:580px;padding:18px;display:flex;flex-direction:column;gap:12px}
-.ps h2{font-family:Fredoka,Nunito,sans-serif;font-size:24px;font-weight:600}
-.ps p.m{color:#5b5b73;font-size:14px;font-weight:700}
-.badge{align-self:flex-start;background:var(--ye);color:#000;font-weight:800;font-size:12px;letter-spacing:.12em;border-radius:999px;padding:5px 12px}
-input{font:inherit;font-weight:700;padding:13px 16px;border-radius:16px;border:3px solid #e6e6ef;width:100%}
+/* iPhone */
+.iphone{position:relative;width:330px;margin:10px auto}
+.iphone .body{background:linear-gradient(145deg,#6b6b6b,#2b2b2b 35%,#555 70%,#2a2a2a);border-radius:56px;padding:5px;box-shadow:0 20px 50px rgba(0,0,0,.6),inset 0 0 0 1px #8a8a8a}
+.iphone .bezel{background:#000;border-radius:51px;padding:10px}
+.iphone .btn{position:absolute;width:4px;background:linear-gradient(90deg,#444,#8a8a8a,#444);border-radius:3px}
+.b1{left:-3px;top:110px;height:28px}.b2{left:-3px;top:160px;height:52px}.b3{left:-3px;top:222px;height:52px}.b4{right:-3px;top:180px;height:84px}
+.scr{position:relative;border-radius:42px;overflow:hidden;background:linear-gradient(180deg,#FFF9DB,#FFFFFF 40%);color:var(--ink);height:660px}
+.island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:100px;height:28px;background:#000;border-radius:20px;z-index:5}
+.island:after{content:"";position:absolute;right:10px;top:9px;width:10px;height:10px;border-radius:50%;background:#10131f;box-shadow:inset 0 0 0 2px #1d2540}
+.status{position:absolute;top:0;left:0;right:0;height:46px;display:flex;justify-content:space-between;align-items:center;padding:6px 26px 0 30px;font-weight:800;font-size:14px;z-index:4}
+.status .ic{display:flex;gap:5px;align-items:center}
+.homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:120px;height:5px;border-radius:5px;background:#1a1a2e;opacity:.85;z-index:5}
+.ps{position:absolute;inset:0;padding:54px 16px 26px;display:flex;flex-direction:column;gap:10px;overflow:auto;scrollbar-width:none}
+.ps::-webkit-scrollbar{display:none}
+.ps h2{font-family:Fredoka,Nunito,sans-serif;font-size:23px;font-weight:600}
+.ps p.m{color:#5b5b73;font-size:13.5px;font-weight:700}
+.badge{align-self:flex-start;background:var(--ye);color:#000;font-weight:800;font-size:11px;letter-spacing:.12em;border-radius:999px;padding:5px 12px}
+input{font:inherit;font-weight:700;padding:12px 15px;border-radius:16px;border:3px solid #e6e6ef;width:100%}
 input:focus{outline:0;border-color:var(--ye);box-shadow:0 0 0 4px #fff3a0}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.sq{aspect-ratio:1;border-radius:18px;padding:6px;font-size:11.5px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;cursor:pointer;line-height:1.1;color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.12);transition:transform .12s}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sq{aspect-ratio:1;border-radius:17px;padding:5px;font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;cursor:pointer;line-height:1.1;color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.12);transition:transform .12s}
 .sq:hover{transform:translateY(-2px) rotate(-1deg)}
-.sq .e{font-size:24px}
-.sq.done{cursor:default;position:relative}
+.sq .e{font-size:22px}
+.sq.done{cursor:default;position:relative;justify-content:flex-end;padding-bottom:4px}
 .sq.done:hover{transform:none}
-.sq.done .ck{position:absolute;top:5px;right:6px;background:#fff;border-radius:999px;width:20px;height:20px;font-size:12px;display:flex;align-items:center;justify-content:center}
-.sq.done b{font-family:Fredoka,sans-serif;font-size:14px;font-weight:600}
-.prog{height:12px;border-radius:999px;background:#ececf4;overflow:hidden}
-.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--ye),var(--or),var(--co));border-radius:999px;transition:width .4s}
-.sheet{background:#fff;border-radius:18px;padding:14px;box-shadow:0 6px 20px rgba(26,26,46,.12);display:flex;flex-direction:column;gap:10px}
-.sheet .r{font-weight:800}
-.opts{display:flex;flex-direction:column;gap:6px;max-height:190px;overflow:auto}
+.sq.done svg.sf{width:78%;background:none;border-radius:0}
+.sq.done .ck{position:absolute;top:4px;right:5px;background:#fff;border-radius:999px;width:18px;height:18px;font-size:11px;display:flex;align-items:center;justify-content:center}
+.sq.done b{font-family:Fredoka,sans-serif;font-size:12.5px;font-weight:600}
+.prog{height:11px;border-radius:999px;background:#ececf4;overflow:hidden}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--ye),#FFB300);border-radius:999px;transition:width .4s}
+.sheet{background:#fff;border-radius:18px;padding:13px;box-shadow:0 6px 20px rgba(26,26,46,.12);display:flex;flex-direction:column;gap:10px}
+.sheet .r{font-weight:800;font-size:14px}
+.opts{display:flex;flex-direction:column;gap:6px;max-height:170px;overflow:auto}
 .opt{padding:11px 14px;border-radius:14px;background:#f4f4fa;cursor:pointer;font-weight:800}
 .opt:hover{background:#fff3a0}
 .err{color:#d6284a;font-size:13px;font-weight:800;min-height:16px}
-.q{background:#FFF3B0;border-radius:14px;padding:11px 12px;font-size:14px;font-weight:700}
-.screen{background:#0c0c14;border-radius:22px;padding:14px;border:1px solid #23233a}
+.q{background:#FFF3B0;border-radius:14px;padding:10px 12px;font-size:13.5px;font-weight:700}
+/* pantalla del evento */
+.screen{background:#262626;border-radius:22px;padding:14px;border:1px solid #3c3c3c}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
 .top b{font-family:Fredoka,sans-serif;font-size:20px;font-weight:600}
 .cols{display:grid;grid-template-columns:1fr 240px;gap:12px}
 @media(max-width:700px){.cols{grid-template-columns:1fr}}
-svg{width:100%;background:radial-gradient(ellipse at 50% 45%,#1f1f3a,#07070d 75%);border-radius:16px;display:block}
-.rank{background:#13131f;border-radius:16px;padding:12px;font-size:14px;font-weight:700}
-.rank h3{font-family:Fredoka,sans-serif;font-size:13px;color:#b9b9d0;letter-spacing:.14em;margin-bottom:6px;font-weight:600}
+svg#map{width:100%;background:radial-gradient(ellipse at 50% 45%,#5a5a5a,#2a2a2a 80%);border-radius:16px;display:block}
+.rank{background:#333;border-radius:16px;padding:12px;font-size:14px;font-weight:700}
+.rank h3{font-family:Fredoka,sans-serif;font-size:13px;color:#cfcfcf;letter-spacing:.14em;margin-bottom:6px;font-weight:600}
 .row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;gap:8px}
-.row .bar2{height:6px;border-radius:99px;background:#26263a;flex:1;overflow:hidden;max-width:60px}
+.row .bar2{height:6px;border-radius:99px;background:#4a4a4a;flex:1;overflow:hidden;max-width:60px}
 .row .bar2 i{display:block;height:100%;background:var(--ye)}
 .row.me{color:var(--ye)}
-.podium{display:none;margin-top:12px;background:#13131f;border-radius:18px;padding:16px;text-align:center}
+.podium{display:none;margin-top:12px;background:#333;border-radius:18px;padding:16px;text-align:center}
 .podium.on{display:block}
 .podium .t{font-family:Fredoka,sans-serif;font-size:24px;font-weight:600}
 .pod{display:flex;justify-content:center;align-items:flex-end;gap:10px;margin-top:10px}
@@ -69,14 +82,17 @@ canvas#cf{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 <header><div><img src="logo.png" alt="MNRY Visual Lab" style="height:46px;display:block;margin-bottom:6px"><h1>Bingo Humano Digital · Prototipo</h1></div>
 <div class="bar"><select id="selN"><option value="30">30 personas</option><option value="80" selected>80 personas</option><option value="150">150 personas</option></select><button class="s" id="bTime">Terminar el tiempo</button><button class="s" id="bReset">Reiniciar</button></div></header>
 <main>
-<div class="phone"><div class="ps" id="ps"></div></div>
+<div class="iphone"><i class="btn b1"></i><i class="btn b2"></i><i class="btn b3"></i><i class="btn b4"></i>
+<div class="body"><div class="bezel"><div class="scr"><div class="island"></div>
+<div class="status"><span id="clk">9:41</span><span class="ic"><svg width="18" height="12" viewBox="0 0 18 12" style="background:none;width:18px"><rect x="0" y="8" width="3" height="4" rx="1" fill="#1a1a2e"/><rect x="5" y="5" width="3" height="7" rx="1" fill="#1a1a2e"/><rect x="10" y="2" width="3" height="10" rx="1" fill="#1a1a2e"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#1a1a2e"/></svg><svg width="26" height="12" viewBox="0 0 26 12" style="background:none;width:26px"><rect x=".5" y=".5" width="21" height="11" rx="3.5" fill="none" stroke="#1a1a2e" opacity=".5"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#1a1a2e"/><rect x="23" y="4" width="2" height="4" rx="1" fill="#1a1a2e" opacity=".5"/></svg></span></div>
+<div class="ps" id="ps"></div><div class="homebar"></div></div></div></div></div>
 <div>
  <div class="screen">
-  <div class="top"><b>Pantalla del evento</b><span id="stat" style="color:#b9b9d0;font-size:14px;font-weight:700"></span></div>
-  <div class="cols"><svg id="map" viewBox="0 0 800 520"></svg><div class="rank"><h3>RANKING</h3><div id="rk"></div><h3 style="margin-top:12px">ÚLTIMAS SELFIES</h3><div id="feed" style="font-size:13px;color:#d6d6e6;font-weight:600"></div></div></div>
+  <div class="top"><b>Pantalla del evento</b><span id="stat" style="color:#d0d0d0;font-size:14px;font-weight:700"></span></div>
+  <div class="cols"><svg id="map" viewBox="0 0 800 520"></svg><div class="rank"><h3>RANKING</h3><div id="rk"></div><h3 style="margin-top:12px">ÚLTIMAS SELFIES</h3><div id="feed" style="font-size:13px;color:#e0e0e0;font-weight:600"></div></div></div>
   <div class="podium" id="pod"><div class="t" id="podt">¡Juego terminado!</div><div class="pod" id="podx"></div></div>
  </div>
- <p class="note">Simulación: el centro muestra un reto y cuántas personas ya lo cumplieron; esas personas se iluminan y el reto cambia solo. Tú eres un punto más (el que tiene aro blanco). Los otros jugadores son de ejemplo y se conectan solos. Cambia arriba entre 30, 80 y 150 personas. En el evento real cada persona usa su propio celular y las fotos se quedan en el celular.</p>
+ <p class="note">Simulación: el centro muestra un reto y cuántas personas ya lo cumplieron; esas personas se iluminan y el reto cambia solo. Tú eres un punto más (el punto amarillo con aro blanco). Los otros jugadores son de ejemplo y se conectan solos. Cambia arriba entre 30, 80 y 150 personas. En el evento real cada persona usa su propio celular y las fotos se quedan en el celular.</p>
 </div>
 </main>
 <script>
@@ -86,7 +102,26 @@ const RETOS=["Ha viajado a más de 5 países","Habla otro idioma","Tiene mascota
 const EM=["✈️","🗣️","🐾","🎸","🍳","📍","💼","⚽","👯"];
 const PREG=["¿Cuál es tu comida favorita?","¿Qué lugar te gustaría visitar?","¿Qué serie recomiendas?","¿Cuál fue tu primer trabajo?","¿Qué hacías de niño los sábados?","¿Qué canción no puede faltar en una fiesta?"];
 const COL=["#FFEE00","#FF8FA0","#5EEAD4","#C4B5FD","#BEF264","#FFC15E","#7DD3FC","#FFA6D2","#FFE08A"];
-const PC=["#FFEE00","#FF5A6E","#19D3C5","#A78BFA","#A3E635","#FF9F1C","#38BDF8","#FF6FB5"];
+const CONF=["#FFEE00","#FFFFFF","#ACACAC","#FFC400","#E5E5E5"];
+const SKIN=["#F6D2B0","#E8B88E","#C98F63","#9B6A45","#F2C9A5"];
+const HAIR=["#2b1d14","#4a2e1b","#1a1a1a","#7a4b22","#3b2a20"];
+const FEM=new Set(["ana","marta","rosa","sofía","sofia","lucía","lucia","valeria","camila","milagros","daniela","elena","paola","nora","karla","julia","alicia","carmen","rocío","rocio","beatriz","isabel","mercedes","pilar","luz","inés","ines","andrea","maría","maria","patricia","gabriela","fiorella","claudia","diana","ivette","úrsula","ursula","fabiana","manuela","cami"]);
+const MAS=new Set(["luis","diego","carlos","jorge","pedro","andrés","andres","renzo","hugo","mateo","raúl","raul","iván","ivan","fabio","óscar","oscar","percy","rodrigo","miguel","juan","josé","jose","luca","jaime","hans","gonzalo","eduardo","ricardo","javier","sebastián","sebastian","manasés","santiago","pablo","david","daniel","alex","fernando","jesús","jesus","manray"]);
+function gender(name){const w=String(name).trim().toLowerCase().split(/\s+/)[0];if(FEM.has(w))return"f";if(MAS.has(w))return"m";if(/[aä]$/.test(w)&&!/(luca|joshua|nikita)$/.test(w))return"f";if(/o$/.test(w))return"m";return"n"}
+function head(cx,cy,g,sk,hr){
+ let s="";
+ if(g==="f")s+=`<path d="M${cx-15},${cy+16} Q${cx-19},${cy-16} ${cx},${cy-17} Q${cx+19},${cy-16} ${cx+15},${cy+16} Q${cx+10},${cy+4} ${cx},${cy-6} Q${cx-10},${cy+4} ${cx-15},${cy+16}Z" fill="${hr}"/>`;
+ s+=`<circle cx="${cx}" cy="${cy}" r="13" fill="${sk}"/>`;
+ if(g==="m")s+=`<path d="M${cx-13},${cy-3} Q${cx-13},${cy-16} ${cx},${cy-15} Q${cx+13},${cy-16} ${cx+13},${cy-3} Q${cx+6},${cy-9} ${cx-2},${cy-8} Q${cx-9},${cy-8} ${cx-13},${cy-3}Z" fill="${hr}"/>`;
+ else if(g==="f")s+=`<path d="M${cx-13},${cy-2} Q${cx-12},${cy-15} ${cx},${cy-15} Q${cx+12},${cy-15} ${cx+13},${cy-2} Q${cx+3},${cy-10} ${cx-13},${cy-2}Z" fill="${hr}"/>`;
+ else s+=`<path d="M${cx-13},${cy-3} Q${cx-12},${cy-14} ${cx},${cy-14} Q${cx+12},${cy-14} ${cx+13},${cy-3} Q${cx},${cy-9} ${cx-13},${cy-3}Z" fill="#8a8a8a"/>`;
+ s+=`<circle cx="${cx-4.5}" cy="${cy+1}" r="1.6" fill="#1a1a2e"/><circle cx="${cx+4.5}" cy="${cy+1}" r="1.6" fill="#1a1a2e"/><path d="M${cx-4},${cy+6} Q${cx},${cy+10} ${cx+4},${cy+6}" stroke="#1a1a2e" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
+ return s}
+function selfie(a,b){
+ const ga=gender(a.name),gb=gender(b.name);
+ return `<svg class="sf" viewBox="0 0 80 62"><rect x="33" y="3" width="14" height="22" rx="3.5" fill="#1a1a2e"/><circle cx="40" cy="9" r="2" fill="#555"/><path d="M26,5 l-4,-3 M54,5 l4,-3 M24,13 l-5,0 M56,13 l5,0" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+ <path d="M18,62 Q20,48 30,46 Q40,52 40,62Z M40,62 Q40,52 50,46 Q60,48 62,62Z" fill="rgba(26,26,46,.82)"/>
+ ${head(28,38,ga,SKIN[a.id%5],HAIR[a.id%5])}${head(52,38,gb,SKIN[b.id%5],HAIR[b.id%5])}</svg>`}
 let G=null;
 function mkNames(n){const a=[];for(let i=0;i<n;i++){const f=FN[i%FN.length];a.push(i<FN.length?f:f+" "+LN[(i*7)%LN.length]+".")}return a}
 function layout(n){
@@ -112,7 +147,7 @@ function viewName(){
 function viewCard(msg){
  const me=G.me,done=G.card.filter(Boolean).length;
  ps.innerHTML=`<span class="badge">BINGO HUMANO</span><h2>¡Hola, ${esc(me.name)}! 🙌</h2><p class="m">Toca una casilla, tómate la selfie y elige a la persona.</p>
- <div class="grid">${RETOS.map((r,i)=>{const c=G.card[i];return c?`<div class="sq done" style="background:${COL[i]}"><span class="ck">✓</span><span class="e">🤳</span><b>${esc(c.name)}</b></div>`:`<div class="sq" data-i="${i}" style="background:${COL[i]}"><span class="e">${EM[i]}</span>${r}</div>`}).join("")}</div>
+ <div class="grid">${RETOS.map((r,i)=>{const c=G.card[i];return c?`<div class="sq done" style="background:${COL[i]}"><span class="ck">✓</span>${selfie(me,c)}<b>${esc(c.name)}</b></div>`:`<div class="sq" data-i="${i}" style="background:${COL[i]}"><span class="e">${EM[i]}</span>${r}</div>`}).join("")}</div>
  <div class="prog"><i style="width:${done/9*100}%"></i></div><p class="m"><b>${done} de 9</b> casillas${G.over?" · el juego terminó":""}</p><div class="err">${msg||""}</div>`;
  if(!G.over)ps.querySelectorAll(".sq:not(.done)").forEach(e=>e.onclick=()=>viewPick(+e.dataset.i));
 }
@@ -148,25 +183,25 @@ function draw(){
  const P=G.players,r=ranking(),cx=400,cy=250,cur=G.cur;
  const lit=P.filter(p=>p.retos.has(cur)),litIds=new Set(lit.map(p=>p.id));
  let s=`<defs><filter id="bl" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="5"/></filter></defs>`;
- lit.forEach(p=>{s+=`<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="${PC[p.id%8]}" stroke-opacity=".7" stroke-width="1.6"/>`});
- P.forEach(p=>{const on=litIds.has(p.id),me=p===G.me,sc=score(p),col=PC[p.id%8];
-  if(on)s+=`<circle cx="${p.x}" cy="${p.y}" r="${11+sc}" fill="${col}" opacity=".55" filter="url(#bl)"/>`;
-  s+=`<circle cx="${p.x}" cy="${p.y}" r="${on?5+sc*.5:3}" fill="${col}" fill-opacity="${on||me?1:.4}"${me?' stroke="#fff" stroke-width="2.5"':''}/>`;
-  if(on||me||P.length<=80)s+=`<text x="${p.x}" y="${p.y+(on?19:13)}" fill="${on||me?"#fff":"#9a9ab5"}" font-family="Nunito,sans-serif" font-weight="${on||me?800:700}" font-size="${on||me?12.5:9}" text-anchor="middle">${esc(p.name)}${me?" (tú)":""}</text>`});
+ lit.forEach(p=>{s+=`<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="#fff" stroke-opacity=".6" stroke-width="1.3"/>`});
+ P.forEach(p=>{const on=litIds.has(p.id),me=p===G.me,sc=score(p);
+  if(on)s+=`<circle cx="${p.x}" cy="${p.y}" r="${11+sc}" fill="#fff" opacity=".5" filter="url(#bl)"/>`;
+  s+=`<circle cx="${p.x}" cy="${p.y}" r="${on?5+sc*.5:3}" fill="${me?"#FFEE00":on?"#fff":"#b5b5b5"}" fill-opacity="${on||me?1:.65}"${me?' stroke="#fff" stroke-width="2.5"':''}/>`;
+  if(on||me||P.length<=80)s+=`<text x="${p.x}" y="${p.y+(on?19:13)}" fill="${on||me?"#fff":"#cfcfcf"}" fill-opacity="${on||me?1:.7}" font-family="Nunito,sans-serif" font-weight="${on||me?800:700}" font-size="${on||me?12.5:9}" text-anchor="middle">${esc(p.name)}${me?" (tú)":""}</text>`});
  s+=`<text x="${cx}" y="${cy-30}" font-size="30" text-anchor="middle">${EM[cur]}</text>`;
  s+=`<text x="${cx}" y="${cy+30}" fill="#fff" font-family="Fredoka,sans-serif" font-weight="700" font-size="72" text-anchor="middle">${lit.length}</text>`;
  s+=`<text x="${cx}" y="${cy+56}" fill="#FFEE00" font-family="Fredoka,sans-serif" font-weight="500" font-size="16" text-anchor="middle">${esc(RETOS[cur])}</text>`;
- s+=`<text x="20" y="28" fill="#b9b9d0" font-family="Fredoka,sans-serif" font-size="12" letter-spacing="3">BINGO HUMANO · ${P.length} PERSONAS</text>`;
+ s+=`<text x="20" y="28" fill="#d6d6d6" font-family="Fredoka,sans-serif" font-size="12" letter-spacing="3">BINGO HUMANO · ${P.length} PERSONAS</text>`;
  map.innerHTML=s;
  const medal=["🥇","🥈","🥉"];
- rk.innerHTML=r.slice(0,10).map((p,i)=>`<div class="row ${p===G.me?"me":""}"><span>${medal[i]||(i+1)+"."} ${esc(p.name)}</span><span class="bar2"><i style="width:${score(p)/9*100}%;background:${PC[p.id%8]}"></i></span><span>${score(p)}/9</span></div>`).join("");
+ rk.innerHTML=r.slice(0,10).map((p,i)=>`<div class="row ${p===G.me?"me":""}"><span>${medal[i]||(i+1)+"."} ${esc(p.name)}</span><span class="bar2"><i style="width:${score(p)/9*100}%"></i></span><span>${score(p)}/9</span></div>`).join("");
  feed.innerHTML=G.feed.map(f=>`<div>${esc(f)}</div>`).join("");
  const myr=G.me?r.indexOf(G.me)+1:0;
  stat.textContent=`${P.length} jugadores · ${G.links.length} selfies`+(G.me?` · tú vas ${myr}º`:"");
 }
 function finish(){
  G.over=true;clearInterval(G.timer);clearInterval(G.fade);const r=ranking().slice(0,3);
- const h=[120,88,66],c=["#FFEE00","#E5E7EB","#FFB27A"],o=[1,0,2],md=["🥇","🥈","🥉"];
+ const h=[120,88,66],c=["#FFEE00","#E5E5E5","#C9A27A"],o=[1,0,2],md=["🥇","🥈","🥉"];
  podx.innerHTML=o.filter(i=>r[i]).map(i=>`<div style="height:${h[i]}px;background:${c[i]}"><span class="md">${md[i]}</span>${esc(r[i].name)}<br>${score(r[i])}/9</div>`).join("");
  podt.textContent=G.me&&r[0]===G.me?"¡Ganaste! 🎉":"¡Juego terminado! 🎉";
  pod.classList.add("on");draw();if(G.me)viewCard();
@@ -175,11 +210,12 @@ function finish(){
 /* confeti */
 const cv=document.getElementById("cf"),cx2=cv.getContext("2d");let parts=[],raf=0;
 function rs(){cv.width=innerWidth;cv.height=innerHeight}rs();addEventListener("resize",rs);
-function burst(x,y,n){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=3+Math.random()*7;parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-5,g:.18,r:3+Math.random()*4,c:PC[i%8],rot:Math.random()*6,vr:(Math.random()-.5)*.4,life:90+Math.random()*50})}if(!raf)raf=requestAnimationFrame(tick)}
+function burst(x,y,n){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=3+Math.random()*7;parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-5,g:.18,r:3+Math.random()*4,c:CONF[i%5],rot:Math.random()*6,vr:(Math.random()-.5)*.4,life:90+Math.random()*50})}if(!raf)raf=requestAnimationFrame(tick)}
 function tick(){cx2.clearRect(0,0,cv.width,cv.height);parts=parts.filter(p=>p.life-->0);
  parts.forEach(p=>{p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.vx*=.99;p.rot+=p.vr;cx2.save();cx2.translate(p.x,p.y);cx2.rotate(p.rot);cx2.fillStyle=p.c;cx2.globalAlpha=Math.min(1,p.life/30);cx2.fillRect(-p.r,-p.r/2,p.r*2,p.r);cx2.restore()});
  raf=parts.length?requestAnimationFrame(tick):0}
 function esc(t){return String(t).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
 bTime.onclick=()=>{if(!G.over)finish()};bReset.onclick=reset;selN.onchange=reset;
+function tk(){const d=new Date();clk.textContent=d.getHours()+":"+String(d.getMinutes()).padStart(2,"0")}tk();setInterval(tk,20000);
 reset();
 </script></body></html>
